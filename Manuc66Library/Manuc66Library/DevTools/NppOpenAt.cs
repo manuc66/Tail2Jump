@@ -55,13 +55,13 @@ namespace Be.Manuc66.Library
     }
     public string DisplayName { get { return "Notepad++"; } }
 
-    public bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo_)
+    public bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo)
     {
-      if (filePathWithLineInfo_ == null) return false;
+      if (filePathWithLineInfo == null) return false;
       bool result;
       if (IsNppAvailble())
       {
-        Process.Start(s_nppLocation, "\"" + filePathWithLineInfo_.FilePath + "\" -n" + filePathWithLineInfo_.LineNumber);
+        Process.Start(s_nppLocation, "\"" + filePathWithLineInfo.FilePath + "\" -n" + filePathWithLineInfo.LineNumber);
         result = true;
       }
       else

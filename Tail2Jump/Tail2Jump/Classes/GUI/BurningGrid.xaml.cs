@@ -142,7 +142,7 @@ namespace Tail2Jump
     {
       const bool result = false;
 
-      StartToBurnCommand = new SimpleCommand<IEmpty>((e) => CanStartToBurn, (e) => GoToBurn());
+      StartToBurnCommand = new SimpleCommand<IEmpty>(e => CanStartToBurn, e => GoToBurn());
 
       new PerformanceCounter("Memory", "Available MBytes");
       return result;
@@ -230,7 +230,7 @@ namespace Tail2Jump
 
     public void StartThreadCoreTemp()
     {
-      ThreadPool.QueueUserWorkItem((x_) => RetrieveCoreTemp());
+      ThreadPool.QueueUserWorkItem(x_ => RetrieveCoreTemp());
     }
 
     public void BurnCpuThread()

@@ -18,7 +18,6 @@ namespace ProduceLogs
       int j = 0;
       while (true)
       {
-        Encoding encoding = Encoding.GetEncoding("UTF-8");
         foreach (String filePath in fileToProcess)
         {
           j++;
@@ -33,7 +32,7 @@ namespace ProduceLogs
             }
             else
             {
-              streamWriter.WriteLine(j + " " + new ApplicationException().ToString());
+              streamWriter.WriteLine(j + " " + new ApplicationException());
             }
             i++;
           }

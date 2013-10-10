@@ -6,6 +6,6 @@ namespace Be.Manuc66.Library.DevTools
   {
     int TypeSortOrder { get; }
     string DisplayName { get; }
-    bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo_);
+    bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo);
   }
 }

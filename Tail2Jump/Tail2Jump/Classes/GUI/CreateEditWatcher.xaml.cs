@@ -153,11 +153,11 @@ namespace Tail2Jump
       bool result = false;
       ReturnCode = FormReturnCode.None;
       Monitoring = new MonitoringInstance();
-      SelectDirectoryCommand = new SimpleCommand<IEmpty>((e) => CanBrowse, (e) => SelectDirectory());
+      SelectDirectoryCommand = new SimpleCommand<IEmpty>(e => CanBrowse, e => SelectDirectory());
 
-      StartCommand = new SimpleCommand<IEmpty>((e) => CanStart, (e) => Start());
+      StartCommand = new SimpleCommand<IEmpty>(e => CanStart, e => Start());
 
-      CancelCommand = new SimpleCommand<IEmpty>((e) => CanCancel, (e) => Cancel());
+      CancelCommand = new SimpleCommand<IEmpty>(e => CanCancel, e => Cancel());
 
       FilterList = new ThreadSafeObservableCollection<string>();
       LocationList = new ThreadSafeObservableCollection<string>();
