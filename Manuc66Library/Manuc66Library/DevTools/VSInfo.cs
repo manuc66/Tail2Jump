@@ -27,7 +27,9 @@ namespace Be.Manuc66.Library
       get { return m_SolutionPath; }
       set
       {
-        if (m_SolutionPath != value) { m_SolutionPath = value; OnPropertyChanged("SolutionPath"); }
+        if (m_SolutionPath == value) return;
+        m_SolutionPath = value;
+        OnPropertyChanged("SolutionPath");
       }
     }
     public _DTE Vs
@@ -35,7 +37,8 @@ namespace Be.Manuc66.Library
       get { return m_Vs; }
       set
       {
-        if (m_Vs != value) { m_Vs = value; OnPropertyChanged("Vs"); }
+        if (m_Vs == value) return;
+        m_Vs = value; OnPropertyChanged("Vs");
       }
     }
     public bool InDebug
@@ -43,7 +46,8 @@ namespace Be.Manuc66.Library
       get { return m_InDebug; }
       set
       {
-        if (m_InDebug != value) { m_InDebug = value; OnPropertyChanged("InDebug"); }
+        if (m_InDebug == value) return;
+        m_InDebug = value; OnPropertyChanged("InDebug");
       }
     }
     public int TypeSortOrder { get { return s_TypeSortOrder; } }
@@ -92,59 +96,65 @@ namespace Be.Manuc66.Library
     {
       return SolutionPath == null ? 0 : m_displayName.GetHashCode();
     }
-    public bool OpenFileAtLine(FilePathWithLineInfo _filePathWithLineInfo)
+    public bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo)
+    {
+      if (filePathWithLineInfo == null || filePathWithLineInfo.LineNumber <= 0) throw new ArgumentException();
+
+      //Open up incident file and select given line
+      return BringToFront() && OpenFile(filePathWithLineInfo) && GotoLine(filePathWithLineInfo);
+    }
+
+    private bool BringToFront()
     {
       bool sucess;
-      if (_filePathWithLineInfo != null && _filePathWithLineInfo.LineNumber > 0)
+      try
       {
-
-        try
-        {
-          //Make it visible, and stay under user control, not close when this app close
-          Vs.MainWindow.Visible = true;
-          Vs.UserControl = true;
-          sucess = true;
-        }
-        catch (Exception)
-        {
-          m_log.Info(string.Format("The visual studio loaded on \"{0}\" is not responding ", SolutionPath));
-          sucess = false;
-        }
-        if (sucess)
-        {
-          //Open up incident file and select given line
-          bool isFileOk;
-          try
-          {
-            Window win = Vs.ItemOperations.OpenFile(_filePathWithLineInfo.FilePath);
-            isFileOk = true;
-          }
-          catch (ArgumentException)
-          {
-            m_log.Info(string.Format("File not found {0}", _filePathWithLineInfo.FilePath));
-            isFileOk = false;
-            sucess = false;
-          }
-          var selection = Vs.ActiveDocument.Selection as TextSelection;
-          if (selection != null && isFileOk)
-          {
-            try
-            {
-              selection.GotoLine(_filePathWithLineInfo.LineNumber, true);
-            }
-            catch (ArgumentException)
-            {
-              m_log.Info(string.Format("Line {0} not found in file {1}", _filePathWithLineInfo.LineNumber, _filePathWithLineInfo.FilePath));
-              sucess = false;
-            }
-          }
-        }
+        //Make it visible, and stay under user control, not close when this app close
+        Vs.MainWindow.Visible = true;
+        Vs.UserControl = true;
+        sucess = true;
       }
-      else
+      catch (Exception)
       {
-        throw new ArgumentException();
+        m_log.Info(string.Format("The visual studio loaded on \"{0}\" is not responding ", SolutionPath));
+        sucess = false;
       }
       return sucess;
+    }
+
+    private bool GotoLine(FilePathWithLineInfo filePathWithLineInfo)
+    {
+      var selection = Vs.ActiveDocument.Selection as TextSelection;
+
+      if (selection == null) return true;
+      try
+      {
+        selection.GotoLine(filePathWithLineInfo.LineNumber, true);
+        return true;
+      }
+      catch (ArgumentException)
+      {
+        m_log.Info(string.Format("Line {0} not found in file {1}", filePathWithLineInfo.LineNumber,
+          filePathWithLineInfo.FilePath));
+
+        return false;
+      }
+    }
+
+    private bool OpenFile(FilePathWithLineInfo filePathWithLineInfo)
+    {
+      bool isFileOk;
+      try
+      {
+        Vs.ItemOperations.OpenFile(filePathWithLineInfo.FilePath);
+        isFileOk = true;
+      }
+      catch (ArgumentException)
+      {
+        m_log.Info(string.Format("File not found {0}", filePathWithLineInfo.FilePath));
+        isFileOk = false;
+      }
+      return isFileOk;
     }
   }
 }
