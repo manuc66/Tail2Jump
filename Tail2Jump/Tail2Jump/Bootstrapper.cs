@@ -22,7 +22,7 @@ namespace Tail2Jump
     {
       base.InitializeShell();
 
-      Application.Current.MainWindow = (Window)this.Shell;
+      Application.Current.MainWindow = (Window)Shell;
       Application.Current.MainWindow.Show();
     }
 

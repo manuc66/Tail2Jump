@@ -16,12 +16,7 @@ namespace WpfTest
     /// </summary>
     internal CommandBehaviorBinding Behavior
     {
-      get
-      {
-        if (behavior == null)
-          behavior = new CommandBehaviorBinding();
-        return behavior;
-      }
+      get { return behavior ?? (behavior = new CommandBehaviorBinding()); }
     }
 
     DependencyObject owner;
@@ -45,8 +40,8 @@ namespace WpfTest
     /// </summary>
     public static readonly DependencyProperty CommandProperty =
         DependencyProperty.Register("Command", typeof(ICommand), typeof(BehaviorBinding),
-            new FrameworkPropertyMetadata((ICommand)null,
-                new PropertyChangedCallback(OnCommandChanged)));
+            new FrameworkPropertyMetadata(null,
+                OnCommandChanged));
 
     /// <summary>
     /// Gets or sets the Command property.  
@@ -82,8 +77,8 @@ namespace WpfTest
     /// </summary>
     public static readonly DependencyProperty ActionProperty =
         DependencyProperty.Register("Action", typeof(Action<object>), typeof(BehaviorBinding),
-            new FrameworkPropertyMetadata((Action<object>)null,
-                new PropertyChangedCallback(OnActionChanged)));
+            new FrameworkPropertyMetadata(null,
+                OnActionChanged));
 
     /// <summary>
     /// Gets or sets the Action property. 
@@ -119,15 +114,15 @@ namespace WpfTest
     /// </summary>
     public static readonly DependencyProperty CommandParameterProperty =
         DependencyProperty.Register("CommandParameter", typeof(object), typeof(BehaviorBinding),
-            new FrameworkPropertyMetadata((object)null,
-                new PropertyChangedCallback(OnCommandParameterChanged)));
+            new FrameworkPropertyMetadata(null,
+                OnCommandParameterChanged));
 
     /// <summary>
     /// Gets or sets the CommandParameter property.  
     /// </summary>
     public object CommandParameter
     {
-      get { return (object)GetValue(CommandParameterProperty); }
+      get { return GetValue(CommandParameterProperty); }
       set { SetValue(CommandParameterProperty, value); }
     }
 
@@ -156,8 +151,8 @@ namespace WpfTest
     /// </summary>
     public static readonly DependencyProperty EventProperty =
         DependencyProperty.Register("Event", typeof(string), typeof(BehaviorBinding),
-            new FrameworkPropertyMetadata((string)null,
-                new PropertyChangedCallback(OnEventChanged)));
+            new FrameworkPropertyMetadata(null,
+                OnEventChanged));
 
     /// <summary>
     /// Gets or sets the Event property.  

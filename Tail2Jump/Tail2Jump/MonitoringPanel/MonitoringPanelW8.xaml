@@ -149,7 +149,7 @@
           <ColumnDefinition x:Name="MonitoringPanelColumn" Width="140"/>
           <ColumnDefinition Width="25"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="1">
+        <Grid Grid.Column="0">
           <Grid.RowDefinitions>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -296,14 +296,14 @@
               </Style>
             </Image.Style>
           </Image>
-          <Button Grid.Row="1" Grid.Column="5" Command="{Binding StartNewWatcherCommand}">
+          <Button Grid.Row="1" Command="{Binding StartNewWatcherCommand}">
             <Button.Template>
               <ControlTemplate>
                 <Image  Height="20" Width="20" Source="\Classes\GUI\Images/Icons/add.png"></Image>
               </ControlTemplate>
             </Button.Template>
           </Button>
-          <Button Grid.Row="2" Grid.Column="5" Command="{Binding RemoveSelectedWatcherCommand}">
+          <Button Grid.Row="2" Command="{Binding RemoveSelectedWatcherCommand}">
             <Button.Template>
               <ControlTemplate>
                 <Image  Height="20" Width="20" Source="\Classes\GUI\Images/Icons/delete.png"></Image>

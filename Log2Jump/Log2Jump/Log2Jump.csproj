@@ -40,12 +40,6 @@
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Demo.Themes.DarkBlue.WPF">
-      <HintPath>C:\Workspace\Demo\DLL\GraphicsLayer\Release\Demo.Themes.DarkBlue.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphicResources">
-      <HintPath>C:\Workspace\Demo\DLL\GraphicsLayer\Release\GraphicResources.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Manuc66Library\Manuc66Library\bin\Debug\log4net.dll</HintPath>
     </Reference>

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
 
@@ -129,7 +130,7 @@ namespace Tail2Jump
     {
       InitializeComponent();
 
-      this.DataContext = this;
+      DataContext = this;
 
       InitCreateEditWatcherAdvanced();
 
@@ -152,20 +153,11 @@ namespace Tail2Jump
       bool result = false;
       ReturnCode = FormReturnCode.None;
       Monitoring = new MonitoringInstance();
-      SelectDirectoryCommand = new SimpleCommand<IEmpty>((e) => { return CanBrowse; }, (e) =>
-      {
-        SelectDirectory();
-      });
+      SelectDirectoryCommand = new SimpleCommand<IEmpty>((e) => CanBrowse, (e) => SelectDirectory());
 
-      StartCommand = new SimpleCommand<IEmpty>((e) => { return CanStart; }, (e) =>
-      {
-        Start();
-      });
+      StartCommand = new SimpleCommand<IEmpty>((e) => CanStart, (e) => Start());
 
-      CancelCommand = new SimpleCommand<IEmpty>((e) => { return CanCancel; }, (e) =>
-      {
-        Cancel();
-      });
+      CancelCommand = new SimpleCommand<IEmpty>((e) => CanCancel, (e) => Cancel());
 
       FilterList = new ThreadSafeObservableCollection<string>();
       LocationList = new ThreadSafeObservableCollection<string>();
@@ -231,10 +223,12 @@ namespace Tail2Jump
       MergeList(oldConf.DirectoryHistory, LocationList, CFG.Conf.DirectoryHistory);
       MergeList(oldConf.FilterHistory, FilterList, CFG.Conf.FilterHistory);
 
-      CriterianSearch lastSearch = new CriterianSearch();
-      lastSearch.FileExtension = Monitoring.Filter;
-      lastSearch.PathDirectory = Monitoring.FullDirectoryPath;
-      lastSearch.Recursive = Monitoring.IncludeSubdirectories;
+      var lastSearch = new CriterianSearch
+      {
+        FileExtension = Monitoring.Filter,
+        PathDirectory = Monitoring.FullDirectoryPath,
+        Recursive = Monitoring.IncludeSubdirectories
+      };
       CFG.Conf.Search.Add(lastSearch);
       CFG.Save();
 
@@ -250,7 +244,7 @@ namespace Tail2Jump
         }
       }
     }
-    private static void MergeList(List<string> oldConf, IList<string> current, List<string> newConf)
+    private static void MergeList(IEnumerable<string> oldConf, IEnumerable<string> current, List<string> newConf)
     {
       AddUnique(current, newConf);
       AddUnique(oldConf, newConf);
@@ -265,7 +259,7 @@ namespace Tail2Jump
 
     private void CloseForm()
     {
-      this.Close();
+      Close();
     }
 
     private bool SelectDirectory()
@@ -273,7 +267,7 @@ namespace Tail2Jump
       bool result = false;
       string tempPath = string.Empty;
 
-      using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+      using (var dialog = new FolderBrowserDialog())
       {
         if (Monitoring != null && Monitoring.FullDirectoryPath != string.Empty)
         {
@@ -288,7 +282,7 @@ namespace Tail2Jump
         }
 
         dialog.SelectedPath = tempPath;
-        System.Windows.Forms.DialogResult dialogResult = dialog.ShowDialog();
+        DialogResult dialogResult = dialog.ShowDialog();
 
         if (dialogResult == System.Windows.Forms.DialogResult.OK)
         {

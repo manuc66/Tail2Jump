@@ -8,7 +8,7 @@ namespace LineIndexer
   {
     static void Main(string[] args)
     {
-      RandomLineFileAccessor test = new RandomLineFileAccessor(@"C:\Logs\Demo\service3.log");
+      var test = new RandomLineFileAccessor(@"C:\Logs\Demo\service3.log");
       var t0 = DateTime.Now;
       test.IndexFile();
       Console.WriteLine("Total line indexed: " + test.LineIndexed);

@@ -11,6 +11,8 @@ using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.ServiceLocation;
 using log4net;
 using Microsoft.Practices.Unity;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Tail2Jump
 {
@@ -31,13 +33,13 @@ namespace Tail2Jump
       AppDomain.CurrentDomain.UnhandledException +=
         CurrentDomain_UnhandledException;
       // WPF
-      System.Windows.Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+      Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
       // Set the unhandled exception mode to force all Windows Forms errors to go through our handler.
       System.Windows.Forms.Application.ThreadException += Application_ThreadException;
 
       // Set the unhandled exception mode to force all Windows Forms errors to go through our handler.
-      System.Windows.Forms.Application.SetUnhandledExceptionMode(System.Windows.Forms.UnhandledExceptionMode.CatchException);
+      System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
       // Add the event handler for handling non-UI thread exceptions to the event. 
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -76,7 +78,7 @@ namespace Tail2Jump
         {
           var dumpFileName = MiniDump.MiniDumpWriteDump();
 
-          res = System.Windows.Forms.MessageBox.Show(string.Format(@"Whoops! An Unhanled exception has been detected in the application.
+          res = MessageBox.Show(string.Format(@"Whoops! An Unhanled exception has been detected in the application.
 Exception information is saved in {0} Please contact the developers with the dump, Continue or exit ?", dumpFileName),
                  @"Fatal Error Try continue ?", MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
         }

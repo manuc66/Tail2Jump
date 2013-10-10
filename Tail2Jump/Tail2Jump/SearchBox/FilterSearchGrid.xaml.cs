@@ -21,8 +21,8 @@ namespace Tail2Jump
     #region TextSearch
     public string TextSearch
     {
-      get { return (string)this.GetValue(TextSearchProperty); }
-      set { this.SetValue(TextSearchProperty, value); }
+      get { return (string)GetValue(TextSearchProperty); }
+      set { SetValue(TextSearchProperty, value); }
     }
     public static readonly DependencyProperty TextSearchProperty = DependencyProperty.Register(
       "TextSearch", typeof(string), typeof(FilterSearchGrid), new PropertyMetadata(string.Empty, TextSearchPropertyChangedCallback));
@@ -30,8 +30,8 @@ namespace Tail2Jump
     #region IgnoreCase
     public bool IgnoreCase
     {
-      get { return (bool)this.GetValue(IgnoreCaseProperty); }
-      set { this.SetValue(IgnoreCaseProperty, value); }
+      get { return (bool)GetValue(IgnoreCaseProperty); }
+      set { SetValue(IgnoreCaseProperty, value); }
     }
     public static readonly DependencyProperty IgnoreCaseProperty = DependencyProperty.Register(
       "IgnoreCase", typeof(bool), typeof(FilterSearchGrid), new PropertyMetadata(true, TextSearchPropertyChangedCallback));
@@ -39,8 +39,8 @@ namespace Tail2Jump
     #region ApplyFilterCommand
     public ICommand<IEmpty> ApplyFilterCommand
     {
-      get { return (ICommand<IEmpty>)this.GetValue(ApplyFilterCommandProperty); }
-      set { this.SetValue(ApplyFilterCommandProperty, value); }
+      get { return (ICommand<IEmpty>)GetValue(ApplyFilterCommandProperty); }
+      set { SetValue(ApplyFilterCommandProperty, value); }
     }
     public static readonly DependencyProperty ApplyFilterCommandProperty = DependencyProperty.Register(
       "ApplyFilterCommand", typeof(ICommand<IEmpty>), typeof(FilterSearchGrid), new PropertyMetadata());
@@ -48,8 +48,8 @@ namespace Tail2Jump
     #region ResetFilterCommand
     public ICommand<IEmpty> ResetFilterCommand
     {
-      get { return (ICommand<IEmpty>)this.GetValue(ResetFilterCommandProperty); }
-      set { this.SetValue(ResetFilterCommandProperty, value); }
+      get { return (ICommand<IEmpty>)GetValue(ResetFilterCommandProperty); }
+      set { SetValue(ResetFilterCommandProperty, value); }
     }
     public static readonly DependencyProperty ResetFilterCommandProperty = DependencyProperty.Register(
       "ResetFilterCommand", typeof(ICommand<IEmpty>), typeof(FilterSearchGrid), new PropertyMetadata());

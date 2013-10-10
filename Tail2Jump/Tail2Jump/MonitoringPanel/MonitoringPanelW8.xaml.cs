@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
 using Microsoft.Practices.Prism.Events;
@@ -41,8 +42,8 @@ namespace Tail2Jump
     #region MenuDebugConsoleIsChecked
     public bool MenuDebugConsoleIsChecked
     {
-      get { return (bool)this.GetValue(MenuDebugConsoleIsCheckedProperty); }
-      set { this.SetValue(MenuDebugConsoleIsCheckedProperty, value); }
+      get { return (bool)GetValue(MenuDebugConsoleIsCheckedProperty); }
+      set { SetValue(MenuDebugConsoleIsCheckedProperty, value); }
     }
     public static readonly DependencyProperty MenuDebugConsoleIsCheckedProperty = DependencyProperty.Register(
       "MenuDebugConsoleIsChecked", typeof(bool), typeof(MonitoringPanelW8), new PropertyMetadata(false));
@@ -51,8 +52,8 @@ namespace Tail2Jump
     #region MenuStressCPUIsChecked
     public bool MenuStressCPUIsChecked
     {
-      get { return (bool)this.GetValue(MenuStressCPUIsCheckedProperty); }
-      set { this.SetValue(MenuStressCPUIsCheckedProperty, value); }
+      get { return (bool)GetValue(MenuStressCPUIsCheckedProperty); }
+      set { SetValue(MenuStressCPUIsCheckedProperty, value); }
     }
     public static readonly DependencyProperty MenuStressCPUIsCheckedProperty = DependencyProperty.Register(
       "MenuStressCPUIsChecked", typeof(bool), typeof(MonitoringPanelW8), new PropertyMetadata(false));
@@ -61,8 +62,8 @@ namespace Tail2Jump
     #region MonitoringList
     public ThreadSafeObservableCollection<MonitoringInstance> MonitoringList
     {
-      get { return (ThreadSafeObservableCollection<MonitoringInstance>)this.GetValue(MonitoringListProperty); }
-      set { this.SetValue(MonitoringListProperty, value); }
+      get { return (ThreadSafeObservableCollection<MonitoringInstance>)GetValue(MonitoringListProperty); }
+      set { SetValue(MonitoringListProperty, value); }
 
     }
     public static readonly DependencyProperty MonitoringListProperty = DependencyProperty.Register(
@@ -101,7 +102,7 @@ namespace Tail2Jump
       _eventAggregator = eventAggregator_;
 
 
-      WatcherActionAsk watcherActionAskEvent = _eventAggregator.GetEvent<WatcherActionAsk>();
+      var watcherActionAskEvent = _eventAggregator.GetEvent<WatcherActionAsk>();
       watcherActionAskEvent.Subscribe(PerformAction);
       DataContext = this;
 
@@ -159,7 +160,7 @@ namespace Tail2Jump
       RemoveSelectedWatcherCommand.RaiseCanExecuteChanged();
     }
 
-    private void Image_MouseLeftButtonDown_1(object sender_, System.Windows.Input.MouseButtonEventArgs e_)
+    private void Image_MouseLeftButtonDown_1(object sender_, MouseButtonEventArgs e_)
     {
       MonitoringPanelColumn.Width = MonitoringPanelColumn.ActualWidth > 0 ? new GridLength(0) : new GridLength(140);
     }

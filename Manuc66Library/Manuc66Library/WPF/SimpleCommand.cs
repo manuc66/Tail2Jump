@@ -4,7 +4,7 @@ using log4net;
 
 namespace Be.Manuc66.Library
 {
-  public interface ICommand<T> : ICommand
+  public interface ICommand<in T> : ICommand
   {
     bool CanExecute(T parameter_);
     void Execute(T parameter_);

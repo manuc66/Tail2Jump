@@ -9,7 +9,7 @@ namespace Be.Manuc66.Library
 {
   public class VSTools : IVSTools
   {
-    private ILog m_log = log4net.LogManager.GetLogger(typeof(VSTools));
+    private ILog m_log = LogManager.GetLogger(typeof(VSTools));
     private readonly IVsAutomation m_vsAutomation;
 
     public VSTools(IVsAutomation vsAutomation_)
@@ -23,28 +23,26 @@ namespace Be.Manuc66.Library
       {
         throw new ArgumentNullException("VSList");
       }
-      List<VSInfo> tmpVSList = m_vsAutomation.GetAllVs();
+      List<VSInfo> tmpVsList = m_vsAutomation.GetAllVs();
       for (int i = 0; i < VSList.Count; ++i)
       {
-        if (VSList[i] is VSInfo && !tmpVSList.Contains(VSList[i]))
+        if (!(VSList[i] is VSInfo) || tmpVsList.Contains(VSList[i])) continue;
+        if (OpenInVS == VSList[i])
         {
-          if (OpenInVS == VSList[i])
-          {
-            OpenInVS = null;
-          }
-          VSList.RemoveAt(i);
+          OpenInVS = null;
         }
+        VSList.RemoveAt(i);
       }
-      for (int i = 0; i < tmpVSList.Count; ++i)
+      foreach (VSInfo vsInfo in tmpVsList)
       {
-        int index = VSList.IndexOf(tmpVSList[i]);
+        int index = VSList.IndexOf(vsInfo);
         if (index < 0)
         {
-          VSList.Add(tmpVSList[i]);
+          VSList.Add(vsInfo);
         }
         else
         {
-          ((VSInfo)VSList[index]).Set(tmpVSList[i]);
+          ((VSInfo)VSList[index]).Set(vsInfo);
         }
       }
 
@@ -53,22 +51,18 @@ namespace Be.Manuc66.Library
         VSList.Add(new NppOpenAt());
       }
 
-      if (OpenInVS == null)
+      if (OpenInVS != null) return;
+
+      bool debugFound = false;
+      foreach (var vsInfo in VSList.Where(vsInfo => vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug))
       {
-        bool debugFound = false;
-        for (int i = 0; i < VSList.Count; ++i)
-        {
-          if (VSList[i] is VSInfo && ((VSInfo)VSList[i]).InDebug)
-          {
-            OpenInVS = VSList[i];
-            debugFound = true;
-            break;
-          }
-        }
-        if (!debugFound)
-        {
-          OpenInVS = VSList.FirstOrDefault();
-        }
+        OpenInVS = vsInfo;
+        debugFound = true;
+        break;
+      }
+      if (!debugFound)
+      {
+        OpenInVS = VSList.FirstOrDefault();
       }
     }
 
@@ -84,7 +78,7 @@ namespace Be.Manuc66.Library
       int lastIndexDoubleDots = originalString.LastIndexOf(':');
       if (lastIndexDoubleDots > 0 && lastIndexDoubleDots < originalString.Length - 1)
       {
-        string[] fileInfo = new string[] { originalString.Substring(0, lastIndexDoubleDots), originalString.Substring(lastIndexDoubleDots + 1) };
+        var fileInfo = new[] { originalString.Substring(0, lastIndexDoubleDots), originalString.Substring(lastIndexDoubleDots + 1) };
 
         string filePath = fileInfo[0];
         string lineInfo = fileInfo[1];
@@ -93,16 +87,7 @@ namespace Be.Manuc66.Library
         {
           string strLineNum = lineInfo.Substring(lastSpaceIndex + 1);
           int lineNumber;
-          if (int.TryParse(strLineNum, out lineNumber))
-          {
-            fileWithLineInfo = new FilePathWithLineInfo();
-            fileWithLineInfo.FilePath = filePath;
-            fileWithLineInfo.LineNumber = lineNumber;
-          }
-          else
-          {
-            fileWithLineInfo = null;
-          }
+          fileWithLineInfo = int.TryParse(strLineNum, out lineNumber) ? new FilePathWithLineInfo { FilePath = filePath, LineNumber = lineNumber } : null;
         }
         else
         {

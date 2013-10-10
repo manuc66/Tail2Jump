@@ -94,7 +94,7 @@ namespace Tail2Jump
     {
       InitializeComponent();
 
-      this.DataContext = this;
+      DataContext = this;
 
       InitLayoutManagementGrid();
 
@@ -106,7 +106,7 @@ namespace Tail2Jump
     {
       const bool result = false;
 
-      StartToBurnCommand = new SimpleCommand<IEmpty>((e_) => { return CanStartToBurn; }, (e_) => GoToBurn());
+      StartToBurnCommand = new SimpleCommand<IEmpty>(e => CanStartToBurn, e => GoToBurn());
 
 
 

@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.DevTools;
 using Microsoft.Practices.Prism.Events;
 using log4net;
@@ -13,7 +12,7 @@ namespace Tail2Jump
   public class HyperLinkBuilder : IHyperLinkBuilder
   {
     private static readonly ILog _log = LogManager.GetLogger(typeof(HyperLinkBuilder));
-    IVSTools m_vsTools;
+    readonly IVSTools m_vsTools;
     private IOpenWithInfo OpenInVS { get; set; }
 
     public HyperLinkBuilder(IEventAggregator eventAggregator_, IVSTools vsTools_)

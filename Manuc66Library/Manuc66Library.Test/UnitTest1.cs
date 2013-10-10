@@ -11,9 +11,9 @@ namespace Manuc66Library.Test
     [TestMethod]
     public void TestMethod1()
     {
-      var csproj = @"C:\Workspace\Demo\Controler\ControlCom\ControlCom\ControlCom\ControlCom.csproj";
-      string destValue = @"C:\Workspace\Demo\Application\AppDemo\AppDemo\bin\Debug\DemoApp.exe";
-      UserCsproj userCsproj = new UserCsproj();
+      const string csproj = @"C:\Workspace\Demo\Controler\ControlCom\ControlCom\ControlCom\ControlCom.csproj";
+      const string destValue = @"C:\Workspace\Demo\Application\AppDemo\AppDemo\bin\Debug\DemoApp.exe";
+      var userCsproj = new UserCsproj();
 
       userCsproj.GenerateUserCsprojDebugWith(csproj, destValue);
       Assert.AreEqual(userCsproj.GetUserCsprojDebugWith(csproj), destValue);

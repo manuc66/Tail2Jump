@@ -17,8 +17,7 @@ namespace Be.Manuc66.Library
   /// </summary>
   public class NppOpenAt : ViewModelBase, IOpenWithInfo
   {
-
-    private static int s_TypeSortOrder = 2;
+    private const int s_TypeSortOrder = 2;
     private static string s_nppLocation = null;
 
     public static bool IsNppAvailble()
@@ -26,7 +25,7 @@ namespace Be.Manuc66.Library
       bool result;
       if (s_nppLocation == null)
       {
-        string[] possibleLocation = new string[] {
+        var possibleLocation = new[] {
         @"C:\Program Files (x86)\Notepad++\notepad++.exe" ,
         @"C:\Program Files)\Notepad++\notepad++.exe" ,
         Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\notepad++.exe",
@@ -96,7 +95,7 @@ namespace Be.Manuc66.Library
     }
     public override bool Equals(object obj)
     {
-      return base.Equals(obj as IOpenWithInfo);
+      return ReferenceEquals(this, obj);
     }
     public override int GetHashCode()
     {

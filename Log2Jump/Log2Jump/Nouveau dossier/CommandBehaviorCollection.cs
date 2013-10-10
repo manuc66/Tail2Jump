@@ -29,11 +29,10 @@ namespace WpfTest
       if (d == null)
         throw new InvalidOperationException("The dependency object trying to attach to is set to null");
 
-      BehaviorBindingCollection collection = d.GetValue(CommandBehaviorCollection.BehaviorsProperty) as BehaviorBindingCollection;
+      var collection = d.GetValue(BehaviorsProperty) as BehaviorBindingCollection;
       if (collection == null)
       {
-        collection = new BehaviorBindingCollection();
-        collection.Owner = d;
+        collection = new BehaviorBindingCollection {Owner = d};
         SetBehaviors(d, collection);
       }
       return collection;
@@ -46,13 +45,13 @@ namespace WpfTest
     private static void SetBehaviors(DependencyObject d, BehaviorBindingCollection value)
     {
       d.SetValue(BehaviorsPropertyKey, value);
-      INotifyCollectionChanged collection = (INotifyCollectionChanged)value;
-      collection.CollectionChanged += new NotifyCollectionChangedEventHandler(CollectionChanged);
+      var collection = (INotifyCollectionChanged)value;
+      collection.CollectionChanged += CollectionChanged;
     }
 
     static void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-      BehaviorBindingCollection sourceCollection = (BehaviorBindingCollection)sender;
+      var sourceCollection = (BehaviorBindingCollection)sender;
       switch (e.Action)
       {
         //when an item(s) is added we need to set the Owner property implicitly
@@ -84,10 +83,6 @@ namespace WpfTest
           if (e.OldItems != null)
             foreach (BehaviorBinding item in e.OldItems)
               item.Behavior.Dispose();
-          break;
-
-        case NotifyCollectionChangedAction.Move:
-        default:
           break;
       }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Threading;
@@ -85,13 +86,13 @@ namespace WpfTest
 
     private double m_ViewPortSize;
     private double m_ScrollMaximum;
-    private RandomLineFileAccessor m_fileAcessor;
-    private double m_charSize;
+    private readonly RandomLineFileAccessor m_fileAcessor;
+    private readonly double m_charSize;
     private int m_curentStart = 0;
     private ScrollBar m_txtBoxHScroll;
     private IOpenWithInfo m_OpenInVS;
-    private ILog m_log = log4net.LogManager.GetLogger(typeof(MainWindow));
-    private object m_VSListLock = new object();
+    private readonly ILog m_log = LogManager.GetLogger(typeof(MainWindow));
+    private readonly object m_VSListLock = new object();
     private ThreadSafeObservableCollection<IOpenWithInfo> m_VSList;
 
     public MainWindow(VSTools vsTools)
@@ -113,7 +114,7 @@ namespace WpfTest
       m_fileAcessor.IndexFile();
       ScrollMaximum = m_fileAcessor.LineIndexed;
 
-      FormattedText formattedText = new FormattedText("M",
+      var formattedText = new FormattedText("M",
                   CultureInfo.GetCultureInfo("en-us"),
                   FlowDirection.LeftToRight,
                   new Typeface(txtBox.FontFamily, txtBox.FontStyle, txtBox.FontWeight, txtBox.FontStretch),
@@ -122,8 +123,8 @@ namespace WpfTest
       m_charSize = formattedText.Width;
 
       m_VSList = new ThreadSafeObservableCollection<IOpenWithInfo>();
-      this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
-      Activated += new EventHandler(MainWindow_Activated);
+      Loaded += MainWindow_Loaded;
+      Activated += MainWindow_Activated;
 
     }
 
@@ -132,6 +133,7 @@ namespace WpfTest
 
 
       var scrollview = txtBox.Template.FindName("PART_ContentHost", txtBox) as ScrollViewer;
+      Debug.Assert(scrollview != null, "scrollview != null");
       m_txtBoxHScroll = scrollview.Template.FindName("PART_HorizontalScrollBar", scrollview) as ScrollBar;
 
       if (m_txtBoxHScroll != null)
@@ -166,7 +168,7 @@ namespace WpfTest
     {
       double normal = e.NewSize.Height / 19;
 
-      FormattedText formattedText = new FormattedText("M" + Environment.NewLine,
+      var formattedText = new FormattedText("M" + Environment.NewLine,
                   CultureInfo.GetCultureInfo("en-us"),
                   FlowDirection.LeftToRight,
                   new Typeface(txtBox.FontFamily, txtBox.FontStyle, txtBox.FontWeight, txtBox.FontStretch),
@@ -181,7 +183,7 @@ namespace WpfTest
       refreHs();
     }
 
-    private void scroller_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+    private void scroller_Scroll(object sender, ScrollEventArgs e)
     {
       m_curentStart = (int)e.NewValue;
       RefreshView();
@@ -192,14 +194,12 @@ namespace WpfTest
       string[] toDisplay = m_fileAcessor.GetLines(m_curentStart, (int)ViewPortSize);
       txtBox.Document.Blocks.Clear();
       var doc = txtBox.Document = new FlowDocument();
-      var paragraph = new Paragraph();
-      paragraph.KeepTogether = true;
-      paragraph.KeepWithNext = true;
-      StringBuilder textToAdd = new StringBuilder();
+      var paragraph = new Paragraph {KeepTogether = true, KeepWithNext = true};
+      var textToAdd = new StringBuilder();
       txtBox.Document.Blocks.Add(paragraph);
       foreach (var line in toDisplay)
       {
-        string[] words = line.Split(new string[] { " " }, StringSplitOptions.None);
+        string[] words = line.Split(new[] { " " }, StringSplitOptions.None);
         for (int i = 0; i < words.Length; i++)
         {
           string word = words[i];
@@ -207,15 +207,13 @@ namespace WpfTest
           {
             AddText(paragraph, textToAdd);
             string linkText = word + " " + words[i + 1];
-            Hyperlink textLink = new Hyperlink(new Run(linkText));
+            var textLink = new Hyperlink(new Run(linkText)) {TextDecorations = null, NavigateUri = new Uri(linkText)};
 
-            textLink.TextDecorations = null;
-            textLink.NavigateUri = new Uri(linkText);
-            textLink.MouseRightButtonDown += new MouseButtonEventHandler(textLink_MouseRightButtonDown);
-            textLink.RequestNavigate += new RequestNavigateEventHandler(DoOpenInVS);
-            textLink.Unloaded += new RoutedEventHandler(textLink_Unloaded);
-            textLink.MouseEnter += new MouseEventHandler(textLink_MouseEnter);
-            textLink.MouseLeave += new MouseEventHandler(textLink_MouseLeave);
+            textLink.MouseRightButtonDown += textLink_MouseRightButtonDown;
+            textLink.RequestNavigate += DoOpenInVS;
+            textLink.Unloaded += textLink_Unloaded;
+            textLink.MouseEnter += textLink_MouseEnter;
+            textLink.MouseLeave += textLink_MouseLeave;
             paragraph.Inlines.Add(textLink);
             ++i;
           }
@@ -245,8 +243,7 @@ namespace WpfTest
     {
       if (textToAdd.Length != 0)
       {
-        Run run = new Run(textToAdd.ToString());
-        run.TextDecorations = null;
+        var run = new Run(textToAdd.ToString()) {TextDecorations = null};
         paragraph.Inlines.Add(run);
         textToAdd.Length = 0;
       }
@@ -272,7 +269,7 @@ namespace WpfTest
     // Display the underline on only the MouseEnter event.
     private void textLink_MouseEnter(object sender, EventArgs e)
     {
-      Hyperlink myHyperlink = sender as Hyperlink;
+      var myHyperlink = sender as Hyperlink;
       if (myHyperlink != null)
         myHyperlink.TextDecorations = TextDecorations.Underline;
     }
@@ -280,7 +277,7 @@ namespace WpfTest
     // Remove the underline on the MouseLeave event.
     private void textLink_MouseLeave(object sender, EventArgs e)
     {
-      Hyperlink myHyperlink = sender as Hyperlink;
+      var myHyperlink = sender as Hyperlink;
       if (myHyperlink != null)
         myHyperlink.TextDecorations = null;
     }
@@ -289,14 +286,14 @@ namespace WpfTest
     {
       try
       {
-        Hyperlink sender = _sender as Hyperlink;
+        var sender = _sender as Hyperlink;
         if (sender != null)
         {
-          sender.Unloaded -= new RoutedEventHandler(textLink_Unloaded);
-          sender.MouseRightButtonDown -= new MouseButtonEventHandler(textLink_MouseRightButtonDown);
-          sender.RequestNavigate -= new RequestNavigateEventHandler(DoOpenInVS);
-          sender.MouseEnter += new MouseEventHandler(textLink_MouseEnter);
-          sender.MouseLeave += new MouseEventHandler(textLink_MouseLeave);
+          sender.Unloaded -= textLink_Unloaded;
+          sender.MouseRightButtonDown -= textLink_MouseRightButtonDown;
+          sender.RequestNavigate -= DoOpenInVS;
+          sender.MouseEnter += textLink_MouseEnter;
+          sender.MouseLeave += textLink_MouseLeave;
         }
       }
       catch (Exception Error)
@@ -306,7 +303,7 @@ namespace WpfTest
 
     }
 
-    void textLink_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    void textLink_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       //var vsinfo = new VSTools().GetVsInfos();
       //ContextMenu RightClickMenu = new ContextMenu();
@@ -331,7 +328,8 @@ namespace WpfTest
     {
       try
       {
-        if (sender is Hyperlink)
+        var sender1 = sender as Hyperlink;
+        if (sender1 != null)
         {
           if (OpenInVS == null)
           {
@@ -339,7 +337,7 @@ namespace WpfTest
           }
           else
           {
-            Hyperlink hyperlink = (Hyperlink)sender;
+            var hyperlink = sender1;
             string originalString = hyperlink.NavigateUri.OriginalString;
             FilePathWithLineInfo filePathWithLineInfo = m_vsTools.GetFilePathWithLineNumber(hyperlink.NavigateUri.OriginalString);
             OpenInVS.OpenFileAtLine(filePathWithLineInfo);

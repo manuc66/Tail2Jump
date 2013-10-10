@@ -13,13 +13,13 @@ namespace Be.Manuc66.Library
     private bool m_InDebug;
     private string m_displayName;
     private const int s_TypeSortOrder = 1;
-    private ILog m_log = log4net.LogManager.GetLogger(typeof(VSInfo));
+    private readonly ILog m_log = LogManager.GetLogger(typeof(VSInfo));
 
     public VSInfo(string _SolutionPath, _DTE _Vs, string displayName, bool inDebug)
     {
       m_displayName = displayName;
-      this.SolutionPath = _SolutionPath;
-      this.Vs = _Vs;
+      SolutionPath = _SolutionPath;
+      Vs = _Vs;
       InDebug = inDebug;
     }
     public string SolutionPath
@@ -57,11 +57,11 @@ namespace Be.Manuc66.Library
       }
       if (other.SolutionPath != VsAutomation.UnknownSolution || string.IsNullOrWhiteSpace(SolutionPath))
       {
-        this.SolutionPath = other.SolutionPath;
+        SolutionPath = other.SolutionPath;
       }
-      this.Vs = other.Vs;
-      this.InDebug = other.InDebug;
-      this.m_displayName = other.m_displayName;
+      Vs = other.Vs;
+      InDebug = other.InDebug;
+      m_displayName = other.m_displayName;
     }
     public int CompareTo(IOpenWithInfo other)
     {
@@ -71,7 +71,7 @@ namespace Be.Manuc66.Library
       {
         if (other is VSInfo && m_displayName != null)
         {
-          result = m_displayName.CompareTo(((VSInfo)other).m_displayName);
+          result = String.Compare(m_displayName, ((VSInfo)other).m_displayName, StringComparison.Ordinal);
         }
         else
         {
@@ -86,7 +86,7 @@ namespace Be.Manuc66.Library
     }
     public override bool Equals(object obj)
     {
-      return base.Equals(obj as IOpenWithInfo);
+      return ReferenceEquals(this, obj);
     }
     public override int GetHashCode()
     {
@@ -116,7 +116,7 @@ namespace Be.Manuc66.Library
           bool isFileOk;
           try
           {
-            EnvDTE.Window win = Vs.ItemOperations.OpenFile(_filePathWithLineInfo.FilePath);
+            Window win = Vs.ItemOperations.OpenFile(_filePathWithLineInfo.FilePath);
             isFileOk = true;
           }
           catch (ArgumentException)
@@ -125,7 +125,7 @@ namespace Be.Manuc66.Library
             isFileOk = false;
             sucess = false;
           }
-          var selection = Vs.ActiveDocument.Selection as EnvDTE.TextSelection;
+          var selection = Vs.ActiveDocument.Selection as TextSelection;
           if (selection != null && isFileOk)
           {
             try

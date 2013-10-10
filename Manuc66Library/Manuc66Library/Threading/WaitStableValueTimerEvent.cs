@@ -10,7 +10,7 @@ namespace Be.Manuc66.Library.Threading
   {
     #region Event
     #region ReceivedItem
-    private StrongTypedEvent<WaitStableValueTimerEvent<T>, T> _Handle;
+    private readonly StrongTypedEvent<WaitStableValueTimerEvent<T>, T> _Handle;
     public event StrongTypedEvent<WaitStableValueTimerEvent<T>, T>.EventEventHandler eHandle
     {
       add { _Handle.eEvent += value; }

@@ -23,7 +23,8 @@ namespace Tail2Jump
 
     private bool m_Running = false;
     private double m_AskedCPUWork = 0;
-    private double CurrentCPUWork = 100;
+    private const double CurrentCPUWork = 100;
+
     #endregion // Members
 
     #region Properties
@@ -91,11 +92,12 @@ namespace Tail2Jump
     #endregion // Dependency properties
 
     #region Constructeur
+
     public BurningGrid()
     {
       InitializeComponent();
 
-      this.DataContext = this;
+      DataContext = this;
       InitDebugConsoleGrid();
       string support = string.Empty;
       if (Tier == 0)
@@ -117,7 +119,7 @@ namespace Tail2Jump
 
       gridLabelStress.Text = support;
 
-      this.IsVisibleChanged += new DependencyPropertyChangedEventHandler(BurningGrid_IsVisibleChanged);
+      IsVisibleChanged += BurningGrid_IsVisibleChanged;
     }
 
     void BurningGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -138,12 +140,9 @@ namespace Tail2Jump
     #region Methods
     public bool InitDebugConsoleGrid()
     {
-      bool result = false;
+      const bool result = false;
 
-      StartToBurnCommand = new SimpleCommand<IEmpty>((e) => { return CanStartToBurn; }, (e) =>
-      {
-        GoToBurn();
-      });
+      StartToBurnCommand = new SimpleCommand<IEmpty>((e) => CanStartToBurn, (e) => GoToBurn());
 
       new PerformanceCounter("Memory", "Available MBytes");
       return result;
@@ -174,18 +173,20 @@ namespace Tail2Jump
 
         for (int i = 0; i < cpuLoadThread.Length; i++)
         {
-          cpuLoadThread[i] = new Thread(new ThreadStart(cpuLoadProc));
+          cpuLoadThread[i] = new Thread(cpuLoadProc)
+          {
+            IsBackground = true,
+            Name = "CPU Load Thread",
+            Priority = ThreadPriority.Highest
+          };
 
-          cpuLoadThread[i].IsBackground = true;
-          cpuLoadThread[i].Name = "CPU Load Thread";
-          cpuLoadThread[i].Priority = ThreadPriority.Highest;
           cpuLoadThread[i].Start();
         }
       }
     }
     void cpuLoadProc()
     {
-      System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+      var stopWatch = new Stopwatch();
       stopWatch.Start();
 
       while (Running)
@@ -203,7 +204,7 @@ namespace Tail2Jump
     {
       while (true)
       {
-        ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\WMI",
+        var searcher = new ManagementObjectSearcher("root\\WMI",
                            "SELECT * FROM MSAcpi_ThermalZoneTemperature");
 
         ManagementObjectCollection.ManagementObjectEnumerator enumerator =
@@ -223,9 +224,7 @@ namespace Tail2Jump
 
     public void StartThreadDeConsommation()
     {
-      System.Threading.Thread newThread;
-      newThread = new System.Threading.Thread(BurnCpuThread);
-      newThread.Priority = System.Threading.ThreadPriority.Highest;
+      var newThread = new Thread(BurnCpuThread) {Priority = ThreadPriority.Highest};
       newThread.Start();
     }
 

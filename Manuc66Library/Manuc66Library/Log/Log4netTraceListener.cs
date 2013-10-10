@@ -1,17 +1,20 @@
 ﻿
+using System.Diagnostics;
+using log4net;
+
 namespace Be.Manuc66.Library.Log
 {
 
-  public class Log4NetTraceListener : System.Diagnostics.TraceListener
+  public class Log4NetTraceListener : TraceListener
   {
-    private readonly log4net.ILog _log;
+    private readonly ILog _log;
 
     public Log4NetTraceListener()
     {
-      _log = log4net.LogManager.GetLogger("System.Diagnostics.Redirection");
+      _log = LogManager.GetLogger("System.Diagnostics.Redirection");
     }
 
-    public Log4NetTraceListener(log4net.ILog log)
+    public Log4NetTraceListener(ILog log)
     {
       _log = log;
     }

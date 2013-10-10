@@ -24,7 +24,7 @@ namespace Tail2Jump
       InitializeComponent();
       LogController = ServiceLocator.Current.GetInstance<ILogController>();
 
-      this.DataContext = this;
+      DataContext = this;
 
       InitDebugConsoleGrid();
     }
@@ -36,7 +36,7 @@ namespace Tail2Jump
     #region Methods
     public bool InitDebugConsoleGrid()
     {
-      bool result = false;
+      const bool result = false;
       ListLogs = LogController.ListLogs;
       return result;
     }

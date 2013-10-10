@@ -9,10 +9,10 @@ namespace ProduceLogs
   {
     static void Main(string[] args)
     {
-      Random r = new Random();
+      var r = new Random();
 
       Directory.CreateDirectory(@"C:\Logs\Demo\");
-      string[] fileToProcess = new string[] { @"C:\Logs\Demo\service1.log", @"C:\Logs\Demo\service2.log", @"C:\Logs\Demo\service3.log", };
+      var fileToProcess = new[] { @"C:\Logs\Demo\service1.log", @"C:\Logs\Demo\service2.log", @"C:\Logs\Demo\service3.log", };
 
       int i = 0;
       int j = 0;
@@ -23,13 +23,13 @@ namespace ProduceLogs
         {
           j++;
           Directory.CreateDirectory(@"C:\Logs\Demo\");
-          StreamWriter streamWriter = System.IO.File.AppendText(filePath);
+          StreamWriter streamWriter = File.AppendText(filePath);
           try
           {
             i = i % 3;
             if (i == 0)
             {
-              streamWriter.WriteLine(j + " " + Environment.StackTrace.ToString());
+              streamWriter.WriteLine(j + " " + Environment.StackTrace);
             }
             else
             {

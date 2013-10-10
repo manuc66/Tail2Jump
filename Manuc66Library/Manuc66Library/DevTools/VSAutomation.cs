@@ -7,7 +7,7 @@ using log4net;
 
 namespace Be.Manuc66.Library.DevTools
 {
-  public class VsAutomation : Be.Manuc66.Library.DevTools.IVsAutomation
+  public class VsAutomation : IVsAutomation
   {
     readonly ILog _log = LogManager.GetLogger(typeof(VsAutomation));
     public const string UnknownSolution = "unknow solution";

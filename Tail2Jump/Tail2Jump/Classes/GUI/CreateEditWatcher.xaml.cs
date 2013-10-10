@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
 
@@ -129,7 +130,7 @@ namespace Tail2Jump
     {
       InitializeComponent();
 
-      this.DataContext = this;
+      DataContext = this;
 
       InitCreateEditWatcher();
 
@@ -152,20 +153,11 @@ namespace Tail2Jump
       bool result = false;
       ReturnCode = FormReturnCode.None;
       Monitoring = new MonitoringInstance();
-      SelectDirectoryCommand = new SimpleCommand<IEmpty>((e) => { return CanBrowse; }, (e) =>
-      {
-        SelectDirectory();
-      });
+      SelectDirectoryCommand = new SimpleCommand<IEmpty>((e) => CanBrowse, (e) => SelectDirectory());
 
-      StartCommand = new SimpleCommand<IEmpty>((e) => { return CanStart; }, (e) =>
-      {
-        Start();
-      });
+      StartCommand = new SimpleCommand<IEmpty>((e) => CanStart, (e) => Start());
 
-      CancelCommand = new SimpleCommand<IEmpty>((e) => { return CanCancel; }, (e) =>
-      {
-        Cancel();
-      });
+      CancelCommand = new SimpleCommand<IEmpty>((e) => CanCancel, (e) => Cancel());
 
       FilterList = new ThreadSafeObservableCollection<string>();
       LocationList = new ThreadSafeObservableCollection<string>();
@@ -188,21 +180,21 @@ namespace Tail2Jump
             LocationList.Add(dir);
           }
         }
+
+        Monitoring.Filter = CFG.Conf.FilterHistory.FirstOrDefault();
+        Monitoring.FullDirectoryPath = CFG.Conf.DirectoryHistory.FirstOrDefault();
       }
-      Monitoring.Filter = CFG.Conf.FilterHistory.FirstOrDefault();
       if (string.IsNullOrEmpty(Monitoring.Filter))
       {
         Monitoring.Filter = "*.log";
       }
-
-      Monitoring.FullDirectoryPath = CFG.Conf.DirectoryHistory.FirstOrDefault();
       if (string.IsNullOrEmpty(Monitoring.FullDirectoryPath))
       {
         Monitoring.FullDirectoryPath = @"C:\Logs\Demo";
       }
 
       result = true;
-      return result;
+      return true;
     }
 
     private void Start()
@@ -228,13 +220,18 @@ namespace Tail2Jump
       FilterList.Insert(0, Monitoring.Filter);
       Monitoring.Filter = tmpFilter;
 
-      MergeList(oldConf.DirectoryHistory, LocationList, CFG.Conf.DirectoryHistory);
-      MergeList(oldConf.FilterHistory, FilterList, CFG.Conf.FilterHistory);
-
-      CriterianSearch lastSearch = new CriterianSearch();
-      lastSearch.FileExtension = Monitoring.Filter;
-      lastSearch.PathDirectory = Monitoring.FullDirectoryPath;
-      lastSearch.Recursive = Monitoring.IncludeSubdirectories;
+      if (oldConf != null)
+      {
+        MergeList(oldConf.DirectoryHistory, LocationList, CFG.Conf.DirectoryHistory);
+        MergeList(oldConf.FilterHistory, FilterList, CFG.Conf.FilterHistory);
+      }
+      
+      var lastSearch = new CriterianSearch
+        {
+          FileExtension = Monitoring.Filter,
+          PathDirectory = Monitoring.FullDirectoryPath,
+          Recursive = Monitoring.IncludeSubdirectories
+        };
       CFG.Conf.Search.Add(lastSearch);
       CFG.Save();
 
@@ -250,7 +247,7 @@ namespace Tail2Jump
         }
       }
     }
-    private static void MergeList(List<string> oldConf, IList<string> current, List<string> newConf)
+    private static void MergeList(IEnumerable<string> oldConf, IEnumerable<string> current, ICollection<string> newConf)
     {
       AddUnique(current, newConf);
       AddUnique(oldConf, newConf);
@@ -265,7 +262,7 @@ namespace Tail2Jump
 
     private void CloseForm()
     {
-      this.Close();
+      Close();
     }
 
     private bool SelectDirectory()
@@ -273,7 +270,7 @@ namespace Tail2Jump
       bool result = false;
       string tempPath = string.Empty;
 
-      using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+      using (var dialog = new FolderBrowserDialog())
       {
         if (Monitoring != null && Monitoring.FullDirectoryPath != string.Empty)
         {
@@ -288,7 +285,7 @@ namespace Tail2Jump
         }
 
         dialog.SelectedPath = tempPath;
-        System.Windows.Forms.DialogResult dialogResult = dialog.ShowDialog();
+        DialogResult dialogResult = dialog.ShowDialog();
 
         if (dialogResult == System.Windows.Forms.DialogResult.OK)
         {
