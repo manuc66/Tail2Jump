@@ -17,7 +17,7 @@ namespace Tail2Jump
     #region Members
     private ThreadSafeObservableCollection<string> m_FilterList;
     private ThreadSafeObservableCollection<string> m_LocationList;
-    private MonitoringInstance m_Monitoring = null;
+    private MonitoringInstance m_Monitoring;
     #endregion // Members
 
     #region Properties

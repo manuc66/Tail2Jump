@@ -88,7 +88,7 @@ namespace WpfTest
     private double m_ScrollMaximum;
     private readonly RandomLineFileAccessor m_fileAcessor;
     private readonly double m_charSize;
-    private int m_curentStart = 0;
+    private int m_curentStart;
     private ScrollBar m_txtBoxHScroll;
     private IOpenWithInfo m_OpenInVS;
     private readonly ILog m_log = LogManager.GetLogger(typeof(MainWindow));

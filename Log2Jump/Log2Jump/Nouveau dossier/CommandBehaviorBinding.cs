@@ -97,7 +97,7 @@ namespace WpfTest
     }
 
     #region IDisposable Members
-    bool disposed = false;
+    bool disposed;
     /// <summary>
     /// Unregisters the EventHandler from the Event
     /// </summary>

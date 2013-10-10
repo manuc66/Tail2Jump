@@ -21,8 +21,8 @@ namespace Tail2Jump
     #region Members
     private string m_CPUTemperature = string.Empty;
 
-    private bool m_Running = false;
-    private double m_AskedCPUWork = 0;
+    private bool m_Running;
+    private double m_AskedCPUWork;
     private const double CurrentCPUWork = 100;
 
     #endregion // Members

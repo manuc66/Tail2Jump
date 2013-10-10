@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cal="http://www.codeplex.com/CompositeWPF"
+        xmlns:devTools="clr-namespace:Be.Manuc66.Library.DevTools;assembly=Manuc66Library"
         mc:Ignorable="d" 
         x:Class="Tail2Jump.MainWindow"
         Height="508" 
@@ -78,7 +79,7 @@
                 </TextBlock.Style>
               </TextBlock>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type manuc66:NppOpenAt}">
+            <DataTemplate DataType="{x:Type devTools:NppOpenAt}">
               <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding DisplayName}"/>
             </DataTemplate>
           </ComboBox.Resources>
