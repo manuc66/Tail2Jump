@@ -13,13 +13,9 @@ namespace Be.Manuc66.Library.DevTools
     public const string UnknownSolution = "unknow solution";
 
     [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
-    private static extern IRunningObjectTable GetRunningObjectTable(int reserved_);
+    private static extern IRunningObjectTable GetRunningObjectTable(int reserved);
     [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
-    public static extern IBindCtx CreateBindCtx(int reserved_);
-
-    public VsAutomation()
-    {
-    }
+    public static extern IBindCtx CreateBindCtx(int reserved);
 
     [STAThread]
     public List<VSInfo> GetAllVs()

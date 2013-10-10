@@ -47,15 +47,15 @@ Silverlight 	{A1591282-1198-4647-A2B1-27E5FF5F6F3B}
     const string StartActionValue = "Program";
     const string StartProgramLabel = "StartProgram";
 
-    public void GenerateUserCsprojDebugWith(string pathCsproj_, string fullExeDebugPath_)
+    public void GenerateUserCsprojDebugWith(string pathCsproj, string fullExeDebugPath)
     {
-      ProjectRootElement sourceCsproj = ProjectRootElement.Open(pathCsproj_);
+      ProjectRootElement sourceCsproj = ProjectRootElement.Open(pathCsproj);
       if (sourceCsproj != null)
       {
         var debugConfigsConditionToAdd = new List<string>(sourceCsproj.PropertyGroups.Count);
         debugConfigsConditionToAdd.AddRange(from propertyGroup in sourceCsproj.PropertyGroups where IsConditionAppliedToDebug(propertyGroup) select propertyGroup.Condition);
 
-        string userCsproj = GetUserCsproj(pathCsproj_);
+        string userCsproj = GetUserCsproj(pathCsproj);
         ProjectRootElement destUserCsproj;
         bool create;
         if (File.Exists(userCsproj))
@@ -96,11 +96,11 @@ Silverlight 	{A1591282-1198-4647-A2B1-27E5FF5F6F3B}
             }
             if (startProgramPropertyElement == null)
             {
-              item.AddProperty(StartProgramLabel, fullExeDebugPath_);
+              item.AddProperty(StartProgramLabel, fullExeDebugPath);
             }
             else
             {
-              startProgramPropertyElement.Value = fullExeDebugPath_;
+              startProgramPropertyElement.Value = fullExeDebugPath;
             }
             debugConfigsConditionToAdd.Remove(item.Condition);
           }
@@ -109,7 +109,7 @@ Silverlight 	{A1591282-1198-4647-A2B1-27E5FF5F6F3B}
             ProjectPropertyGroupElement projectPropertyGroupElement = destUserCsproj.AddPropertyGroup();
             projectPropertyGroupElement.Condition = debugConfigCondition;
             projectPropertyGroupElement.AddProperty(StartActionLabel, StartActionValue);
-            projectPropertyGroupElement.AddProperty(StartProgramLabel, fullExeDebugPath_);
+            projectPropertyGroupElement.AddProperty(StartProgramLabel, fullExeDebugPath);
           }
           if (create)
           {
@@ -123,20 +123,20 @@ Silverlight 	{A1591282-1198-4647-A2B1-27E5FF5F6F3B}
       }
     }
 
-    private static bool IsConditionAppliedToDebug(ProjectPropertyGroupElement propertyGroup_)
+    private static bool IsConditionAppliedToDebug(ProjectPropertyGroupElement propertyGroup)
     {
-      return !string.IsNullOrWhiteSpace(propertyGroup_.Condition) && propertyGroup_.Condition.Contains(" == 'Debug|");
+      return !string.IsNullOrWhiteSpace(propertyGroup.Condition) && propertyGroup.Condition.Contains(" == 'Debug|");
     }
 
-    private static string GetUserCsproj(string pathCsproj_)
+    private static string GetUserCsproj(string pathCsproj)
     {
-      string userCsproj = pathCsproj_.Trim() + ".user";
+      string userCsproj = pathCsproj.Trim() + ".user";
       return userCsproj;
     }
-    public string GetUserCsprojDebugWith(string pathCsproj_)
+    public string GetUserCsprojDebugWith(string pathCsproj)
     {
       string result;
-      string userCsproj = GetUserCsproj(pathCsproj_);
+      string userCsproj = GetUserCsproj(pathCsproj);
       if (File.Exists(userCsproj))
       {
         ProjectRootElement sourceCsproj = ProjectRootElement.Open(userCsproj);
@@ -192,9 +192,9 @@ Silverlight 	{A1591282-1198-4647-A2B1-27E5FF5F6F3B}
       }
       return result;
     }
-    public bool IsCSharpNotTestProject(string pathCsproj_)
+    public bool IsCSharpNotTestProject(string pathCsproj)
     {
-      ProjectRootElement projectRootElement = ProjectRootElement.Open(pathCsproj_);
+      ProjectRootElement projectRootElement = ProjectRootElement.Open(pathCsproj);
       if (projectRootElement != null)
       {
         foreach (var propertyGroup in projectRootElement.PropertyGroups)

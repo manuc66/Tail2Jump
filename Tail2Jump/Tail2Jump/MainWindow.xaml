@@ -66,7 +66,7 @@
         <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding FlashWindow}" IsEnabled="{Binding CanBlink}" VerticalAlignment="Center" Content="Blink" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060"/>
         <ComboBox Grid.Column="2" Style="{StaticResource SMComboBoxStyle}" x:Name="comboSelecOpenIn" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding VsList}" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Margin="10,0.48,11,2.52">
           <ComboBox.Resources>
-            <DataTemplate DataType="{x:Type manuc66:VSInfo}">
+            <DataTemplate DataType="{x:Type devTools:VSInfo}">
               <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding SolutionPath}">
                 <TextBlock.Style>
                   <Style TargetType="{x:Type TextBlock}">

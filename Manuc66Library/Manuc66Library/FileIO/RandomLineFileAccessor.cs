@@ -34,9 +34,9 @@ namespace Be.Manuc66.Library.FileIO
       NewLineByteDef = encoding.GetBytes(Environment.NewLine);
     }
 
-    public RandomLineFileAccessor(string filePath_)
+    public RandomLineFileAccessor(string filePath)
     {
-      _filePath = filePath_;
+      _filePath = filePath;
     }
 
     public void IndexFile()
@@ -73,27 +73,27 @@ namespace Be.Manuc66.Library.FileIO
     }
 
 
-    public string[] GetLines(int start_, int len_)
+    public string[] GetLines(int start, int len)
     {
-      if (len_ == 0)
+      if (len == 0)
       {
-        if (start_ == _startLineIndex.Count)
+        if (start == _startLineIndex.Count)
         {
-          start_--;
+          start--;
         }
-        len_++;
+        len++;
       }
-      return ShowLines(start_ + 1, Math.Min((start_ + len_), (_startLineIndex.Count - 1)));
+      return ShowLines(start + 1, Math.Min((start + len), (_startLineIndex.Count - 1)));
     }
 
-    public string[] ShowLines(int incudingStart_, int incudingEnd_)
+    public string[] ShowLines(int incudingStart, int incudingEnd)
     {
       string[] result;
-      if (_isFileIndexed && incudingStart_ > 0 && incudingEnd_ - incudingStart_ >= 0)
+      if (_isFileIndexed && incudingStart > 0 && incudingEnd - incudingStart >= 0)
       {
-        long totalbyte = (_startLineIndex[incudingEnd_] - _startLineIndex[incudingStart_ - 1]);
+        long totalbyte = (_startLineIndex[incudingEnd] - _startLineIndex[incudingStart - 1]);
         var byteRequested = new byte[totalbyte];
-        long dataBegin = _startLineIndex[incudingStart_ - 1];
+        long dataBegin = _startLineIndex[incudingStart - 1];
         int numBytes = 0;
         using (FileStream fs = OpenFileShareMode(_filePath))
         {
@@ -113,12 +113,12 @@ namespace Be.Manuc66.Library.FileIO
 
         if (numBytes == byteRequested.Length)
         {
-          result = new string[incudingEnd_ - incudingStart_ + 1];
+          result = new string[incudingEnd - incudingStart + 1];
           long offsetInFile = dataBegin;
           int offsetInArray = 0;
           for (int i = 0; i < result.Length; ++i)
           {
-            var lineTotalBytes = (int)(_startLineIndex[incudingStart_ + i] - offsetInFile);
+            var lineTotalBytes = (int)(_startLineIndex[incudingStart + i] - offsetInFile);
             result[i] = Encoding.UTF8.GetString(byteRequested, offsetInArray, lineTotalBytes);
             offsetInFile += lineTotalBytes;
             offsetInArray += lineTotalBytes;
@@ -137,9 +137,9 @@ namespace Be.Manuc66.Library.FileIO
       }
       return result;
     }
-    private static FileStream OpenFileShareMode(string filePath_)
+    private static FileStream OpenFileShareMode(string filePath)
     {
-      return new FileStream(filePath_, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+      return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
     }
   }
 }

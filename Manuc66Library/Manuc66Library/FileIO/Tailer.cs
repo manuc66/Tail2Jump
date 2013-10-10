@@ -13,7 +13,7 @@ namespace Be.Manuc66.Library.FileIO
   {
     #region Delegates
 
-    public delegate void ValueChangedHandler<in T>(object sender_, T oldValue_, T newValue_);
+    public delegate void ValueChangedHandler<in T>(object sender, T oldValue, T newValue);
 
     #endregion
 
@@ -68,22 +68,10 @@ namespace Be.Manuc66.Library.FileIO
         )
       {
 
-        lock (_monitorPreviousSeekPosition)
-        {
-          long len = 0;
-          using (FileStream fs = OpenFileShareMode(filePath))
-          {
-            if (fs == null)
-            {
-              _log.Error("fail to read file, set file lenght to ZERO for: " + filePath);
-            }
-            else
-            {
-              len = fs.Length;
-            }
-          }
-          SetPreviousPosition(filePath, len);
-        }
+        var len = GetFileActualLength(filePath);
+
+        SetPreviousPosition(filePath, len);
+
       }
 
 
@@ -109,38 +97,58 @@ namespace Be.Manuc66.Library.FileIO
       return true;
     }
 
-    private void SetPreviousPosition(string filePath_, long pos_)
+    private long GetFileActualLength(string filePath)
     {
-      if (pos_ == 0)
+      long len = 0;
+      using (var fs = OpenFileShareMode(filePath))
+      {
+        if (fs == null)
+        {
+          _log.Error("fail to read file, set file lenght to ZERO for: " + filePath);
+        }
+        else
+        {
+          len = fs.Length;
+        }
+      }
+      return len;
+    }
+
+    private void SetPreviousPosition(string filePath, long pos)
+    {
+      if (pos == 0)
       {
 
       }
-      _previousSeekPositions[filePath_] = pos_;
+      lock (_monitorPreviousSeekPosition)
+      {
+        _previousSeekPositions[filePath] = pos;
+      }
     }
-    private long GetPreviousPosition(string filePath_)
+    private long GetPreviousPosition(string filePath)
     {
-      return _previousSeekPositions[filePath_];
+      return _previousSeekPositions[filePath];
     }
 
-    private void FileSystemWatcherRenamed(object sender_, RenamedEventArgs e_)
+    private void FileSystemWatcherRenamed(object sender, RenamedEventArgs e)
     {
       lock (_monitorPreviousSeekPosition)
       {
-        if (_previousSeekPositions.ContainsKey(e_.OldFullPath))
+        if (_previousSeekPositions.ContainsKey(e.OldFullPath))
         {
-          _previousSeekPositions[e_.FullPath] = _previousSeekPositions[e_.OldFullPath];
-          _previousSeekPositions.Remove(e_.OldFullPath);
+          _previousSeekPositions[e.FullPath] = _previousSeekPositions[e.OldFullPath];
+          _previousSeekPositions.Remove(e.OldFullPath);
         }
       }
     }
 
-    private FileStream OpenFileShareMode(string filePath_)
+    private FileStream OpenFileShareMode(string filePath)
     {
       FileStream result;
 
       try
       {
-        result = new FileStream(filePath_, FileMode.Open, FileAccess.Read,
+        result = new FileStream(filePath, FileMode.Open, FileAccess.Read,
                                 FileShare.ReadWrite | FileShare.Delete | FileShare.Inheritable);
       }
       catch (ArgumentException error)
@@ -192,60 +200,60 @@ namespace Be.Manuc66.Library.FileIO
     }
 
 
-    private void FileSystemWatcherError(object sender_, ErrorEventArgs e_)
+    private void FileSystemWatcherError(object sender, ErrorEventArgs e)
     {
-      _log.Error(e_.GetException());
+      _log.Error(e.GetException());
     }
 
-    public void TargetFileDeleted(object source_, FileSystemEventArgs e_)
+    public void TargetFileDeleted(object source, FileSystemEventArgs e)
     {
-      if (e_ == null)
+      if (e == null)
       {
         return;
       }
       lock (_monitorPreviousSeekPosition)
       {
-        if (_previousSeekPositions.ContainsKey(e_.FullPath))
+        if (_previousSeekPositions.ContainsKey(e.FullPath))
         {
-          SetPreviousPosition(e_.FullPath, 0);
+          SetPreviousPosition(e.FullPath, 0);
         }
       }
     }
 
     private readonly object _lockTargetFileChanged = new object();
 
-    public void TargetFileChanged(object source_, FileSystemEventArgs fsEvent_)
+    public void TargetFileChanged(object source, FileSystemEventArgs fsEvent)
     {
       lock (_lockTargetFileChanged)
       {
-        if (fsEvent_ == null)
+        if (fsEvent == null)
         {
           return;
         }
         lock (_monitorPreviousSeekPosition)
         {
-          if (!_previousSeekPositions.ContainsKey(fsEvent_.FullPath))
+          if (!_previousSeekPositions.ContainsKey(fsEvent.FullPath))
           {
-            SetPreviousPosition(fsEvent_.FullPath, 0);
+            SetPreviousPosition(fsEvent.FullPath, 0);
           }
         }
         //read from current seek position to end of file
         int numBytes;
         byte[] bytesRead;
         bool fileProcessed;
-        using (FileStream fs = OpenFileShareMode(fsEvent_.FullPath))
+        using (FileStream fs = OpenFileShareMode(fsEvent.FullPath))
         {
           if (fs == null)
           {
             fileProcessed = false;
             bytesRead = new byte[0];
             numBytes = 0;
-            _log.Error(fsEvent_.FullPath + " fail to get tailed");
+            _log.Error(fsEvent.FullPath + " fail to get tailed");
           }
           else
           {
             long fileLength;
-            long pos = GetActualFilePos(fsEvent_, fs, out fileLength);
+            long pos = GetActualFilePos(fsEvent, fs, out fileLength);
 
 
             long newPos = pos;
@@ -255,10 +263,9 @@ namespace Be.Manuc66.Library.FileIO
               _log.Error("File seek did not do what I want...");
             }
 
-            lock (_monitorPreviousSeekPosition)
-            {
-              SetPreviousPosition(fsEvent_.FullPath, pos);
-            }
+
+            SetPreviousPosition(fsEvent.FullPath, pos);
+
             long size = fileLength - pos;
             if (size <= 0)
             {
@@ -276,7 +283,7 @@ namespace Be.Manuc66.Library.FileIO
               }
               else
               {
-                _log.Error("Nothing readed in the file: " + fsEvent_.FullPath + " expected data read: " +
+                _log.Error("Nothing readed in the file: " + fsEvent.FullPath + " expected data read: " +
                             bytesRead.Length);
                 fileProcessed = false;
               }
@@ -299,13 +306,13 @@ namespace Be.Manuc66.Library.FileIO
             byteConsumed += (uint)Encoding.UTF8.GetBytes(toShow).Length;
             lock (_monitorPreviousSeekPosition)
             {
-              fileSeekPos = GetPreviousPosition(fsEvent_.FullPath);
-              SetPreviousPosition(fsEvent_.FullPath, fileSeekPos + byteConsumed);
+              fileSeekPos = GetPreviousPosition(fsEvent.FullPath);
+              SetPreviousPosition(fsEvent.FullPath, fileSeekPos + byteConsumed);
             }
 
             toShow = stringRead.Substring(0, indexNewLine);
 
-            string file = Path.GetFileName(fsEvent_.FullPath);
+            string file = Path.GetFileName(fsEvent.FullPath);
 
             _evtMoreData.RaiseEvent(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
           }
@@ -313,34 +320,34 @@ namespace Be.Manuc66.Library.FileIO
           {
             _log.Debug(
               "Target file changed but no new lines..., maybe the file has been processed by this method before this execution" +
-              string.Format("{0} - {1}", fsEvent_.ChangeType, fsEvent_.FullPath));
+              string.Format("{0} - {1}", fsEvent.ChangeType, fsEvent.FullPath));
           }
         }
       }
     }
 
-    private long GetActualFilePos(FileSystemEventArgs fsEvent_, FileStream fs_, out long fileLength_)
+    private long GetActualFilePos(FileSystemEventArgs fsEvent, FileStream fs, out long fileLength)
     {
       long pos;
       lock (_monitorPreviousSeekPosition)
       {
-        pos = GetPreviousPosition(fsEvent_.FullPath);
+        pos = GetPreviousPosition(fsEvent.FullPath);
         int retry = 0;
 
-        fileLength_ = fs_.Length;
-        while (retry < 5 && fileLength_ - pos < 0)
+        fileLength = fs.Length;
+        while (retry < 5 && fileLength - pos < 0)
         {
           // si le fichier est plus petit que la taille connue on attend avant de considerer qu'il a été tronqué car il pourrais être en cour de re-ecriture!
-          fileLength_ = fs_.Length;
+          fileLength = fs.Length;
           Thread.Sleep(100);
           retry++;
         }
 
-        if (fileLength_ - pos < 0)
+        if (fileLength - pos < 0)
         {
           //seems like if the file has been reseted!
-          _log.Error("File reset detected: " + fsEvent_.FullPath);
-          SetPreviousPosition(fsEvent_.FullPath, 0);
+          _log.Error("File reset detected: " + fsEvent.FullPath);
+          SetPreviousPosition(fsEvent.FullPath, 0);
           pos = 0;
         }
 
@@ -357,13 +364,13 @@ namespace Be.Manuc66.Library.FileIO
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing_)
+    protected virtual void Dispose(bool disposing)
     {
       // If you need thread safety, use a lock around these 
       // operations, as well as in your methods that use the resource.
       if (!_disposed)
       {
-        if (disposing_)
+        if (disposing)
         {
           if (_fileSystemWatcher != null)
           {

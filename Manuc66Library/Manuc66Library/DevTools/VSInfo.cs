@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
-using Be.Manuc66.Library.DevTools;
+﻿using System;
+using System.ComponentModel;
 using EnvDTE;
-using System;
 using log4net;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.DevTools
 {
-  public class VSInfo : ViewModelBase, INotifyPropertyChanged, IOpenWithInfo
+  public class VSInfo : ViewModelBase, IOpenWithInfo
   {
     private string _solutionPath;
     private _DTE _vs;

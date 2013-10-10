@@ -17,52 +17,52 @@ namespace Be.Manuc66.Library
       m_vsAutomation = vsAutomation_;
     }
 
-    public void RefreshVSList(ThreadSafeObservableCollection<IOpenWithInfo> VSList, ref IOpenWithInfo OpenInVS)
+    public void RefreshVSList(ThreadSafeObservableCollection<IOpenWithInfo> vsList, ref IOpenWithInfo openInVS)
     {
-      if (VSList == null)
+      if (vsList == null)
       {
-        throw new ArgumentNullException("VSList");
+        throw new ArgumentNullException("vsList");
       }
       List<VSInfo> tmpVsList = m_vsAutomation.GetAllVs();
-      for (int i = 0; i < VSList.Count; ++i)
+      for (int i = 0; i < vsList.Count; ++i)
       {
-        if (!(VSList[i] is VSInfo) || tmpVsList.Contains(VSList[i])) continue;
-        if (OpenInVS == VSList[i])
+        if (!(vsList[i] is VSInfo) || tmpVsList.Contains(vsList[i])) continue;
+        if (openInVS == vsList[i])
         {
-          OpenInVS = null;
+          openInVS = null;
         }
-        VSList.RemoveAt(i);
+        vsList.RemoveAt(i);
       }
       foreach (VSInfo vsInfo in tmpVsList)
       {
-        int index = VSList.IndexOf(vsInfo);
+        int index = vsList.IndexOf(vsInfo);
         if (index < 0)
         {
-          VSList.Add(vsInfo);
+          vsList.Add(vsInfo);
         }
         else
         {
-          ((VSInfo)VSList[index]).Set(vsInfo);
+          ((VSInfo)vsList[index]).Set(vsInfo);
         }
       }
 
-      if (VSList.Count <= 0 || !(VSList[VSList.Count - 1] is NppOpenAt))
+      if (vsList.Count <= 0 || !(vsList[vsList.Count - 1] is NppOpenAt))
       {
-        VSList.Add(new NppOpenAt());
+        vsList.Add(new NppOpenAt());
       }
 
-      if (OpenInVS != null) return;
+      if (openInVS != null) return;
 
       bool debugFound = false;
-      foreach (var vsInfo in VSList.Where(vsInfo => vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug))
+      foreach (var vsInfo in vsList.Where(vsInfo => vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug))
       {
-        OpenInVS = vsInfo;
+        openInVS = vsInfo;
         debugFound = true;
         break;
       }
       if (!debugFound)
       {
-        OpenInVS = VSList.FirstOrDefault();
+        openInVS = vsList.FirstOrDefault();
       }
     }
 
