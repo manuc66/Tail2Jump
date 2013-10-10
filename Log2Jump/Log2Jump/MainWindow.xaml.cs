@@ -166,8 +166,6 @@ namespace WpfTest
 
     private void txtBox_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-      double normal = e.NewSize.Height / 19;
-
       var formattedText = new FormattedText("M" + Environment.NewLine,
                   CultureInfo.GetCultureInfo("en-us"),
                   FlowDirection.LeftToRight,
@@ -338,7 +336,6 @@ namespace WpfTest
           else
           {
             var hyperlink = sender1;
-            string originalString = hyperlink.NavigateUri.OriginalString;
             FilePathWithLineInfo filePathWithLineInfo = m_vsTools.GetFilePathWithLineNumber(hyperlink.NavigateUri.OriginalString);
             OpenInVS.OpenFileAtLine(filePathWithLineInfo);
           }
