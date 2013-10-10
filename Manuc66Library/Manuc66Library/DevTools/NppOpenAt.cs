@@ -1,52 +1,42 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="NppOpenAt.cs" company="">
-// TODO: Update copyright text.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Be.Manuc66.Library.DevTools;
+using System.Linq;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.DevTools
 {
-
-  /// <summary>
-  /// TODO: Update summary.
-  /// </summary>
   public class NppOpenAt : ViewModelBase, IOpenWithInfo
   {
     private const int s_TypeSortOrder = 2;
-    private static string s_nppLocation = null;
+    private static string s_nppLocation;
 
     public static bool IsNppAvailble()
     {
       bool result;
       if (s_nppLocation == null)
       {
-        var possibleLocation = new[] {
-        @"C:\Program Files (x86)\Notepad++\notepad++.exe" ,
-        @"C:\Program Files)\Notepad++\notepad++.exe" ,
-        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\notepad++.exe",
-        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\notepad++.exe"
-        };
-        result = false;
-        foreach (var item in possibleLocation)
-        {
-          if (File.Exists(item))
-          {
-            s_nppLocation = item;
-            result = true;
-            break;
-          }
-        }
+        var possibleLocation = PossibleNppLocations();
+        s_nppLocation = possibleLocation.Where(File.Exists).FirstOrDefault();
+        result = s_nppLocation != null;
       }
       else
       {
         result = true;
       }
       return result;
+    }
+
+    private static IEnumerable<string> PossibleNppLocations()
+    {
+      var possibleLocation = new[]
+      {
+        @"C:\Program Files (x86)\Notepad++\notepad++.exe",
+        @"C:\Program Files)\Notepad++\notepad++.exe",
+        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\notepad++.exe",
+        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\notepad++.exe"
+      };
+      return possibleLocation;
     }
 
     public int TypeSortOrder
@@ -61,7 +51,7 @@ namespace Be.Manuc66.Library
       bool result;
       if (IsNppAvailble())
       {
-        Process.Start(s_nppLocation, "\"" + filePathWithLineInfo.FilePath + "\" -n" + filePathWithLineInfo.LineNumber);
+        Process.Start(s_nppLocation, string.Format("\"{0}\" -n{1}", filePathWithLineInfo.FilePath, filePathWithLineInfo.LineNumber));
         result = true;
       }
       else
@@ -76,18 +66,8 @@ namespace Be.Manuc66.Library
     {
       if (other == null) return -1;
       int result = TypeSortOrder.CompareTo(other.TypeSortOrder);
-      if (result == 0)
-      {
-        if (other is NppOpenAt)
-        {
-          result = 0;
-        }
-        else
-        {
-          result = -1;
-        }
-      }
-      return result;
+      if (result != 0) return result;
+      return other is NppOpenAt ? 0 : -1;
     }
     public bool Equals(IOpenWithInfo other)
     {

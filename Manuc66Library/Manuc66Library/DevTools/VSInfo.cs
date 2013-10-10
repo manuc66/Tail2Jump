@@ -8,46 +8,46 @@ namespace Be.Manuc66.Library
 {
   public class VSInfo : ViewModelBase, INotifyPropertyChanged, IOpenWithInfo
   {
-    private string m_SolutionPath;
-    private _DTE m_Vs;
-    private bool m_InDebug;
-    private string m_displayName;
+    private string _solutionPath;
+    private _DTE _vs;
+    private bool _inDebug;
+    private string _displayName;
     private const int s_TypeSortOrder = 1;
-    private readonly ILog m_log = LogManager.GetLogger(typeof(VSInfo));
+    private readonly ILog _log = LogManager.GetLogger(typeof(VSInfo));
 
-    public VSInfo(string _SolutionPath, _DTE _Vs, string displayName, bool inDebug)
+    public VSInfo(string solutionPath, _DTE vs, string displayName, bool inDebug)
     {
-      m_displayName = displayName;
-      SolutionPath = _SolutionPath;
-      Vs = _Vs;
+      _displayName = displayName;
+      SolutionPath = solutionPath;
+      Vs = vs;
       InDebug = inDebug;
     }
     public string SolutionPath
     {
-      get { return m_SolutionPath; }
+      get { return _solutionPath; }
       set
       {
-        if (m_SolutionPath == value) return;
-        m_SolutionPath = value;
+        if (_solutionPath == value) return;
+        _solutionPath = value;
         OnPropertyChanged("SolutionPath");
       }
     }
     public _DTE Vs
     {
-      get { return m_Vs; }
+      get { return _vs; }
       set
       {
-        if (m_Vs == value) return;
-        m_Vs = value; OnPropertyChanged("Vs");
+        if (_vs == value) return;
+        _vs = value; OnPropertyChanged("Vs");
       }
     }
     public bool InDebug
     {
-      get { return m_InDebug; }
+      get { return _inDebug; }
       set
       {
-        if (m_InDebug == value) return;
-        m_InDebug = value; OnPropertyChanged("InDebug");
+        if (_inDebug == value) return;
+        _inDebug = value; OnPropertyChanged("InDebug");
       }
     }
     public int TypeSortOrder { get { return s_TypeSortOrder; } }
@@ -65,22 +65,20 @@ namespace Be.Manuc66.Library
       }
       Vs = other.Vs;
       InDebug = other.InDebug;
-      m_displayName = other.m_displayName;
+      _displayName = other._displayName;
     }
     public int CompareTo(IOpenWithInfo other)
     {
       if (other == null) return -1;
       int result = TypeSortOrder.CompareTo(other.TypeSortOrder);
-      if (result == 0)
+      if (result != 0) return result;
+      if (other is VSInfo && _displayName != null)
       {
-        if (other is VSInfo && m_displayName != null)
-        {
-          result = String.Compare(m_displayName, ((VSInfo)other).m_displayName, StringComparison.Ordinal);
-        }
-        else
-        {
-          result = -1;
-        }
+        result = String.Compare(_displayName, ((VSInfo)other)._displayName, StringComparison.Ordinal);
+      }
+      else
+      {
+        result = -1;
       }
       return result;
     }
@@ -94,7 +92,7 @@ namespace Be.Manuc66.Library
     }
     public override int GetHashCode()
     {
-      return SolutionPath == null ? 0 : m_displayName.GetHashCode();
+      return SolutionPath == null ? 0 : _displayName.GetHashCode();
     }
     public bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo)
     {
@@ -116,7 +114,7 @@ namespace Be.Manuc66.Library
       }
       catch (Exception)
       {
-        m_log.Info(string.Format("The visual studio loaded on \"{0}\" is not responding ", SolutionPath));
+        _log.Info(string.Format("The visual studio loaded on \"{0}\" is not responding ", SolutionPath));
         sucess = false;
       }
       return sucess;
@@ -134,7 +132,7 @@ namespace Be.Manuc66.Library
       }
       catch (ArgumentException)
       {
-        m_log.Info(string.Format("Line {0} not found in file {1}", filePathWithLineInfo.LineNumber,
+        _log.Info(string.Format("Line {0} not found in file {1}", filePathWithLineInfo.LineNumber,
           filePathWithLineInfo.FilePath));
 
         return false;
@@ -151,7 +149,7 @@ namespace Be.Manuc66.Library
       }
       catch (ArgumentException)
       {
-        m_log.Info(string.Format("File not found {0}", filePathWithLineInfo.FilePath));
+        _log.Info(string.Format("File not found {0}", filePathWithLineInfo.FilePath));
         isFileOk = false;
       }
       return isFileOk;
