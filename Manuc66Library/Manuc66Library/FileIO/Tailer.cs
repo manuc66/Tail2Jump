@@ -237,101 +237,100 @@ namespace Be.Manuc66.Library.FileIO
             SetPreviousPosition(fsEvent.FullPath, 0);
           }
         }
-        //read from current seek position to end of file
-        int numBytes;
         byte[] bytesRead;
-        bool fileProcessed;
-        using (FileStream fs = OpenFileShareMode(fsEvent.FullPath))
+        var numBytes = ReadAvaibleBytes(fsEvent.FullPath, out bytesRead);
+
+        if (numBytes <= 0) return;
+
+        string stringRead = Encoding.UTF8.GetString(bytesRead, 0, numBytes);
+        int indexNewLine;
+        uint byteConsumed = 0;
+        if (stringRead.Length > 0 && stringRead != Environment.NewLine &&
+            (indexNewLine = stringRead.LastIndexOf(Environment.NewLine, StringComparison.Ordinal)) >= 0)
         {
-          if (fs == null)
+          string toShow = stringRead.Substring(0, indexNewLine + Environment.NewLine.Length);
+
+          long fileSeekPos;
+
+          byteConsumed += (uint)Encoding.UTF8.GetBytes(toShow).Length;
+          lock (_monitorPreviousSeekPosition)
           {
-            fileProcessed = false;
-            bytesRead = new byte[0];
-            numBytes = 0;
-            _log.Error(fsEvent.FullPath + " fail to get tailed");
+            fileSeekPos = GetPreviousPosition(fsEvent.FullPath);
+            SetPreviousPosition(fsEvent.FullPath, fileSeekPos + byteConsumed);
           }
-          else
-          {
-            long fileLength;
-            long pos = GetActualFilePos(fsEvent, fs, out fileLength);
 
+          toShow = stringRead.Substring(0, indexNewLine);
 
-            long newPos = pos;
-            pos = fs.Seek(newPos, SeekOrigin.Begin);
-            if (newPos != pos)
-            {
-              _log.Error("File seek did not do what I want...");
-            }
+          string file = Path.GetFileName(fsEvent.FullPath);
 
-
-            SetPreviousPosition(fsEvent.FullPath, pos);
-
-            long size = fileLength - pos;
-            if (size <= 0)
-            {
-              fileProcessed = false;
-              bytesRead = new byte[0];
-              numBytes = 0;
-            }
-            else
-            {
-              bytesRead = new byte[size];
-              numBytes = fs.Read(bytesRead, 0, bytesRead.Length);
-              if (numBytes > 0)
-              {
-                fileProcessed = true;
-              }
-              else
-              {
-                _log.Error("Nothing readed in the file: " + fsEvent.FullPath + " expected data read: " +
-                            bytesRead.Length);
-                fileProcessed = false;
-              }
-            }
-          }
+          _evtMoreData.RaiseEvent(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
         }
-
-        if (fileProcessed)
+        else
         {
-          string stringRead = Encoding.UTF8.GetString(bytesRead, 0, numBytes);
-          int indexNewLine;
-          uint byteConsumed = 0;
-          if (stringRead.Length > 0 && stringRead != Environment.NewLine &&
-              (indexNewLine = stringRead.LastIndexOf(Environment.NewLine, StringComparison.Ordinal)) >= 0)
-          {
-            string toShow = stringRead.Substring(0, indexNewLine + Environment.NewLine.Length);
-
-            long fileSeekPos;
-
-            byteConsumed += (uint)Encoding.UTF8.GetBytes(toShow).Length;
-            lock (_monitorPreviousSeekPosition)
-            {
-              fileSeekPos = GetPreviousPosition(fsEvent.FullPath);
-              SetPreviousPosition(fsEvent.FullPath, fileSeekPos + byteConsumed);
-            }
-
-            toShow = stringRead.Substring(0, indexNewLine);
-
-            string file = Path.GetFileName(fsEvent.FullPath);
-
-            _evtMoreData.RaiseEvent(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
-          }
-          else
-          {
-            _log.Debug(
-              "Target file changed but no new lines..., maybe the file has been processed by this method before this execution" +
-              string.Format("{0} - {1}", fsEvent.ChangeType, fsEvent.FullPath));
-          }
+          _log.Debug(
+            "Target file changed but no new lines..., maybe the file has been processed by this method before this execution" +
+            string.Format("{0} - {1}", fsEvent.ChangeType, fsEvent.FullPath));
         }
       }
     }
 
-    private long GetActualFilePos(FileSystemEventArgs fsEvent, FileStream fs, out long fileLength)
+    private int ReadAvaibleBytes(string fullPath, out byte[] bytesRead)
+    {
+      //read from current seek position to end of file
+      int numBytes;
+      using (FileStream fs = OpenFileShareMode(fullPath))
+      {
+        if (fs == null)
+        {
+          bytesRead = new byte[0];
+          numBytes = 0;
+          _log.Error(fullPath + " fail to get tailed");
+          return numBytes;
+        }
+
+        long fileLength;
+        long pos = GetActualFilePos(fullPath, fs, out fileLength);
+
+
+        long newPos = pos;
+        pos = fs.Seek(newPos, SeekOrigin.Begin);
+        if (newPos != pos)
+        {
+          _log.Error("File seek did not do what I want...");
+        }
+
+
+        SetPreviousPosition(fullPath, pos);
+
+        long size = fileLength - pos;
+        if (size <= 0)
+        {
+          bytesRead = new byte[0];
+          numBytes = 0;
+          return numBytes;
+        }
+
+        bytesRead = new byte[size];
+        numBytes = fs.Read(bytesRead, 0, bytesRead.Length);
+
+        if (numBytes <= 0)
+        {
+          _log.Error("Nothing readed in the file: " + fullPath + " expected data read: " + bytesRead.Length);
+          bytesRead = new byte[0];
+          numBytes = 0;
+          return numBytes;
+        }
+
+      }
+      return numBytes;
+    }
+
+    private long GetActualFilePos(string fullPath, FileStream fs, out long fileLength)
     {
       long pos;
       lock (_monitorPreviousSeekPosition)
       {
-        pos = GetPreviousPosition(fsEvent.FullPath);
+        pos = GetPreviousPosition(fullPath);
         int retry = 0;
 
         fileLength = fs.Length;
@@ -346,8 +345,8 @@ namespace Be.Manuc66.Library.FileIO
         if (fileLength - pos < 0)
         {
           //seems like if the file has been reseted!
-          _log.Error("File reset detected: " + fsEvent.FullPath);
-          SetPreviousPosition(fsEvent.FullPath, 0);
+          _log.Error("File reset detected: " + fullPath);
+          SetPreviousPosition(fullPath, 0);
           pos = 0;
         }
 
