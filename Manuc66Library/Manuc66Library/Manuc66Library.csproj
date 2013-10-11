@@ -110,7 +110,6 @@
     <Compile Include="WPF\ThreadSafeObservableCollection.cs" />
     <Compile Include="DevTools\VSAutomation.cs" />
     <Compile Include="DevTools\VSTools.cs" />
-    <Compile Include="General\WeakEvent.cs" />
     <Compile Include="WPF\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
