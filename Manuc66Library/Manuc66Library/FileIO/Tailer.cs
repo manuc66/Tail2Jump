@@ -245,7 +245,7 @@ namespace Be.Manuc66.Library.FileIO
         int indexNewLine;
         uint byteConsumed = 0;
         if (stringRead.Length > 0 && stringRead != Environment.NewLine &&
-            (indexNewLine = stringRead.LastIndexOf(Environment.NewLine, StringComparison.Ordinal)) >= 0)
+            (indexNewLine = stringRead.LastIndexOf(Environment.NewLine, StringComparison.InvariantCultureIgnoreCase)) >= 0)
         {
           string toShow = stringRead.Substring(0, indexNewLine + Environment.NewLine.Length);
 
@@ -335,14 +335,12 @@ namespace Be.Manuc66.Library.FileIO
           retry++;
         }
 
-        if (fileLength - pos < 0)
-        {
-          //seems like if the file has been reseted!
-          _log.Error("File reset detected: " + fullPath);
-          SetPreviousPosition(fullPath, 0);
-          pos = 0;
-        }
+        if (fileLength - pos >= 0) return pos;
 
+        //seems like if the file has been reseted!
+        _log.Error("File reset detected: " + fullPath);
+        SetPreviousPosition(fullPath, 0);
+        pos = 0;
       }
       return pos;
     }
