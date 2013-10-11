@@ -17,9 +17,6 @@ namespace Be.Manuc66.Library.FileIO
 
     #endregion
 
-    private readonly StrongTypedEvent<Tailer, TailEventData> _evtMoreData =
-      new StrongTypedEvent<Tailer, TailEventData>(false);
-
     private readonly ILog _log = LogManager.GetLogger(typeof(Tailer));
     private readonly object _monitorPreviousSeekPosition = new object();
     private FileSystemWatcher _fileSystemWatcher;
@@ -32,11 +29,8 @@ namespace Be.Manuc66.Library.FileIO
 
     public bool IncludeSubdirectories { get; set; }
 
-    public event StrongTypedEvent<Tailer, TailEventData>.EventEventHandler eMoreData
-    {
-      add { _evtMoreData.eEvent += value; }
-      remove { _evtMoreData.eEvent -= value; }
-    }
+    public event Action<Tailer, TailEventData> eMoreData;
+
 
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public bool Start()
@@ -262,7 +256,10 @@ namespace Be.Manuc66.Library.FileIO
 
           string file = Path.GetFileName(fsEvent.FullPath);
 
-          _evtMoreData.RaiseEvent(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
+          if (eMoreData != null)
+          {
+            eMoreData(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
+          }
         }
         else
         {
