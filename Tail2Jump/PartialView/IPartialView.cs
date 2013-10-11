@@ -1,6 +1,4 @@
 using System.Windows.Threading;
-using Be.Manuc66.Library.DevTools;
-using Be.Manuc66.Library.FileIO;
 
 namespace Tail2Jump
 {

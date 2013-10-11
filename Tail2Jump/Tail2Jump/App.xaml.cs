@@ -5,13 +5,8 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Be.Manuc66.Library.Debug;
-using Be.Manuc66.Library.FileIO;
 using Be.Manuc66.Library.Log;
-using Microsoft.Practices.Prism.Regions;
-using Microsoft.Practices.ServiceLocation;
 using log4net;
-using Microsoft.Practices.Unity;
-using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Tail2Jump

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading;
-using log4net;
-using System.Windows;
 
 namespace Be.Manuc66.Library
 {

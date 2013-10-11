@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Documents;
+﻿using System.Windows.Documents;
 namespace Tail2Jump
 {
   public interface IHyperLinkBuilder

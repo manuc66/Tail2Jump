@@ -1,10 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using Be.Manuc66.Library;
 using Microsoft.Practices.ServiceLocation;
-using Microsoft.Practices.Unity;
 using Tail2Jump.Interfaces;
 
 namespace Tail2Jump

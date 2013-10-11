@@ -1,12 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
 using Microsoft.Practices.Prism.Events;
-using Microsoft.Practices.ServiceLocation;
-using Microsoft.Practices.Unity;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;
 

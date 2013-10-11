@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using Be.Manuc66.Library;
+﻿using Be.Manuc66.Library;
 using System;
 
 namespace Tail2Jump

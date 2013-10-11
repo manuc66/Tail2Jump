@@ -1,5 +1,4 @@
-﻿using System;
-namespace Be.Manuc66.Library.DevTools
+﻿namespace Be.Manuc66.Library.DevTools
 {
   public interface IVSTools
   {

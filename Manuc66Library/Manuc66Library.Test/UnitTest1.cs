@@ -1,5 +1,4 @@
-﻿using Be.Manuc66.Library;
-using Be.Manuc66.Library.DevTools;
+﻿using Be.Manuc66.Library.DevTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Manuc66Library.Test

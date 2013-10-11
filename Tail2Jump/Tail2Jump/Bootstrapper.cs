@@ -3,7 +3,6 @@ using Be.Manuc66.Library.FileIO;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Prism.UnityExtensions;
-using Microsoft.Practices.Prism.Events;
 using Be.Manuc66.Library.DevTools;
 using Be.Manuc66.Library;
 using Tail2Jump.Classes.Controller;

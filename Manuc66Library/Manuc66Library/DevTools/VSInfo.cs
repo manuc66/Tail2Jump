@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using EnvDTE;
 using log4net;
 

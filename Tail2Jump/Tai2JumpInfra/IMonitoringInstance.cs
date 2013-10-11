@@ -3,7 +3,6 @@ using System.Windows.Controls;
 
 namespace Tai2JumpInfra
 {
-
   // A développer
   public interface IMonitoringInstance
   {
