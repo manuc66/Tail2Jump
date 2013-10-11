@@ -237,12 +237,11 @@ namespace Be.Manuc66.Library.FileIO
             SetPreviousPosition(fsEvent.FullPath, 0);
           }
         }
-        byte[] bytesRead;
-        var numBytes = ReadAvaibleBytes(fsEvent.FullPath, out bytesRead);
+        byte[] bytesRead  = ReadAvaibleBytes(fsEvent.FullPath);
 
-        if (numBytes <= 0) return;
+        if (bytesRead.Length <= 0) return;
 
-        string stringRead = Encoding.UTF8.GetString(bytesRead, 0, numBytes);
+        string stringRead = Encoding.UTF8.GetString(bytesRead, 0, bytesRead.Length);
         int indexNewLine;
         uint byteConsumed = 0;
         if (stringRead.Length > 0 && stringRead != Environment.NewLine &&
@@ -274,23 +273,19 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    private int ReadAvaibleBytes(string fullPath, out byte[] bytesRead)
+    private byte[] ReadAvaibleBytes(string fullPath)
     {
       //read from current seek position to end of file
-      int numBytes;
       using (FileStream fs = OpenFileShareMode(fullPath))
       {
         if (fs == null)
         {
-          bytesRead = new byte[0];
-          numBytes = 0;
           _log.Error(fullPath + " fail to get tailed");
-          return numBytes;
+          return new byte[0];
         }
 
         long fileLength;
         long pos = GetActualFilePos(fullPath, fs, out fileLength);
-
 
         long newPos = pos;
         pos = fs.Seek(newPos, SeekOrigin.Begin);
@@ -299,30 +294,28 @@ namespace Be.Manuc66.Library.FileIO
           _log.Error("File seek did not do what I want...");
         }
 
-
         SetPreviousPosition(fullPath, pos);
 
         long size = fileLength - pos;
         if (size <= 0)
         {
-          bytesRead = new byte[0];
-          numBytes = 0;
-          return numBytes;
+          return new byte[0];
         }
 
-        bytesRead = new byte[size];
-        numBytes = fs.Read(bytesRead, 0, bytesRead.Length);
+        var bytesRead = new byte[size];
+        int numBytes = fs.Read(bytesRead, 0, bytesRead.Length);
 
         if (numBytes <= 0)
         {
           _log.Error("Nothing readed in the file: " + fullPath + " expected data read: " + bytesRead.Length);
-          bytesRead = new byte[0];
-          numBytes = 0;
-          return numBytes;
+          return new byte[0];
         }
+        var toReturn = new byte[numBytes];
+        Array.Copy(bytesRead, toReturn, numBytes);
 
+        return toReturn;
       }
-      return numBytes;
+
     }
 
     private long GetActualFilePos(string fullPath, FileStream fs, out long fileLength)
