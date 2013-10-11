@@ -39,32 +39,31 @@ namespace Tail2Jump
       // Add the event handler for handling non-UI thread exceptions to the event. 
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
     }
-    protected override void OnStartup(StartupEventArgs e_)
+    protected override void OnStartup(StartupEventArgs e)
     {
       var bootstrapper = new Bootstrapper();
       bootstrapper.Run();
     }
 
 
-    public void Current_DispatcherUnhandledException(object sender_, DispatcherUnhandledExceptionEventArgs e_)
+    public void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-      HandleException(e_.Exception);
-      e_.Handled = true;
+      HandleException();
+      e.Handled = true;
     }
 
-    public void Application_ThreadException(object sender_, ThreadExceptionEventArgs e_)
+    public void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
-      HandleException(e_.Exception);
+      HandleException();
     }
-    static void CurrentDomain_UnhandledException(object sender_, UnhandledExceptionEventArgs e_)
+    static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-      var ex = (Exception)e_.ExceptionObject;
-      HandleException(ex);
+      HandleException();
     }
 
     private static readonly object HandleExceptionLock = new object();
 
-    private static void HandleException(Exception ex_)
+    private static void HandleException()
     {
       lock (HandleExceptionLock)
       {
