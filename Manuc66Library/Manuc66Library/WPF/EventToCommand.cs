@@ -46,21 +46,7 @@ namespace Be.Manuc66.Library
         typeof(EventToCommand),
         new PropertyMetadata(
             null,
-            (s_, e_) =>
-            {
-              var sender = s_ as EventToCommand;
-              if (sender == null)
-              {
-                return;
-              }
-
-              if (sender.AssociatedObject == null)
-              {
-                return;
-              }
-
-              sender.EnableDisableElement();
-            }));
+            OnPropertyChangedCallback));
 
     /// <summary>
     /// Identifies the <see cref="Command" /> dependency property
@@ -82,21 +68,23 @@ namespace Be.Manuc66.Library
         typeof(EventToCommand),
         new PropertyMetadata(
             false,
-            (s_, e_) =>
-            {
-              var sender = s_ as EventToCommand;
-              if (sender == null)
-              {
-                return;
-              }
+            OnPropertyChangedCallback));
 
-              if (sender.AssociatedObject == null)
-              {
-                return;
-              }
+    private static void OnPropertyChangedCallback(DependencyObject s_, DependencyPropertyChangedEventArgs e_)
+    {
+      var sender = s_ as EventToCommand;
+      if (sender == null)
+      {
+        return;
+      }
 
-              sender.EnableDisableElement();
-            }));
+      if (sender.AssociatedObject == null)
+      {
+        return;
+      }
+
+      sender.EnableDisableElement();
+    }
 
     private object _commandParameterValue;
 
