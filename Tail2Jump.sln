@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2Jump", "Tail2Jump\Tail2Jump.csproj", "{5F9121B0-6BEE-46C2-8682-6F3F7FD3EC88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2Jump", "Tail2Jump\Tail2Jump\Tail2Jump.csproj", "{5F9121B0-6BEE-46C2-8682-6F3F7FD3EC88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProduceLogs", "ProduceLogs\ProduceLogs.csproj", "{8990994D-79C9-4A08-920D-ACD569D7F646}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProduceLogs", "Tail2Jump\ProduceLogs\ProduceLogs.csproj", "{8990994D-79C9-4A08-920D-ACD569D7F646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library", "..\Manuc66Library\Manuc66Library\Manuc66Library.csproj", "{49B156DA-13F5-4F8E-8148-59E36A7F7136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library", "Manuc66Library\Manuc66Library\Manuc66Library.csproj", "{49B156DA-13F5-4F8E-8148-59E36A7F7136}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library.Test", "..\Manuc66Library\Manuc66Library.Test\Manuc66Library.Test.csproj", "{274F427A-1584-4614-8DCF-244269D67720}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library.Test", "Manuc66Library\Manuc66Library.Test\Manuc66Library.Test.csproj", "{274F427A-1584-4614-8DCF-244269D67720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialView", "PartialView\PartialView.csproj", "{62FCC42C-7781-4BFD-A884-EFA7DE293A01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialView", "Tail2Jump\PartialView\PartialView.csproj", "{62FCC42C-7781-4BFD-A884-EFA7DE293A01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2JumpInfra", "Tai2JumpInfra\Tail2JumpInfra.csproj", "{C4D72FCD-933E-42D1-B00A-2CEAA23FBDB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2JumpInfra", "Tail2Jump\Tai2JumpInfra\Tail2JumpInfra.csproj", "{C4D72FCD-933E-42D1-B00A-2CEAA23FBDB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
