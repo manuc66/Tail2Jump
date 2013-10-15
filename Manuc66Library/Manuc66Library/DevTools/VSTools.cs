@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Be.Manuc66.Library.DevTools;
-using log4net;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.DevTools
 {
   public class VSTools : IVSTools
   {
-    private ILog m_log = LogManager.GetLogger(typeof(VSTools));
-    private readonly IVsAutomation m_vsAutomation;
+    private readonly IVsAutomation _vsAutomation;
 
-    public VSTools(IVsAutomation vsAutomation_)
+    public VSTools(IVsAutomation vsAutomation)
     {
-      m_vsAutomation = vsAutomation_;
+      _vsAutomation = vsAutomation;
     }
 
     public void RefreshVSList(ThreadSafeObservableCollection<IOpenWithInfo> vsList, ref IOpenWithInfo openInVS)
@@ -23,11 +20,11 @@ namespace Be.Manuc66.Library
       {
         throw new ArgumentNullException("vsList");
       }
-      List<VSInfo> tmpVsList = m_vsAutomation.GetAllVs();
+      List<VSInfo> tmpVsList = _vsAutomation.GetAllVs();
       for (int i = 0; i < vsList.Count; ++i)
       {
         if (!(vsList[i] is VSInfo) || tmpVsList.Contains(vsList[i])) continue;
-        if (openInVS == vsList[i])
+        if (ReferenceEquals(openInVS, vsList[i]))
         {
           openInVS = null;
         }
