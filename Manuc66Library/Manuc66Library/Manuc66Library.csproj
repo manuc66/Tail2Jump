@@ -96,7 +96,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="DevTools\IOpenWithInfo.cs" />
-    <Compile Include="DevTools\UserCsproj.cs" />
     <Compile Include="DevTools\VSInfo.cs" />
     <Compile Include="WPF\EventToCommand.cs" />
     <Compile Include="WPF\SimpleCommand.cs" />
