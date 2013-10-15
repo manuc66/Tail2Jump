@@ -68,42 +68,36 @@ namespace Be.Manuc66.Library
 
     public FilePathWithLineInfo GetFilePathWithLineNumber(string originalString)
     {
-      FilePathWithLineInfo fileWithLineInfo;
-
-      if (originalString == null)
+      if (string.IsNullOrEmpty(originalString))
       {
-        originalString = string.Empty;
+        return null;
       }
 
-      int lastIndexDoubleDots = originalString.LastIndexOf(':');
-      if (lastIndexDoubleDots > 0 && lastIndexDoubleDots < originalString.Length - 1)
-      {
-        var fileInfo = new[] { originalString.Substring(0, lastIndexDoubleDots), originalString.Substring(lastIndexDoubleDots + 1) };
+      var fileInfo = GetGoToLineInfo(originalString);
+      if (fileInfo == null) 
+        return null;
 
-        string filePath = fileInfo[0];
-        string lineInfo = fileInfo[1];
-        int lastSpaceIndex = lineInfo.LastIndexOf(' ');
-        if (File.Exists(filePath) && lastSpaceIndex > 0 && lastSpaceIndex < originalString.Length - 1)
-        {
-          string strLineNum = lineInfo.Substring(lastSpaceIndex + 1);
-          int lineNumber;
-          fileWithLineInfo = int.TryParse(strLineNum, out lineNumber) ? new FilePathWithLineInfo { FilePath = filePath, LineNumber = lineNumber } : null;
-        }
-        else
-        {
-          fileWithLineInfo = null;
-        }
-      }
-      else
+      string filePath = fileInfo.FilePath;
+      int? lineNumber = fileInfo.GetLineNumber();
+
+      if (!lineNumber.HasValue || !File.Exists(filePath))
       {
-        fileWithLineInfo = null;
+        return null;
       }
-      return fileWithLineInfo;
+
+      return new FilePathWithLineInfo {FilePath = filePath, LineNumber = lineNumber.Value};
     }
-  }
-  public class FilePathWithLineInfo
-  {
-    public string FilePath { get; set; }
-    public int LineNumber { get; set; }
+
+    private static FileGotoLineInfo GetGoToLineInfo(string originalString)
+    {
+      int lastIndexDoubleDots = originalString.LastIndexOf(':');
+      if (lastIndexDoubleDots <= 0 || lastIndexDoubleDots >= originalString.Length - 1)
+      {
+        return null;
+      }
+      var fileInfo = new FileGotoLineInfo(originalString.Substring(0, lastIndexDoubleDots),
+        originalString.Substring(lastIndexDoubleDots + 1));
+      return fileInfo;
+    }
   }
 }

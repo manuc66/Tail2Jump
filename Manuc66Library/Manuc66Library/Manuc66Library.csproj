@@ -80,6 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Debug\MiniDump.cs" />
+    <Compile Include="DevTools\FileGotoLineInfo.cs" />
+    <Compile Include="DevTools\FilePathWithLineInfo.cs" />
     <Compile Include="DevTools\IVsAutomation.cs" />
     <Compile Include="DevTools\IVSTools.cs" />
     <Compile Include="DevTools\NppOpenAt.cs" />
