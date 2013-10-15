@@ -1,6 +1,6 @@
 ﻿namespace Be.Manuc66.Library
 {
-  public class FileGotoLineInfo
+  internal class FileGotoLineInfo
   {
     private readonly string _filePath;
     private readonly string _lineInfo;
