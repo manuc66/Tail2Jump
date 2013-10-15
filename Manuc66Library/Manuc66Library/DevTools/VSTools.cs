@@ -14,7 +14,7 @@ namespace Be.Manuc66.Library.DevTools
       _vsAutomation = vsAutomation;
     }
 
-    public void RefreshVSList(ThreadSafeObservableCollection<IOpenWithInfo> vsList, ref IOpenWithInfo openInVS)
+    public void RefreshVSList(IList<IOpenWithInfo> vsList, ref IOpenWithInfo openInVS)
     {
       if (vsList == null)
       {
