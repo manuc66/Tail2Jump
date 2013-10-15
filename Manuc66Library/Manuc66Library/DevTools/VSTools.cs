@@ -20,47 +20,78 @@ namespace Be.Manuc66.Library.DevTools
       {
         throw new ArgumentNullException("vsList");
       }
+
       List<VSInfo> tmpVsList = _vsAutomation.GetAllVs();
-      for (int i = 0; i < vsList.Count; ++i)
+
+      RemoveMissingVs(vsList, tmpVsList);
+
+      UpdateExisting(vsList, tmpVsList);
+
+      AddNewVs(vsList, tmpVsList);
+
+      AddNppIfMissing(vsList);
+
+      if (!vsList.Contains(openInVS))
       {
-        if (!(vsList[i] is VSInfo) || tmpVsList.Contains(vsList[i])) continue;
-        if (ReferenceEquals(openInVS, vsList[i]))
-        {
-          openInVS = null;
-        }
-        vsList.RemoveAt(i);
-      }
-      foreach (VSInfo vsInfo in tmpVsList)
-      {
-        int index = vsList.IndexOf(vsInfo);
-        if (index < 0)
-        {
-          vsList.Add(vsInfo);
-        }
-        else
-        {
-          ((VSInfo)vsList[index]).Set(vsInfo);
-        }
+        openInVS = null;
       }
 
-      if (vsList.Count <= 0 || !(vsList[vsList.Count - 1] is NppOpenAt))
+      if (openInVS == null)
+      {
+        openInVS = vsList.FirstOrDefault(IsInDebug) ?? vsList.FirstOrDefault();
+      }
+    }
+
+    private static void RemoveMissingVs(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    {
+      var toRemove = vsList.Where(openWithInfo => openWithInfo is VSInfo && !tmpVsList.Contains(openWithInfo)).ToList();
+      toRemove.ForEach(x => vsList.Remove(x));
+    }
+
+    private static void AddNppIfMissing(IList<IOpenWithInfo> vsList)
+    {
+      if (!vsList.Any(x => x is NppOpenAt))
       {
         vsList.Add(new NppOpenAt());
       }
+    }
 
-      if (openInVS != null) return;
+    private static void UpdateExisting(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    {
+      foreach (VSInfo vsInfo in tmpVsList)
+      {
+        var found = TryGet(vsList, vsInfo);
 
-      bool debugFound = false;
-      foreach (var vsInfo in vsList.Where(vsInfo => vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug))
-      {
-        openInVS = vsInfo;
-        debugFound = true;
-        break;
+        if (found != null)
+        {
+          ((VSInfo) found).Set(vsInfo);
+        }
       }
-      if (!debugFound)
+    }
+
+    private static void AddNewVs(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    {
+      foreach (VSInfo vsInfo in tmpVsList)
       {
-        openInVS = vsList.FirstOrDefault();
+        var found = TryGet(vsList, vsInfo);
+
+        if (found == null)
+        {
+          vsList.Add(vsInfo);
+        }
       }
+    }
+
+    private static IOpenWithInfo TryGet(IList<IOpenWithInfo> vsList, VSInfo vsInfo)
+    {
+      int index = vsList.IndexOf(vsInfo);
+      IOpenWithInfo found = index < 0 ? null : vsList[index];
+      return found;
+    }
+
+    private static bool IsInDebug(IOpenWithInfo vsInfo)
+    {
+      return vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug;
     }
 
     public FilePathWithLineInfo GetFilePathWithLineNumber(string originalString)
@@ -71,7 +102,7 @@ namespace Be.Manuc66.Library.DevTools
       }
 
       var fileInfo = GetGoToLineInfo(originalString);
-      if (fileInfo == null) 
+      if (fileInfo == null)
         return null;
 
       string filePath = fileInfo.FilePath;
@@ -82,7 +113,7 @@ namespace Be.Manuc66.Library.DevTools
         return null;
       }
 
-      return new FilePathWithLineInfo {FilePath = filePath, LineNumber = lineNumber.Value};
+      return new FilePathWithLineInfo { FilePath = filePath, LineNumber = lineNumber.Value };
     }
 
     private static FileGotoLineInfo GetGoToLineInfo(string originalString)
