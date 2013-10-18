@@ -119,20 +119,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Classes\Config\Objects\Config.cs" />
-    <Compile Include="Classes\Config\Objects\CriterianSearch.cs" />
-    <Compile Include="Classes\Config\Objects\CFG.cs" />
-    <Compile Include="Classes\Config\Objects\ListCriterianSearch.cs" />
-    <Compile Include="Classes\Config\Utils.cs" />
+    <Compile Include="Config\Objects\Config.cs" />
+    <Compile Include="Config\Objects\CriterianSearch.cs" />
+    <Compile Include="Config\Objects\CFG.cs" />
+    <Compile Include="Config\Objects\ListCriterianSearch.cs" />
+    <Compile Include="Config\Utils.cs" />
     <Compile Include="Interfaces\IMainWindow.cs" />
     <Compile Include="Interfaces\ILogController.cs" />
     <Compile Include="Interfaces\IWatcherController.cs" />
-    <Compile Include="Classes\Controller\LogController.cs" />
-    <Compile Include="Classes\Enums\Enums.cs" />
-    <Compile Include="Classes\GUI\BurningGrid.xaml.cs">
+    <Compile Include="Controller\LogController.cs" />
+    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="GUI\BurningGrid.xaml.cs">
       <DependentUpon>BurningGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\GUI\Controls\MonitoringChart.xaml.cs">
+    <Compile Include="GUI\Controls\MonitoringChart.xaml.cs">
       <DependentUpon>MonitoringChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="MonitoringPanel\IMonitoringPanelW8.cs" />
@@ -142,30 +142,30 @@
     <Compile Include="SearchBox\FilterSearchGrid.xaml.cs">
       <DependentUpon>FilterSearchGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\GUI\CreateEditWatcherAdvanced.xaml.cs">
+    <Compile Include="GUI\CreateEditWatcherAdvanced.xaml.cs">
       <DependentUpon>CreateEditWatcherAdvanced.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\GUI\LayoutManagementGrid.xaml.cs">
+    <Compile Include="GUI\LayoutManagementGrid.xaml.cs">
       <DependentUpon>LayoutManagementGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\GUI\DebugConsoleGrid.xaml.cs">
+    <Compile Include="GUI\DebugConsoleGrid.xaml.cs">
       <DependentUpon>DebugConsoleGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\GUI\CreateEditWatcher.xaml.cs">
+    <Compile Include="GUI\CreateEditWatcher.xaml.cs">
       <DependentUpon>CreateEditWatcher.xaml</DependentUpon>
     </Compile>
     <Compile Include="MonitoringPanel\MonitoringModule.cs" />
-    <Compile Include="Classes\Objects\LogInstance.cs" />
-    <Compile Include="Classes\Objects\MonitoringInstance.cs" />
-    <Compile Include="Classes\Controller\WatcherController.cs" />
-    <Compile Include="Classes\Objects\RingBuffer.cs" />
+    <Compile Include="Objects\LogInstance.cs" />
+    <Compile Include="Objects\MonitoringInstance.cs" />
+    <Compile Include="Controller\WatcherController.cs" />
+    <Compile Include="Objects\RingBuffer.cs" />
     <Compile Include="SearchBox\IFilterSearchGrid.cs" />
     <Compile Include="SearchBox\SearchBoxModule.cs" />
-    <Page Include="Classes\GUI\BurningGrid.xaml">
+    <Page Include="GUI\BurningGrid.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Classes\GUI\Controls\MonitoringChart.xaml">
+    <Page Include="GUI\Controls\MonitoringChart.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -177,31 +177,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Classes\GUI\CreateEditWatcherAdvanced.xaml">
+    <Page Include="GUI\CreateEditWatcherAdvanced.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Classes\GUI\LayoutManagementGrid.xaml">
+    <Page Include="GUI\LayoutManagementGrid.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Classes\GUI\DebugConsoleGrid.xaml">
+    <Page Include="GUI\DebugConsoleGrid.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Classes\GUI\CreateEditWatcher.xaml">
+    <Page Include="GUI\CreateEditWatcher.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Classes\GUI\Styles\Button.xaml">
+    <Page Include="GUI\Styles\Button.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Classes\GUI\Styles\Colors.xaml">
+    <Page Include="GUI\Styles\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Classes\GUI\Styles\ComboBox.xaml">
+    <Page Include="GUI\Styles\ComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,19 +210,19 @@
       <SubType>Designer</SubType>
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
-    <Resource Include="Classes\GUI\Styles\GeneralDictionary.xaml">
+    <Resource Include="GUI\Styles\GeneralDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
-    <Page Include="Classes\GUI\Styles\ScrollBar.xaml">
+    <Page Include="GUI\Styles\ScrollBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Classes\GUI\Styles\TextBlock.xaml">
+    <Page Include="GUI\Styles\TextBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Classes\GUI\Styles\TextBox.xaml">
+    <Page Include="GUI\Styles\TextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -287,56 +287,58 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgMenuColor_32x32.png" />
-    <Resource Include="Classes\GUI\Images\imgMenuSearch_32x32.png" />
-    <Resource Include="Classes\GUI\Images\imgMenuSettings_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuColor_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuSearch_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuSettings_32x32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgMenuAjouter_16x16.png" />
-    <Resource Include="Classes\GUI\Images\imgMenuSupprimer_16x16.png" />
+    <Resource Include="GUI\Images\imgMenuAjouter_16x16.png" />
+    <Resource Include="GUI\Images\imgMenuSupprimer_16x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgMenuConsole_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuConsole_32x32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgNotifBasic_16x16.png" />
-    <Resource Include="Classes\GUI\Images\imgPauseBasic_16x16.png" />
-    <Resource Include="Classes\GUI\Images\imgPlayBasic_16x16.png" />
-    <Resource Include="Classes\GUI\Images\imgMonitorBasic_16x16.png" />
+    <Resource Include="GUI\Images\imgNotifBasic_16x16.png" />
+    <Resource Include="GUI\Images\imgPauseBasic_16x16.png" />
+    <Resource Include="GUI\Images\imgPlayBasic_16x16.png" />
+    <Resource Include="GUI\Images\imgMonitorBasic_16x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgMenuCPU_32x32.png" />
-    <Resource Include="Classes\GUI\Images\imgMenuFire_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuCPU_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuFire_32x32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\imgMenuTimeline_32x32.png" />
+    <Resource Include="GUI\Images\imgMenuTimeline_32x32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\add-a-folder-icone-4540-32.png" />
-    <Resource Include="Classes\GUI\Images\add-new-document-file-more-icone-7513-32.png" />
-    <Resource Include="Classes\GUI\Images\add-new-document-file-more-icone-7513-48.png" />
-    <Resource Include="Classes\GUI\Images\color-fill-color-icone-8919-32.png" />
-    <Resource Include="Classes\GUI\Images\computer-monitor-screen-icone-9182-32.png" />
-    <Resource Include="Classes\GUI\Images\computer-monitor-screen-icone-9182-48.png" />
+    <Resource Include="GUI\Images\add-a-folder-icone-4540-32.png" />
+    <Resource Include="GUI\Images\add-new-document-file-more-icone-7513-32.png" />
+    <Resource Include="GUI\Images\add-new-document-file-more-icone-7513-48.png" />
+    <Resource Include="GUI\Images\color-fill-color-icone-8919-32.png" />
+    <Resource Include="GUI\Images\computer-monitor-screen-icone-9182-32.png" />
+    <Resource Include="GUI\Images\computer-monitor-screen-icone-9182-48.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Classes\GUI\Images\Icons\add.png" />
-    <Resource Include="Classes\GUI\Images\Icons\back.png" />
-    <Resource Include="Classes\GUI\Images\Icons\cancel.png" />
-    <Resource Include="Classes\GUI\Images\Icons\check.png" />
-    <Resource Include="Classes\GUI\Images\Icons\delete.png" />
-    <Resource Include="Classes\GUI\Images\Icons\edit.png" />
-    <Resource Include="Classes\GUI\Images\Icons\favs.png" />
-    <Resource Include="Classes\GUI\Images\Icons\folder.png" />
-    <Resource Include="Classes\GUI\Images\Icons\next.png" />
-    <Resource Include="Classes\GUI\Images\Icons\pause.png" />
-    <Resource Include="Classes\GUI\Images\Icons\play.png" />
-    <Resource Include="Classes\GUI\Images\Icons\questionmark.png" />
-    <Resource Include="Classes\GUI\Images\Icons\refresh.png" />
-    <Resource Include="Classes\GUI\Images\Icons\save.png" />
-    <Resource Include="Classes\GUI\Images\Icons\search.png" />
-    <Resource Include="Classes\GUI\Images\Icons\settings.png" />
+    <Folder Include="Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\Images\Icons\add.png" />
+    <Resource Include="GUI\Images\Icons\back.png" />
+    <Resource Include="GUI\Images\Icons\cancel.png" />
+    <Resource Include="GUI\Images\Icons\check.png" />
+    <Resource Include="GUI\Images\Icons\delete.png" />
+    <Resource Include="GUI\Images\Icons\edit.png" />
+    <Resource Include="GUI\Images\Icons\favs.png" />
+    <Resource Include="GUI\Images\Icons\folder.png" />
+    <Resource Include="GUI\Images\Icons\next.png" />
+    <Resource Include="GUI\Images\Icons\pause.png" />
+    <Resource Include="GUI\Images\Icons\play.png" />
+    <Resource Include="GUI\Images\Icons\questionmark.png" />
+    <Resource Include="GUI\Images\Icons\refresh.png" />
+    <Resource Include="GUI\Images\Icons\save.png" />
+    <Resource Include="GUI\Images\Icons\search.png" />
+    <Resource Include="GUI\Images\Icons\settings.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
