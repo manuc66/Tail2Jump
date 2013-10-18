@@ -9,10 +9,10 @@ namespace PartialView
     private readonly IRegionViewRegistry _regionViewRegistry;
     private readonly IUnityContainer _container;
 
-    public PartialViewModule(IUnityContainer container_, IRegionViewRegistry registry_)
+    public PartialViewModule(IUnityContainer container, IRegionViewRegistry registry)
     {
-      _regionViewRegistry = registry_;
-      _container = container_;
+      _regionViewRegistry = registry;
+      _container = container;
     }
 
     public void Initialize()
