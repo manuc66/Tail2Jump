@@ -13,6 +13,7 @@ using Be.Manuc66.Library.General;
 using log4net;
 using log4net.Config;
 using Microsoft.Practices.Prism.Events;
+using PartialView;
 using Tai2JumpInfra;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;

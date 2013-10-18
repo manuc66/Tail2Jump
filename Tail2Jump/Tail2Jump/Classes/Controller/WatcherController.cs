@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.FileIO;
 using log4net;
+using PartialView;
 using Tai2JumpInfra;
 using Tail2Jump.Interfaces;
 

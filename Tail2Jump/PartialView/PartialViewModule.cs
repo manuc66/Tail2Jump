@@ -2,7 +2,7 @@
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 
-namespace Tail2Jump
+namespace PartialView
 {
   public class PartialViewModule : IModule
   {

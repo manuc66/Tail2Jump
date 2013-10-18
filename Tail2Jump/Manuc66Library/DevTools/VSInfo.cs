@@ -10,7 +10,7 @@ namespace Be.Manuc66.Library.DevTools
     private _DTE _vs;
     private bool _inDebug;
     private string _displayName;
-    private const int s_TypeSortOrder = 1;
+    private const int TYPE_SORT_ORDER = 1;
     private readonly ILog _log = LogManager.GetLogger(typeof(VSInfo));
 
     public VSInfo(string solutionPath, _DTE vs, string displayName, bool inDebug)
@@ -48,7 +48,7 @@ namespace Be.Manuc66.Library.DevTools
         _inDebug = value; OnPropertyChanged("InDebug");
       }
     }
-    public int TypeSortOrder { get { return s_TypeSortOrder; } }
+    public int TypeSortOrder { get { return TYPE_SORT_ORDER; } }
     public string DisplayName { get { return SolutionPath; } }
 
     public void Set(VSInfo other)

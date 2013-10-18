@@ -18,7 +18,6 @@ using Be.Manuc66.Library.General;
 using log4net;
 using Microsoft.Practices.Prism.Events;
 using Tai2JumpInfra.Events;
-using Tail2Jump;
 
 namespace PartialView
 {

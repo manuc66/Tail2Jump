@@ -3,11 +3,11 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Be.Manuc66.Library.DevTools;
-using Microsoft.Practices.Prism.Events;
 using log4net;
+using Microsoft.Practices.Prism.Events;
 using Tai2JumpInfra.Events;
 
-namespace Tail2Jump
+namespace PartialView
 {
   public class HyperLinkBuilder : IHyperLinkBuilder
   {

@@ -1,6 +1,6 @@
 using System.Windows.Threading;
 
-namespace Tail2Jump
+namespace PartialView
 {
   public interface IPartialView
   {
