@@ -276,7 +276,7 @@
     <Resource Include="tail.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Manuc66Library\Manuc66Library\Manuc66Library.csproj">
+    <ProjectReference Include="..\Manuc66Library\Manuc66Library\Manuc66Library.csproj">
       <Project>{49B156DA-13F5-4F8E-8148-59E36A7F7136}</Project>
       <Name>Manuc66Library</Name>
     </ProjectReference>
