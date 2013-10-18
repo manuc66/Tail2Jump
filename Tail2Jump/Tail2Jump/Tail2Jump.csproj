@@ -319,9 +319,7 @@
     <Resource Include="GUI\Images\computer-monitor-screen-icone-9182-32.png" />
     <Resource Include="GUI\Images\computer-monitor-screen-icone-9182-48.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="GUI\Images\Icons\add.png" />
     <Resource Include="GUI\Images\Icons\back.png" />
