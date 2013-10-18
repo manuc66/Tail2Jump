@@ -1,8 +1,0 @@
-﻿<ResourceDictionary
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/Tail2Jump;component/Classes/GUI/Styles/GeneralDictionary.xaml"/>
-	</ResourceDictionary.MergedDictionaries>
-	<!-- Les entrées du dictionnaire de ressources sont définies ici. -->
-</ResourceDictionary>
