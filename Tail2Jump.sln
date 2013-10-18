@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialView", "Tail2Jump\Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2JumpInfra", "Tail2Jump\Tai2JumpInfra\Tail2JumpInfra.csproj", "{C4D72FCD-933E-42D1-B00A-2CEAA23FBDB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library", "Tail2Jump\Manuc66Library\Manuc66Library\Manuc66Library.csproj", "{49B156DA-13F5-4F8E-8148-59E36A7F7136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library", "Tail2Jump\Manuc66Library\Manuc66Library.csproj", "{49B156DA-13F5-4F8E-8148-59E36A7F7136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

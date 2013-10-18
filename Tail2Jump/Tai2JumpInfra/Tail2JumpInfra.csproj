@@ -73,7 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Manuc66Library\Manuc66Library\Manuc66Library.csproj">
+    <ProjectReference Include="..\Manuc66Library\Manuc66Library.csproj">
       <Project>{49b156da-13f5-4f8e-8148-59e36a7f7136}</Project>
       <Name>Manuc66Library</Name>
     </ProjectReference>
