@@ -11,19 +11,19 @@ namespace PartialView
 {
   public class HyperLinkBuilder : IHyperLinkBuilder
   {
-    private static readonly ILog _log = LogManager.GetLogger(typeof(HyperLinkBuilder));
-    readonly IVSTools m_vsTools;
+    private static readonly ILog Log = LogManager.GetLogger(typeof(HyperLinkBuilder));
+    readonly IVSTools _vsTools;
     private IOpenWithInfo OpenInVS { get; set; }
 
-    public HyperLinkBuilder(IEventAggregator eventAggregator_, IVSTools vsTools_)
+    public HyperLinkBuilder(IEventAggregator eventAggregator, IVSTools vsTools)
     {
-      eventAggregator_.GetEvent<OpenInChanged>().Subscribe(OpenInChangedEventHandler);
-      m_vsTools = vsTools_;
+      eventAggregator.GetEvent<OpenInChanged>().Subscribe(OpenInChangedEventHandler);
+      _vsTools = vsTools;
     }
 
-    private void OpenInChangedEventHandler(IOpenWithInfo obj_)
+    private void OpenInChangedEventHandler(IOpenWithInfo obj)
     {
-      OpenInVS = obj_;
+      OpenInVS = obj;
     }
 
     public Hyperlink GetHyperLink(string linkText)
@@ -38,24 +38,24 @@ namespace PartialView
     }
 
     // Display the underline on only the MouseEnter event.
-    private void textLink_MouseEnter(object sender_, EventArgs e_)
+    private void textLink_MouseEnter(object sender, EventArgs e)
     {
-      var myHyperlink = sender_ as Hyperlink;
+      var myHyperlink = sender as Hyperlink;
       if (myHyperlink != null)
         myHyperlink.TextDecorations = TextDecorations.Underline;
     }
 
     // Remove the underline on the MouseLeave event.
-    private void textLink_MouseLeave(object sender_, EventArgs e_)
+    private void textLink_MouseLeave(object sender, EventArgs e)
     {
-      var myHyperlink = sender_ as Hyperlink;
+      var myHyperlink = sender as Hyperlink;
       if (myHyperlink != null)
         myHyperlink.TextDecorations = null;
     }
 
-    private void textLink_Unloaded(object sender_, RoutedEventArgs e_)
+    private void textLink_Unloaded(object sender, RoutedEventArgs e)
     {
-      var hyperlink = sender_ as Hyperlink;
+      var hyperlink = sender as Hyperlink;
       if (hyperlink == null) return;
       hyperlink.Unloaded -= textLink_Unloaded;
       hyperlink.Click -= textLink_Click;
@@ -63,29 +63,29 @@ namespace PartialView
       hyperlink.MouseLeave -= textLink_MouseLeave;
     }
 
-    private void textLink_Click(object sender_, RoutedEventArgs e_)
+    private void textLink_Click(object sender, RoutedEventArgs e)
     {
-      var sender1 = sender_ as Hyperlink;
+      var sender1 = sender as Hyperlink;
       if (sender1 == null)
       {
         throw new ArgumentException("Sender should be an Hyperlink!");
       }
       if (OpenInVS == null)
       {
-        _log.Info("No VS to open in");
+        Log.Info("No VS to open in");
       }
       else
       {
         var hyperlink = sender1;
         var originalString = ((Run)hyperlink.Inlines.FirstInline).Text;
         NavigateTo(originalString);
-        e_.Handled = true;
+        e.Handled = true;
       }
     }
 
-    private void NavigateTo(string originalString_)
+    private void NavigateTo(string originalString)
     {
-      var filePathWithLineInfo = m_vsTools.GetFilePathWithLineNumber(originalString_);
+      var filePathWithLineInfo = _vsTools.GetFilePathWithLineNumber(originalString);
       OpenInVS.OpenFileAtLine(filePathWithLineInfo);
     }
   }

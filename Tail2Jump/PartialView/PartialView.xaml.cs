@@ -88,8 +88,8 @@ namespace PartialView
     private readonly object _refreshViewLock = new object();
     private readonly SolidColorBrush _highLightColor = Brushes.Yellow;
     private readonly TemporisedEvent<IEmpty> _autoScroll;
-    const string LineFr = ":ligne";
-    const string LineEn = ":line";
+    const string LINE_FR = ":ligne";
+    const string LINE_EN = ":line";
     #endregion
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -154,18 +154,42 @@ namespace PartialView
       {
         _txtBoxHScroll = scrollview.Template.FindName("PART_HorizontalScrollBar", scrollview) as ScrollBar;
 
+        if (_txtBoxHScroll == null) return;
+
         hscroll.Maximum = 0.0;
-        DependencyPropertyDescriptor dpdMax = DependencyPropertyDescriptor.FromProperty(RangeBase.MaximumProperty, typeof(ScrollBar));
-        if (dpdMax != null && _txtBoxHScroll != null)
-        {
-          dpdMax.AddValueChanged(_txtBoxHScroll, (sender_, args) => hscroll.Maximum = _txtBoxHScroll.Maximum);
-        }
-        DependencyPropertyDescriptor dpdView = DependencyPropertyDescriptor.FromProperty(ScrollBar.ViewportSizeProperty, typeof(ScrollBar));
-        if (dpdView != null && _txtBoxHScroll != null)
-        {
-          dpdView.AddValueChanged(_txtBoxHScroll, (sender_, args) => hscroll.ViewportSize = _txtBoxHScroll.ViewportSize);
-        }
+
+        WatchMaximumScroll();
+
+        WatchViewportSize();
       }
+    }
+
+    private void WatchViewportSize()
+    {
+      DependencyPropertyDescriptor dpdView = DependencyPropertyDescriptor.FromProperty(ScrollBar.ViewportSizeProperty, typeof(ScrollBar));
+      if (dpdView != null)
+      {
+        dpdView.AddValueChanged(_txtBoxHScroll, UpdateHorizViewportSize);
+      }
+    }
+
+    private void UpdateHorizViewportSize(object sender, EventArgs args)
+    {
+      hscroll.ViewportSize = _txtBoxHScroll.ViewportSize;
+    }
+
+    private void WatchMaximumScroll()
+    {
+      DependencyPropertyDescriptor dpdMax = DependencyPropertyDescriptor.FromProperty(RangeBase.MaximumProperty, typeof(ScrollBar));
+      if (dpdMax != null)
+      {
+        dpdMax.AddValueChanged(_txtBoxHScroll, UpdateHorizScrollMaximum);
+      }
+    }
+
+    private void UpdateHorizScrollMaximum(object sender, EventArgs args)
+    {
+      hscroll.Maximum = _txtBoxHScroll.Maximum;
     }
 
     void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -235,10 +259,6 @@ namespace PartialView
         var viewSize = (int)_viewPortSize;
         if (viewSize == 0)
         {
-        }
-        else
-        {
-
         }
         RefreshScrollMaximum(viewSize);
 
@@ -320,7 +340,7 @@ namespace PartialView
       for (int i = 0; i < words.Length; i++)
       {
         string word = words[i];
-        if ((word.EndsWith(LineFr) || word.EndsWith(LineEn)) && i < words.Length - 1)
+        if ((word.EndsWith(LINE_FR) || word.EndsWith(LINE_EN)) && i < words.Length - 1)
         {
           AddText(paragraph, textToAdd);
           string linkText = word + " " + words[i + 1];
