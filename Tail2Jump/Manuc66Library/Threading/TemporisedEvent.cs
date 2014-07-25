@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.Threading
 {
   public class TemporisedEvent<T> : IDisposable
   {

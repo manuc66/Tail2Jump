@@ -6,14 +6,18 @@ using System.Security;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.FileIO;
+using Be.Manuc66.Library.WPF;
 using log4net;
 using PartialView;
 using Tai2JumpInfra;
+using Tail2Jump.Config.Objects;
+using Tail2Jump.Enums;
+using Tail2Jump.GUI;
 using Tail2Jump.Interfaces;
+using Tail2Jump.Objects;
 
-namespace Tail2Jump.Classes.Controller
+namespace Tail2Jump.Controller
 {
   public class WatcherController : ViewModelBase, IWatcherController
   {

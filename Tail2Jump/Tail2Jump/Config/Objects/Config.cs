@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tail2Jump
+namespace Tail2Jump.Config.Objects
 {
   [Serializable]
   public class Config //: ISerializable

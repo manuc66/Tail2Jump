@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
   public interface ICommand<in T> : ICommand
   {

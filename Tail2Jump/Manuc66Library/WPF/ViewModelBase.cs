@@ -1,9 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
   // taken from http://www.e-pedro.com/2009/07/a-view-model-base-class-to-use-with-mvvm-in-wpf/
   public class ViewModelBase : INotifyPropertyChanged

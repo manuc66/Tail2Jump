@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
 using Microsoft.Practices.Prism.Events;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;
 
-namespace Tail2Jump
+namespace Tail2Jump.SearchBox
 {
   /// <summary>
   /// Logique d'interaction pour DebugConsoleGrid.xaml

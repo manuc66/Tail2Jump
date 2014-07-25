@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace Tail2Jump
+namespace Tail2Jump.Objects
 {
   /// <summary>
   /// Represents a fixed length ring buffer to store a specified maximal count of items within.

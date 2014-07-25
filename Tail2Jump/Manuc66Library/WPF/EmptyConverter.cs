@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
   public class EmptyConverter : IValueConverter
   {

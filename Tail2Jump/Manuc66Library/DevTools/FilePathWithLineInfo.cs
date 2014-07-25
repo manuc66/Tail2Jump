@@ -1,4 +1,4 @@
-﻿namespace Be.Manuc66.Library
+﻿namespace Be.Manuc66.Library.DevTools
 {
   public class FilePathWithLineInfo
   {

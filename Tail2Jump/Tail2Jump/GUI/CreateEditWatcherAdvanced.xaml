@@ -1,7 +1,8 @@
-﻿<Window x:Class="Tail2Jump.CreateEditWatcherAdvanced"
+﻿<Window x:Class="Tail2Jump.GUI.CreateEditWatcherAdvanced"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:Tail2Jump" 
+        xmlns:local="clr-namespace:Tail2Jump"
+        xmlns:gui="clr-namespace:Tail2Jump.GUI"
         Title="Add new Watcher" Height="400" Width="800">
   <Window.Resources>
     <ResourceDictionary>

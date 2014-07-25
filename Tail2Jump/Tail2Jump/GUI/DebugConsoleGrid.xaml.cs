@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Windows.Controls;
-using Be.Manuc66.Library;
+using Be.Manuc66.Library.WPF;
 using Microsoft.Practices.ServiceLocation;
 using Tail2Jump.Interfaces;
+using Tail2Jump.Objects;
 
-namespace Tail2Jump
+namespace Tail2Jump.GUI
 {
   /// <summary>
   /// Logique d'interaction pour DebugConsoleGrid.xaml

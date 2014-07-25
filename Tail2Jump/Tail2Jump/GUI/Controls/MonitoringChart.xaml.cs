@@ -1,12 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
-using System.Diagnostics;
-using System;
 using Microsoft.Practices.ServiceLocation;
+using Tail2Jump.Enums;
 using Tail2Jump.Interfaces;
+using Tail2Jump.Objects;
 
-namespace Tail2Jump
+namespace Tail2Jump.GUI.Controls
 {
   /// <summary>
   /// Logique d'interaction pour MonitoringChart.xaml

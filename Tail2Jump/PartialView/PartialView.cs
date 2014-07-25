@@ -15,6 +15,7 @@ using System.Windows.Threading;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.FileIO;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.Threading;
 using log4net;
 using Microsoft.Practices.Prism.Events;
 using Tai2JumpInfra.Events;

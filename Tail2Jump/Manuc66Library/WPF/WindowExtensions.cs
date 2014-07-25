@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
   public static class WindowExtensions
   {

@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
+using Tail2Jump.Config.Objects;
+using Tail2Jump.Enums;
+using Tail2Jump.Objects;
 
-namespace Tail2Jump
+namespace Tail2Jump.GUI
 {
   /// <summary>
   /// Logique d'interaction pour CreateEditWatcher.xaml
@@ -206,9 +209,9 @@ namespace Tail2Jump
       ReturnCode = FormReturnCode.Start;
       // Sauvegarde de tout ce qui se trouve dans CFG.
       CFG.Load();
-      Config oldConf = CFG.Conf;
+      Config.Objects.Config oldConf = CFG.Conf;
 
-      CFG.Conf = new Config();
+      CFG.Conf = new Config.Objects.Config();
 
       string tempFullDirectoryPath = Monitoring.FullDirectoryPath;
       LocationList.Remove(Monitoring.FullDirectoryPath);

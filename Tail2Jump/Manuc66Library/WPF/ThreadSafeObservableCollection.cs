@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows.Threading;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
 
 

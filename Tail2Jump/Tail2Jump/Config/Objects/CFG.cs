@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Soap;
 using log4net;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 
-namespace Tail2Jump
+namespace Tail2Jump.Config.Objects
 {
   [Serializable]
   public class CFG

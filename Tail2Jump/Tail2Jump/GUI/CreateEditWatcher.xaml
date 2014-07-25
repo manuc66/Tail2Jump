@@ -1,4 +1,4 @@
-﻿<Window x:Class="Tail2Jump.CreateEditWatcher"
+﻿<Window x:Class="Tail2Jump.GUI.CreateEditWatcher"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Add new Watcher" Height="170" Width="550">

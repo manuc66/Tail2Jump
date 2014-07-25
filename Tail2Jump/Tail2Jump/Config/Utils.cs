@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Tail2Jump
+namespace Tail2Jump.Config
 {
   public class Utils
   {

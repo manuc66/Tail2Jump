@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Management;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using Be.Manuc66.Library;
-using System.Diagnostics;
-using System.Threading;
-using System;
-using System.Management;
 using System.Windows.Media;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
 
-namespace Tail2Jump
+namespace Tail2Jump.GUI
 {
   /// <summary>
   /// Logique d'interaction pour BurningGrid.xaml

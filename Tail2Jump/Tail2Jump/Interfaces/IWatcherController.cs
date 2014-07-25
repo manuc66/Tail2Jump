@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.FileIO;
+using Be.Manuc66.Library.WPF;
 using Tai2JumpInfra;
 
 namespace Tail2Jump.Interfaces

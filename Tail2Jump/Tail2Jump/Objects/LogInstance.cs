@@ -1,7 +1,8 @@
-﻿using Be.Manuc66.Library;
-using System;
+﻿using System;
+using Be.Manuc66.Library.WPF;
+using Tail2Jump.Enums;
 
-namespace Tail2Jump
+namespace Tail2Jump.Objects
 {
   public class LogInstance : ViewModelBase
   {
@@ -75,7 +76,7 @@ namespace Tail2Jump
 
     }
 
-    public LogInstance(string text_,LogType type_)
+    public LogInstance(string text_, LogType type_)
     {
       _text = text_;
       _type = type_;

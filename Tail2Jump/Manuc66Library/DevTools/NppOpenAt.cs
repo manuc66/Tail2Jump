@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Be.Manuc66.Library.WPF;
 
 namespace Be.Manuc66.Library.DevTools
 {

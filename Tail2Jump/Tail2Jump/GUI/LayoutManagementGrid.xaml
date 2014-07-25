@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Tail2Jump" 
-             xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="Tail2Jump.LayoutManagementGrid" 
+             xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="Tail2Jump.GUI.LayoutManagementGrid" 
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="800">
   <UserControl.Resources>

@@ -1,4 +1,4 @@
-﻿namespace Tail2Jump
+﻿namespace Tail2Jump.SearchBox
 {
   public interface IFilterSearchGrid
   {

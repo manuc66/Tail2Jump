@@ -4,14 +4,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
 using Microsoft.Practices.Prism.Events;
 using Tai2JumpInfra;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;
+using Tail2Jump.Objects;
 
-namespace Tail2Jump
+namespace Tail2Jump.MonitoringPanel
 {
   /// <summary>
   /// Logique d'interaction pour UserControl1.xaml

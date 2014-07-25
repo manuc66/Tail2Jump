@@ -1,4 +1,5 @@
 ﻿using System;
+using Be.Manuc66.Library.WPF;
 using EnvDTE;
 using log4net;
 

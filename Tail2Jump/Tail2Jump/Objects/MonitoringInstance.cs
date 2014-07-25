@@ -1,8 +1,8 @@
 ﻿using System.Windows.Controls;
-using Be.Manuc66.Library;
+using Be.Manuc66.Library.WPF;
 using Tai2JumpInfra;
 
-namespace Tail2Jump
+namespace Tail2Jump.Objects
 {
   public class MonitoringInstance : ViewModelBase, IMonitoringInstance
   {

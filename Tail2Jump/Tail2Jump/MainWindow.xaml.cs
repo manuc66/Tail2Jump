@@ -10,12 +10,14 @@ using System.Windows.Threading;
 using Be.Manuc66.Library;
 using Be.Manuc66.Library.DevTools;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
 using log4net;
 using log4net.Config;
 using Microsoft.Practices.Prism.Events;
 using PartialView;
 using Tai2JumpInfra;
 using Tai2JumpInfra.Events;
+using Tail2Jump.Enums;
 using Tail2Jump.Interfaces;
 
 namespace Tail2Jump

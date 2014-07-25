@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
+using Be.Manuc66.Library.WPF;
 
 namespace Be.Manuc66.Library.FileIO
 {

@@ -24,7 +24,7 @@ using System.Windows.Controls;
 
 ////using GalaSoft.Utilities.Attributes;
 
-namespace Be.Manuc66.Library
+namespace Be.Manuc66.Library.WPF
 {
   /// <summary>
   /// This <see cref="System.Windows.Interactivity.TriggerAction" /> can be

@@ -1,14 +1,14 @@
-﻿using System.ComponentModel;
-using System.Windows.Controls;
-using Be.Manuc66.Library;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading;
-using System;
 using System.Management;
+using System.Threading;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Be.Manuc66.Library.General;
+using Be.Manuc66.Library.WPF;
 
-namespace Tail2Jump
+namespace Tail2Jump.GUI
 {
   /// <summary>
   /// Logique d'interaction pour LayoutManagementGrid.xaml

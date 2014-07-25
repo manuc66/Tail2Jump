@@ -7,6 +7,8 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cal="http://www.codeplex.com/CompositeWPF"
         xmlns:devTools="clr-namespace:Be.Manuc66.Library.DevTools;assembly=Manuc66Library"
+        xmlns:wpf="clr-namespace:Be.Manuc66.Library.WPF;assembly=Manuc66Library"
+        xmlns:gui="clr-namespace:Tail2Jump.GUI"
         mc:Ignorable="d" 
         x:Class="Tail2Jump.MainWindow"
         Height="508" 
@@ -23,10 +25,10 @@
   </Window.Resources>
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="DragOver" >
-      <manuc66:EventToCommand  Command="{Binding DragOverCommand}" PassEventArgsToCommand="True" />
+      <wpf:EventToCommand  Command="{Binding DragOverCommand}" PassEventArgsToCommand="True" />
     </i:EventTrigger>
     <i:EventTrigger EventName="Drop" >
-      <manuc66:EventToCommand  Command="{Binding DropCommand}" PassEventArgsToCommand="True" />
+      <wpf:EventToCommand  Command="{Binding DropCommand}" PassEventArgsToCommand="True" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <Grid Background="#FF2D2D30">
@@ -129,7 +131,7 @@
             </Style.Triggers>
           </Style>
         </Grid.Style>
-        <local:DebugConsoleGrid></local:DebugConsoleGrid>
+        <gui:DebugConsoleGrid></gui:DebugConsoleGrid>
       </Grid>
       <Grid Grid.Row="4">
         <Grid.Style>
@@ -142,7 +144,7 @@
             </Style.Triggers>
           </Style>
         </Grid.Style>
-        <local:BurningGrid></local:BurningGrid>
+        <gui:BurningGrid></gui:BurningGrid>
       </Grid>
     </Grid>
   </Grid>
