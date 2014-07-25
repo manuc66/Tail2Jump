@@ -84,6 +84,7 @@
     <Compile Include="Debug\MiniDump.cs" />
     <Compile Include="DevTools\FileGotoLineInfo.cs" />
     <Compile Include="DevTools\FilePathWithLineInfo.cs" />
+    <Compile Include="DevTools\IOleMessageFilter.cs" />
     <Compile Include="DevTools\IVsAutomation.cs" />
     <Compile Include="DevTools\IVSTools.cs" />
     <Compile Include="DevTools\NppOpenAt.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="FileIO\TailEventData.cs" />
     <Compile Include="FileIO\TailLineCache.cs" />
     <Compile Include="General\Empty.cs" />
+    <Compile Include="General\IEmpty.cs" />
     <Compile Include="Log\Log4netTraceListener.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -100,6 +102,7 @@
     <Compile Include="DevTools\IOpenWithInfo.cs" />
     <Compile Include="DevTools\VSInfo.cs" />
     <Compile Include="WPF\EventToCommand.cs" />
+    <Compile Include="WPF\ICommand.cs" />
     <Compile Include="WPF\SimpleCommand.cs" />
     <Compile Include="WPF\ViewModelBase.cs" />
     <Compile Include="WPF\EmptyConverter.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="DevTools\VSAutomation.cs" />
     <Compile Include="DevTools\VSTools.cs" />
     <Compile Include="WPF\WindowExtensions.cs" />
+    <Compile Include="WPF\WpfControlThreadingExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

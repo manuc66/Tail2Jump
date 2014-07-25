@@ -81,7 +81,7 @@
     <Compile Include="HyperLinkBuilder.cs" />
     <Compile Include="IHyperLinkBuilder.cs" />
     <Compile Include="IPartialView.cs" />
-    <Compile Include="PartialView.xaml.cs">
+    <Compile Include="PartialView.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PartialViewModule.cs" />

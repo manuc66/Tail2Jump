@@ -123,12 +123,15 @@
     <Compile Include="Config\Objects\CriterianSearch.cs" />
     <Compile Include="Config\Objects\CFG.cs" />
     <Compile Include="Config\Objects\ListCriterianSearch.cs" />
+    <Compile Include="Config\Objects\SerialStringList.cs" />
     <Compile Include="Config\Utils.cs" />
+    <Compile Include="Enums\GraphicsType.cs" />
+    <Compile Include="Enums\LogType.cs" />
     <Compile Include="Interfaces\IMainWindow.cs" />
     <Compile Include="Interfaces\ILogController.cs" />
     <Compile Include="Interfaces\IWatcherController.cs" />
     <Compile Include="Controller\LogController.cs" />
-    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Enums\FormReturnCode.cs" />
     <Compile Include="GUI\BurningGrid.xaml.cs">
       <DependentUpon>BurningGrid.xaml</DependentUpon>
     </Compile>

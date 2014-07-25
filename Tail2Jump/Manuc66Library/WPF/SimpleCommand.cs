@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Windows.Input;
 using log4net;
 
 namespace Be.Manuc66.Library
 {
-  public interface ICommand<in T> : ICommand
-  {
-    bool CanExecute(T parameter_);
-    void Execute(T parameter_);
-
-    void RaiseCanExecuteChanged();
-  }
   /// <summary>
   /// Implements the ICommand and wraps up all the verbose stuff so that you can just pass 2 delegates 1 for the CanExecute and one for the Execute
   /// </summary>
