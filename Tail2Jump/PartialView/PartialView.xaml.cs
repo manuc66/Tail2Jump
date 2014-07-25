@@ -240,7 +240,7 @@ namespace PartialView
       ScrollMaximum = _fileAcessor != null ? Math.Max(0, _fileAcessor.LineIndexed - _viewPortSize) : 0;
     }
 
-    void m_autoScroll_eHandle(TemporisedEvent<IEmpty> sender, IEmpty data)
+    void m_autoScroll_eHandle(object sender, IEmpty data)
     {
       if (AutoScroll)
       {

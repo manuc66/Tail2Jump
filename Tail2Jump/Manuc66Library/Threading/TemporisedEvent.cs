@@ -7,12 +7,8 @@ namespace Be.Manuc66.Library
   {
     #region Event
     #region ReceivedItem
-    private readonly StrongTypedEvent<TemporisedEvent<T>, T> _handle;
-    public event StrongTypedEvent<TemporisedEvent<T>, T>.EventEventHandler eHandle
-    {
-      add { _handle.eEvent += value; }
-      remove { _handle.eEvent -= value; }
-    }
+    public delegate void EventHandler(object sender, T data_);
+    public event EventHandler eHandle = delegate { };
     #endregion // ReceivedItem
     #endregion // Event
 
@@ -31,8 +27,6 @@ namespace Be.Manuc66.Library
     {
       TimerValue = timerValue_;
       _refreshThreadReset = new ManualResetEvent(false);
-      _handle = new StrongTypedEvent<TemporisedEvent<T>, T>(true);
-
 
       ThreadPool.RegisterWaitForSingleObject(_refreshThreadReset, Wait, this, int.MaxValue, true);
     }
@@ -62,10 +56,9 @@ namespace Be.Manuc66.Library
         ((ManualResetEvent)state_).Dispose();
         lock (_lockObject)
         {
-          if (_handle.IsSubscriber)
-          {
-            _handle.RaiseEvent(this, _value);
-          }
+          T value = _value;
+          ThreadPool.QueueUserWorkItem(x => eHandle(this, value));
+
           _refreshThreadReset.Reset();
           ThreadPool.RegisterWaitForSingleObject(_refreshThreadReset, Wait, this, -1, true);
         }
