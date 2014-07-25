@@ -88,7 +88,7 @@ namespace PartialView
     private static readonly ILog Log = LogManager.GetLogger(typeof(PartialView));
     private readonly object _refreshViewLock = new object();
     private readonly SolidColorBrush _highLightColor = Brushes.Yellow;
-    private readonly TemporisedEvent<IEmpty> _autoScroll;
+    private readonly TemporisedEvent _autoScroll;
     const string LINE_FR = ":ligne";
     const string LINE_EN = ":line";
     #endregion
@@ -122,7 +122,7 @@ namespace PartialView
       Loaded += PartialView_Loaded;
 
 
-      _autoScroll = new TemporisedEvent<IEmpty>(250);
+      _autoScroll = new TemporisedEvent(250);
       _autoScroll.eHandle += m_autoScroll_eHandle;
       _hyperLinkBuilder = hyperLinkBuilder;
     }
@@ -241,7 +241,7 @@ namespace PartialView
       ScrollMaximum = _fileAcessor != null ? Math.Max(0, _fileAcessor.LineIndexed - _viewPortSize) : 0;
     }
 
-    void m_autoScroll_eHandle(object sender, IEmpty data)
+    void m_autoScroll_eHandle(object sender, EventArgs data)
     {
       if (AutoScroll)
       {
@@ -294,7 +294,7 @@ namespace PartialView
         currentStart = Math.Min(_fileAcessor.LineIndexed - (int)_viewPortSize, _curentStart);
         if (AutoScroll && Mouse.LeftButton != MouseButtonState.Pressed)
         {
-          _autoScroll.Set(Empty.Instance);
+          _autoScroll.Set();
         }
       }
       if (currentStart < 0)

@@ -91,7 +91,6 @@
     <Compile Include="FileIO\ITailLineCache.cs" />
     <Compile Include="FileIO\TailEventData.cs" />
     <Compile Include="FileIO\TailLineCache.cs" />
-    <Compile Include="General\Empty.cs" />
     <Compile Include="General\IEmpty.cs" />
     <Compile Include="Log\Log4netTraceListener.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

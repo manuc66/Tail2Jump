@@ -3,11 +3,11 @@ using System.Threading;
 
 namespace Be.Manuc66.Library.Threading
 {
-  public class TemporisedEvent<T> : IDisposable
+  public class TemporisedEvent : IDisposable
   {
     #region Event
     #region ReceivedItem
-    public delegate void EventHandler(object sender, T data_);
+    public delegate void EventHandler(object sender, EventArgs data);
     public event EventHandler eHandle = delegate { };
     #endregion // ReceivedItem
     #endregion // Event
@@ -17,7 +17,6 @@ namespace Be.Manuc66.Library.Threading
     #endregion // Properties
 
     #region Members variables
-    private T _value;
     private readonly object _lockObject = new object();
     private ManualResetEvent _refreshThreadReset;
     #endregion // Members variables
@@ -33,11 +32,10 @@ namespace Be.Manuc66.Library.Threading
     #endregion // Constructor
 
     #region Methods
-    public void Set(T value_)
+    public void Set()
     {
       lock (_lockObject)
       {
-        _value = value_;
         _refreshThreadReset.Set();
       }
     }
@@ -56,8 +54,7 @@ namespace Be.Manuc66.Library.Threading
         ((ManualResetEvent)state_).Dispose();
         lock (_lockObject)
         {
-          T value = _value;
-          ThreadPool.QueueUserWorkItem(x => eHandle(this, value));
+          ThreadPool.QueueUserWorkItem(x => eHandle(this, EventArgs.Empty));
 
           _refreshThreadReset.Reset();
           ThreadPool.RegisterWaitForSingleObject(_refreshThreadReset, Wait, this, -1, true);
