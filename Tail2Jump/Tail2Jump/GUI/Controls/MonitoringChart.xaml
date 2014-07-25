@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="Tail2Jump.MonitoringChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             xmlns:chartingprimitives="clr-namespace:System.Windows.Controls.DataVisualization.Charting.Primitives;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             mc:Ignorable="d" d:DesignHeight="75" d:DesignWidth="169">
+
+  <Grid>
+    <Charting:Chart  Name="MemoryChartComponent" VerticalAlignment="Top" BorderBrush="Transparent" Foreground="Black">
+      <Charting:AreaSeries VerticalAlignment="Stretch" 
+                                HorizontalAlignment="Stretch" 
+                                ItemsSource="{Binding Path=MemoryStats}" 
+                                IndependentValuePath="Timestamp" 
+                                DependentValuePath="ByteCount">
+        <Charting:AreaSeries.DataPointStyle>
+          <Style TargetType="Charting:AreaDataPoint">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="Background">
+              <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                  <GradientStop Color="#FFD81212" Offset="0"/>
+                  <GradientStop Color="#FF79D040" Offset="0.768"/>
+                  <GradientStop Color="#FFD0B728" Offset="0.49"/>
+                </LinearGradientBrush>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </Charting:AreaSeries.DataPointStyle>
+        <Charting:AreaSeries.TransitionDuration>500</Charting:AreaSeries.TransitionDuration>
+        <Charting:AreaSeries.Style>
+          <Style TargetType="Charting:AreaSeries">
+            <Setter Property="Template">
+              <Setter.Value>
+                <ControlTemplate TargetType="Charting:AreaSeries">
+                  <Canvas x:Name="PlotArea" Background="Black" Opacity="0.7">
+                    <Path Data="{TemplateBinding Geometry}" Fill="OrangeRed" Style="{TemplateBinding PathStyle}" Opacity="1"/>
+                  </Canvas>
+                </ControlTemplate>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </Charting:AreaSeries.Style>
+      </Charting:AreaSeries>
+      <Charting:Chart.Axes>
+        <Charting:LinearAxis Orientation="Y" ShowGridLines="True" Visibility="Visible" Width="50" Foreground="White" FontSize="10" Minimum="0" Interval="20" Maximum="100"/>
+        <Charting:DateTimeAxis Orientation="X" Visibility="Hidden" Height="0"></Charting:DateTimeAxis>
+      </Charting:Chart.Axes>
+      <Charting:Chart.Template>
+        <ControlTemplate TargetType="{x:Type Charting:Chart}">
+          <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="0">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <chartingprimitives:EdgePanel Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}" Grid.Row="0" Margin="0">
+                <Grid Panel.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                <Border Panel.ZIndex="10" BorderBrush="#FF919191" BorderThickness="0" />
+              </chartingprimitives:EdgePanel>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Charting:Chart.Template>
+    </Charting:Chart>
+  </Grid>
+</UserControl>
