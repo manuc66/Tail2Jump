@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Be.Manuc66.Library
 {
@@ -18,7 +19,7 @@ namespace Be.Manuc66.Library
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void OnPropertyChanged(string propertyName)
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
     {
       PropertyChangedEventArgs args;
       if (!_eventArgsCache.TryGetValue(propertyName, out args))
