@@ -4,14 +4,14 @@
         xmlns:local="clr-namespace:Tail2Jump"
         xmlns:gui="clr-namespace:Tail2Jump.GUI"
         Title="Add new Watcher" Height="400" Width="800">
-  <Window.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Styles/GeneralDictionary.xaml"></ResourceDictionary>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </Window.Resources>
-  <Grid Background="#FF252525">
-    <local:LayoutManagementGrid></local:LayoutManagementGrid>
-  </Grid>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/GeneralDictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Background="#FF252525">
+        <gui:LayoutManagementGrid></gui:LayoutManagementGrid>
+    </Grid>
 </Window>
