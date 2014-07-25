@@ -18,13 +18,13 @@ namespace Be.Manuc66.Library
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void OnPropertyChanged(string propertyName_)
+    protected void OnPropertyChanged(string propertyName)
     {
       PropertyChangedEventArgs args;
-      if (!_eventArgsCache.TryGetValue(propertyName_, out args))
+      if (!_eventArgsCache.TryGetValue(propertyName, out args))
       {
-        args = new PropertyChangedEventArgs(propertyName_);
-        _eventArgsCache.Add(propertyName_, args);
+        args = new PropertyChangedEventArgs(propertyName);
+        _eventArgsCache.Add(propertyName, args);
       }
 
       OnPropertyChanged(args);
