@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Be.Manuc66.Library.Debug;
-using Be.Manuc66.Library.Log;
 using log4net;
 using MessageBox = System.Windows.Forms.MessageBox;
 
@@ -16,10 +15,6 @@ namespace Tail2Jump
   /// </summary>
   public partial class App
   {
-    static App()
-    {
-      Trace.Listeners.Add(new Log4NetTraceListener());
-    }
     private static readonly ILog Log = LogManager.GetLogger(typeof(App));
     public App()
     {

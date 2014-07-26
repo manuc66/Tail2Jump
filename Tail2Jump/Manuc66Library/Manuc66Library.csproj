@@ -92,7 +92,6 @@
     <Compile Include="FileIO\TailEventData.cs" />
     <Compile Include="FileIO\TailLineCache.cs" />
     <Compile Include="General\IEmpty.cs" />
-    <Compile Include="Log\Log4netTraceListener.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
