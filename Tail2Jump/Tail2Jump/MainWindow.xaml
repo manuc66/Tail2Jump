@@ -18,134 +18,134 @@
         AllowDrop="True"
         x:Name="parent"
         WindowStyle="SingleBorderWindow">
-  <Window.Resources>
+    <Window.Resources>
 
 
 
-  </Window.Resources>
-  <i:Interaction.Triggers>
-    <i:EventTrigger EventName="DragOver" >
-      <wpf:EventToCommand  Command="{Binding DragOverCommand}" PassEventArgsToCommand="True" />
-    </i:EventTrigger>
-    <i:EventTrigger EventName="Drop" >
-      <wpf:EventToCommand  Command="{Binding DropCommand}" PassEventArgsToCommand="True" />
-    </i:EventTrigger>
-  </i:Interaction.Triggers>
-  <Grid Background="#FF2D2D30">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition  Width="auto"></ColumnDefinition>
-      <ColumnDefinition Width="*"></ColumnDefinition>
-    </Grid.ColumnDefinitions>
-    <Grid>
-      <ContentControl Grid.Row="0" Margin="2,2" cal:RegionManager.RegionName="MonitoringPanel"/>
-      <!--<local:MonitoringPanelW8></local:MonitoringPanelW8>-->
-    </Grid>
-    <Grid  Grid.Column="1">
-      <Grid.Resources>
-
-      </Grid.Resources>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="*" />
-        <RowDefinition Height="auto" />
-        <RowDefinition Height="auto" />
-        <RowDefinition Height="auto" />
-        <RowDefinition Height="auto" />
-      </Grid.RowDefinitions>
-      <ContentControl Grid.Row="0" Margin="2,2" cal:RegionManager.RegionName="PartialViewRegion"/>
-      <Grid HorizontalAlignment="Stretch" Grid.Row="1" Margin="5,0,5,5" >
-        <Grid.Resources />
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="DragOver" >
+            <wpf:EventToCommand  Command="{Binding DragOverCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Drop" >
+            <wpf:EventToCommand  Command="{Binding DropCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Background="#FF2D2D30">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="2*"/>
-          <ColumnDefinition Width="3*" MinWidth="125"/>
-          <ColumnDefinition Width="1*"/>
-          <ColumnDefinition Width="125"/>
-          <ColumnDefinition Width="100"/>
-          <ColumnDefinition Width="100"/>
+            <ColumnDefinition  Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <CheckBox IsEnabled="{Binding CanAutoScrollToEnd}" IsChecked="{Binding AutoScrollToEnd}"  Grid.Column="0" VerticalAlignment="Center" Content="AutoScroll" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060" />
-        <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding FlashWindow}" IsEnabled="{Binding CanBlink}" VerticalAlignment="Center" Content="Blink" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060"/>
-        <ComboBox Grid.Column="2" Style="{StaticResource SMComboBoxStyle}" x:Name="comboSelecOpenIn" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding VsList}" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Margin="10,0.48,11,2.52">
-          <ComboBox.Resources>
-            <DataTemplate DataType="{x:Type devTools:VSInfo}">
-              <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding SolutionPath}">
-                <TextBlock.Style>
-                  <Style TargetType="{x:Type TextBlock}">
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding InDebug}" Value="True">
-                        <Setter Property="Background" Value="#11492C"/>
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </TextBlock.Style>
-              </TextBlock>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type devTools:NppOpenAt}">
-              <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding DisplayName}"/>
-            </DataTemplate>
-          </ComboBox.Resources>
-        </ComboBox>
-        <Button Style="{StaticResource SMButtonStyle}" x:Name="btnClear" Grid.Column="5" HorizontalAlignment="Stretch" Content="Clear" Margin="6,0" Command="{Binding ClearCommand}" Height="22" >
+        <Grid>
+            <ContentControl Grid.Row="0" Margin="2,2" cal:RegionManager.RegionName="MonitoringPanel"/>
+            <!--<local:MonitoringPanelW8></local:MonitoringPanelW8>-->
+        </Grid>
+        <Grid  Grid.Column="1">
+            <Grid.Resources>
 
-        </Button>
-        <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStart" Grid.Column="6" HorizontalAlignment="Stretch" Content="Start" Margin="6,0,0,0" Command="{Binding StartCommand}" Height="22" >
-          <Button.Background>
-            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-              <GradientStop Color="#FF1C7848" Offset="0"/>
-              <GradientStop Color="#FF1A1A1A" Offset="0.836"/>
-            </LinearGradientBrush>
-          </Button.Background>
-        </Button>
-        <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStop" Grid.Column="7" HorizontalAlignment="Stretch" Content="Stop" Margin="6,0" Command="{Binding StopCommand}" Height="22" >
-          <Button.Background>
-            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-              <GradientStop Color="#FF9B2222" Offset="0"/>
-              <GradientStop Color="#FF1B1B1B" Offset="0.853"/>
-            </LinearGradientBrush>
-          </Button.Background>
-        </Button>
-      </Grid>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <ContentControl Grid.Row="0" Margin="2,2" cal:RegionManager.RegionName="PartialViewRegion"/>
+            <Grid HorizontalAlignment="Stretch" Grid.Row="1" Margin="5,0,5,5" >
+                <Grid.Resources />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*" MinWidth="125"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="125"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox IsEnabled="{Binding CanAutoScrollToEnd}" IsChecked="{Binding AutoScrollToEnd}"  Grid.Column="0" VerticalAlignment="Center" Content="AutoScroll" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060" />
+                <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding FlashWindow}" IsEnabled="{Binding CanBlink}" VerticalAlignment="Center" Content="Blink" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060"/>
+                <ComboBox Grid.Column="2" Style="{StaticResource SMComboBoxStyle}" x:Name="comboSelecOpenIn" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding VsList}" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Margin="10,0.48,11,2.52">
+                    <ComboBox.Resources>
+                        <DataTemplate DataType="{x:Type devTools:VSInfo}">
+                            <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding SolutionPath}">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding InDebug}" Value="True">
+                                                <Setter Property="Background" Value="#11492C"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type devTools:NppOpenAt}">
+                            <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding DisplayName}"/>
+                        </DataTemplate>
+                    </ComboBox.Resources>
+                </ComboBox>
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnClear" Grid.Column="5" HorizontalAlignment="Stretch" Content="Clear" Margin="6,0" Command="{Binding ClearCommand}" Height="22" >
+
+                </Button>
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStart" Grid.Column="6" HorizontalAlignment="Stretch" Content="Start" Margin="6,0,0,0" Command="{Binding StartCommand}" Height="22" >
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                            <GradientStop Color="#FF1C7848" Offset="0"/>
+                            <GradientStop Color="#FF1A1A1A" Offset="0.836"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStop" Grid.Column="7" HorizontalAlignment="Stretch" Content="Stop" Margin="6,0" Command="{Binding StopCommand}" Height="22" >
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                            <GradientStop Color="#FF9B2222" Offset="0"/>
+                            <GradientStop Color="#FF1B1B1B" Offset="0.853"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+            </Grid>
 
 
-      <ContentControl Grid.Row="2" x:Name="SearchBox" cal:RegionManager.RegionName="SearchBoxRegion">
-        <ContentControl.Style>
-          <Style>
-            <Setter Property="Control.Visibility" Value="Collapsed"></Setter>
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding Path=DataContext.MenuSearchIsChecked, ElementName=parent}" Value="True">
-                <Setter Property="Control.Visibility" Value="Visible"></Setter>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </ContentControl.Style>
-      </ContentControl>
-      <Grid Grid.Row="3">
-        <Grid.Style>
-          <Style TargetType="{x:Type Grid}">
-            <Setter Property="Visibility" Value="Collapsed"></Setter>
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding ElementName=m_monitoringPanel, Path=MenuDebugConsoleIsChecked}" Value="True">
-                <Setter Property="Visibility" Value="Visible"></Setter>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </Grid.Style>
-        <gui:DebugConsoleGrid></gui:DebugConsoleGrid>
-      </Grid>
-      <Grid Grid.Row="4">
-        <Grid.Style>
-          <Style TargetType="{x:Type Grid}">
-            <Setter Property="Visibility" Value="Collapsed"></Setter>
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding ElementName=m_monitoringPanel, Path=MenuStressCPUIsChecked}" Value="True">
-                <Setter Property="Visibility" Value="Visible"></Setter>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </Grid.Style>
-        <gui:BurningGrid></gui:BurningGrid>
-      </Grid>
+            <ContentControl Grid.Row="2" x:Name="SearchBox" cal:RegionManager.RegionName="SearchBoxRegion">
+                <ContentControl.Style>
+                    <Style>
+                        <Setter Property="Control.Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=DataContext.MenuSearchIsChecked, ElementName=parent}" Value="True">
+                                <Setter Property="Control.Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+            <Grid Grid.Row="3">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=m_monitoringPanel, Path=MenuDebugConsoleIsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <gui:DebugConsoleGrid></gui:DebugConsoleGrid>
+            </Grid>
+            <Grid Grid.Row="4">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=m_monitoringPanel, Path=MenuStressCPUIsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <gui:BurningGrid></gui:BurningGrid>
+            </Grid>
+        </Grid>
     </Grid>
-  </Grid>
 </Window>

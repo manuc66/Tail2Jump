@@ -18,31 +18,30 @@ namespace Be.Manuc66.Library.WPF
     /// </summary>
     public Action<T> ExecuteDelegate { get; set; }
 
-    public SimpleCommand(Predicate<T> canExecuteDelegate_, Action<T> executeDelegate_)
+    public SimpleCommand(Predicate<T> canExecuteDelegate, Action<T> executeDelegate)
     {
-      CanExecuteDelegate = canExecuteDelegate_;
-      ExecuteDelegate = executeDelegate_;
+      CanExecuteDelegate = canExecuteDelegate;
+      ExecuteDelegate = executeDelegate;
     }
-
-    #region ICommand Members
 
     private static readonly ILog Log = LogManager.GetLogger(typeof(SimpleCommand<T>));
 
     /// <summary>
     /// Checks if the command Execute method can run
     /// </summary>
-    /// <param name="parameter_">THe command parameter to be passed</param>
+    /// <param name="parameter">THe command parameter to be passed</param>
     /// <returns>Returns true if the command can execute. By default true is returned so that if the user of SimpleCommand does not specify a CanExecuteCommand delegate the command still executes.</returns>
-    public bool CanExecute(object parameter_)
+    public bool CanExecute(object parameter)
     {
       if (CanExecuteDelegate != null)
       {
-        if (parameter_ is T)
+        if (parameter is T)
         {
-          return (this as ICommand<T>).CanExecute((T)parameter_);
+          return (this as ICommand<T>).CanExecute((T)parameter);
         }
-        if (!ReferenceEquals(default(T) , parameter_)) {
-          Log.Error("Bad parameter type for method " + CanExecuteDelegate.Method.Name + ", expected " + typeof(T) + " got: " + (parameter_ == null ? "(null)" : parameter_.GetType().FullName));
+        if (!ReferenceEquals(default(T), parameter))
+        {
+          Log.Error("Bad parameter type for method " + CanExecuteDelegate.Method.Name + ", expected " + typeof(T) + " got: " + (parameter == null ? "(null)" : parameter.GetType().FullName));
         }
         return (this as ICommand<T>).CanExecute(default(T));
       }
@@ -50,9 +49,9 @@ namespace Be.Manuc66.Library.WPF
     }
 
 
-    bool ICommand<T>.CanExecute(T parameter_)
+    bool ICommand<T>.CanExecute(T parameter)
     {
-      return CanExecuteDelegate(parameter_);
+      return CanExecuteDelegate(parameter);
     }
 
     public event EventHandler CanExecuteChanged;
@@ -60,29 +59,29 @@ namespace Be.Manuc66.Library.WPF
     /// <summary>
     /// Executes the actual command
     /// </summary>
-    /// <param name="parameter_">THe command parameter to be passed</param>
-    public void Execute(object parameter_)
+    /// <param name="parameter">THe command parameter to be passed</param>
+    public void Execute(object parameter)
     {
       if (ExecuteDelegate != null)
       {
-        if (parameter_ is T)
+        if (parameter is T)
         {
-          (this as ICommand<T>).Execute((T)parameter_);
+          (this as ICommand<T>).Execute((T)parameter);
         }
         else
         {
-          if (!ReferenceEquals(default(T), parameter_))
+          if (!ReferenceEquals(default(T), parameter))
           {
-            Log.Error("Bad parameter type for method " + ExecuteDelegate.Method.Name + ", expected " + typeof(T) + " got: " + (parameter_ == null ? "(null)" : parameter_.GetType().FullName));
+            Log.Error("Bad parameter type for method " + ExecuteDelegate.Method.Name + ", expected " + typeof(T) + " got: " + (parameter == null ? "(null)" : parameter.GetType().FullName));
           }
           (this as ICommand<T>).Execute(default(T));
         }
       }
     }
 
-    void ICommand<T>.Execute(T parameter_)
+    void ICommand<T>.Execute(T parameter)
     {
-      ExecuteDelegate(parameter_);
+      ExecuteDelegate(parameter);
     }
 
     public void RaiseCanExecuteChanged()
@@ -92,8 +91,5 @@ namespace Be.Manuc66.Library.WPF
         CanExecuteChanged(this, EventArgs.Empty);
       }
     }
-
-
-    #endregion
   }
 }

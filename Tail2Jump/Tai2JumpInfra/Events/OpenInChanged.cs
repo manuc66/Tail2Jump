@@ -1,9 +1,9 @@
 ﻿using Be.Manuc66.Library.DevTools;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace Tai2JumpInfra.Events
 {
-  public class OpenInChanged : CompositePresentationEvent<IOpenWithInfo>
+  public class OpenInChanged : PubSubEvent<IOpenWithInfo>
   {
   }
 }

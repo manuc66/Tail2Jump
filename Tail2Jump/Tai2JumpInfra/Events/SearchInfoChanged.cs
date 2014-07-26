@@ -1,8 +1,8 @@
-﻿using Microsoft.Practices.Prism.Events;
+﻿using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace Tai2JumpInfra.Events
 {
-  public class SearchInfoChanged : CompositePresentationEvent<string>
+  public class SearchInfoChanged : PubSubEvent<string>
   {
   }
 }

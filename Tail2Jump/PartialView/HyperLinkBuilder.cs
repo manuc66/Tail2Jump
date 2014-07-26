@@ -4,7 +4,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Be.Manuc66.Library.DevTools;
 using log4net;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Tai2JumpInfra.Events;
 
 namespace PartialView

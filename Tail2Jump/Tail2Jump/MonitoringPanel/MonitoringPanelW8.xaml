@@ -122,10 +122,10 @@
                                                             <Setter Property="Source" Value="{x:Null}"></Setter>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=DataContext.Status}" Value="Started">
-                                                                    <Setter Property="Source" Value="\Classes\GUI\Images/imgPlayBasic_16x16.png"></Setter>
+                                                                    <Setter Property="Source" Value="\GUI\Images\imgPlayBasic_16x16.png"></Setter>
                                                                 </DataTrigger>
                                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=DataContext.Status}" Value="Paused">
-                                                                    <Setter Property="Source" Value="\Classes\GUI\Images\imgPauseBasic_16x16.png"></Setter>
+                                                                    <Setter Property="Source" Value="\GUI\Images\imgPauseBasic_16x16.png"></Setter>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -329,16 +329,16 @@
                                     </Style.Triggers>
                                 </Style>
                             </Grid.Style>
-                            <Image  Height="20" Width="20" Source="\Classes\GUI\Images\Icons/search.png"></Image>
+                            <Image  Height="20" Width="20" Source="\GUI\Images\Icons\search.png"></Image>
                         </Grid>
                         <Grid Grid.Row="2" Width="25" HorizontalAlignment="Right" Height="25" Background="YellowGreen">
-                            <Image  Height="20" Width="20" Source="\Classes\GUI\Images\Icons\refresh.png"></Image>
+                            <Image  Height="20" Width="20" Source="\GUI\Images\Icons\refresh.png"></Image>
                         </Grid>
                         <Grid Grid.Row="3" Width="25" HorizontalAlignment="Right" Height="25" Background="YellowGreen">
-                            <Image  Height="20" Width="20" Source="\Classes\GUI\Images\Icons/edit.png"></Image>
+                            <Image  Height="20" Width="20" Source="\GUI\Images\Icons\edit.png"></Image>
                         </Grid>
                         <Grid Grid.Row="4" Width="25" HorizontalAlignment="Right" Height="25">
-                            <Image  Height="20" Width="20" Source="\Classes\GUI\Images/Icons/settings.png"></Image>
+                            <Image  Height="20" Width="20" Source="\GUI\Images\Icons\settings.png"></Image>
                         </Grid>
                     </Grid>
                     <Grid.Style>

@@ -30,11 +30,11 @@ namespace Be.Manuc66.Library.WPF
       OnPropertyChanged(args);
     }
 
-    protected void OnPropertyChanged(PropertyChangedEventArgs args_)
+    protected void OnPropertyChanged(PropertyChangedEventArgs args)
     {
       var handler = PropertyChanged;
       if (handler != null)
-        handler(this, args_);
+        handler(this, args);
     }
     #endregion
   }

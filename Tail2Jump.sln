@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2Jump", "Tail2Jump\Tail2Jump\Tail2Jump.csproj", "{5F9121B0-6BEE-46C2-8682-6F3F7FD3EC88}"
 EndProject
@@ -12,6 +12,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail2JumpInfra", "Tail2Jump\Tai2JumpInfra\Tail2JumpInfra.csproj", "{C4D72FCD-933E-42D1-B00A-2CEAA23FBDB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manuc66Library", "Tail2Jump\Manuc66Library\Manuc66Library.csproj", "{49B156DA-13F5-4F8E-8148-59E36A7F7136}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9192E651-38ED-49A3-BAD8-B4EB7D7D030A}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

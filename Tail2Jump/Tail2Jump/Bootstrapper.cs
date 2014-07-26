@@ -4,7 +4,6 @@ using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Be.Manuc66.Library.DevTools;
-using Be.Manuc66.Library;
 using PartialView;
 using Tail2Jump.Controller;
 using Tail2Jump.Interfaces;

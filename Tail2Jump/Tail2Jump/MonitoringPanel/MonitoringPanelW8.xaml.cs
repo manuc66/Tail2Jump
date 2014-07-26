@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Be.Manuc66.Library.General;
 using Be.Manuc66.Library.WPF;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Tai2JumpInfra;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;
@@ -34,9 +34,9 @@ namespace Tail2Jump.MonitoringPanel
     {
       ((MonitoringPanelW8)d).MenuSearchIsCheckedChanged(e);
     }
-    private void MenuSearchIsCheckedChanged( DependencyPropertyChangedEventArgs e_)
+    private void MenuSearchIsCheckedChanged(DependencyPropertyChangedEventArgs e)
     {
-     _eventAggregator.GetEvent<SearchActivationStatusChanged>().Publish((bool)e_.NewValue);
+      _eventAggregator.GetEvent<SearchActivationStatusChanged>().Publish((bool)e.NewValue);
     }
     #endregion // MenuSearchIsChecked
 
@@ -51,13 +51,13 @@ namespace Tail2Jump.MonitoringPanel
     #endregion // MenuDebugConsoleIsChecked
 
     #region MenuStressCPUIsChecked
-    public bool MenuStressCPUIsChecked
+    public bool MenuStressCpuIsChecked
     {
-      get { return (bool)GetValue(MenuStressCPUIsCheckedProperty); }
-      set { SetValue(MenuStressCPUIsCheckedProperty, value); }
+      get { return (bool)GetValue(MenuStressCpuIsCheckedProperty); }
+      set { SetValue(MenuStressCpuIsCheckedProperty, value); }
     }
-    public static readonly DependencyProperty MenuStressCPUIsCheckedProperty = DependencyProperty.Register(
-      "MenuStressCPUIsChecked", typeof(bool), typeof(MonitoringPanelW8), new PropertyMetadata(false));
+    public static readonly DependencyProperty MenuStressCpuIsCheckedProperty = DependencyProperty.Register(
+      "MenuStressCpuIsChecked", typeof(bool), typeof(MonitoringPanelW8), new PropertyMetadata(false));
     #endregion // MenuStressCPUIsChecked
 
     #region MonitoringList
@@ -78,29 +78,29 @@ namespace Tail2Jump.MonitoringPanel
     {
       get
       {
-        return m_CanStartNewWatcher;
+        return _canStartNewWatcher;
       }
       set
       {
-        if (m_CanStartNewWatcher != value)
+        if (_canStartNewWatcher != value)
         {
-          m_CanStartNewWatcher = value;
+          _canStartNewWatcher = value;
           OnPropertyChanged("CanStartNewWatcher");
           StartNewWatcherCommand.RaiseCanExecuteChanged();
         }
       }
     }
-    private bool m_CanStartNewWatcher = true;
+    private bool _canStartNewWatcher = true;
     #endregion // Commands
     #endregion ////////// Dependency properties
 
     private IWatcherController WatcherController { get; set; }
     private readonly IEventAggregator _eventAggregator;
-    public MonitoringPanelW8(IWatcherController watcherController_, IEventAggregator eventAggregator_)
+    public MonitoringPanelW8(IWatcherController watcherController, IEventAggregator eventAggregator)
     {
       InitializeComponent();
-      WatcherController = watcherController_;
-      _eventAggregator = eventAggregator_;
+      WatcherController = watcherController;
+      _eventAggregator = eventAggregator;
 
 
       var watcherActionAskEvent = _eventAggregator.GetEvent<WatcherActionAsk>();
@@ -119,9 +119,9 @@ namespace Tail2Jump.MonitoringPanel
     {
       ListWatcher = WatcherController.ListWatcher;
 
-      StartNewWatcherCommand = new SimpleCommand<IEmpty>(e_ => CanStartNewWatcher, e_ => CreateNewWatcher());
+      StartNewWatcherCommand = new SimpleCommand<IEmpty>(e => CanStartNewWatcher, e => CreateNewWatcher());
 
-      RemoveSelectedWatcherCommand = new SimpleCommand<IEmpty>(e_ => m_instanceLst.SelectedItems.Count > 0, e_ => RelomovdWatcher());
+      RemoveSelectedWatcherCommand = new SimpleCommand<IEmpty>(e => m_instanceLst.SelectedItems.Count > 0, e => RelomovdWatcher());
 
       return true;
     }
@@ -145,30 +145,30 @@ namespace Tail2Jump.MonitoringPanel
     }
 
     // Create the OnPropertyChanged method to raise the event
-    protected void OnPropertyChanged(string name_)
+    protected void OnPropertyChanged(string name)
     {
       var handler = PropertyChanged;
       if (handler == null) return;
-      handler(this, new PropertyChangedEventArgs(name_));
+      handler(this, new PropertyChangedEventArgs(name));
     }
     #endregion // Methods
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    private void m_instanceLst_SelectionChanged(object sender_, SelectionChangedEventArgs e_)
+    private void m_instanceLst_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       _eventAggregator.GetEvent<MonitoringSelectionChanged>().Publish(m_instanceLst.SelectedItems.Cast<IMonitoringInstance>());
       RemoveSelectedWatcherCommand.RaiseCanExecuteChanged();
     }
 
-    private void Image_MouseLeftButtonDown_1(object sender_, MouseButtonEventArgs e_)
+    private void Image_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
     {
       MonitoringPanelColumn.Width = MonitoringPanelColumn.ActualWidth > 0 ? new GridLength(0) : new GridLength(140);
     }
 
-    private void PerformAction(WatcherAction action_)
+    private void PerformAction(WatcherAction action)
     {
-      switch (action_)
+      switch (action)
       {
         case WatcherAction.Start:
           WatcherController.Start(GetSelectedMonitoringInstances());

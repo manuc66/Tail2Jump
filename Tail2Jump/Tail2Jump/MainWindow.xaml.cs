@@ -7,13 +7,12 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.DevTools;
 using Be.Manuc66.Library.General;
 using Be.Manuc66.Library.WPF;
 using log4net;
 using log4net.Config;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 using PartialView;
 using Tai2JumpInfra;
 using Tai2JumpInfra.Events;
@@ -285,7 +284,7 @@ namespace Tail2Jump
     public event PropertyChangedEventHandler PropertyChanged;
 
     #region Constructor
-    public MainWindow(IWatcherController watcherController, ILogController logController,  IPartialView partialView, IEventAggregator eventAggregator, VSTools vsTools)
+    public MainWindow(IWatcherController watcherController, ILogController logController, IPartialView partialView, IEventAggregator eventAggregator, VSTools vsTools)
     {
       InitializeComponent();
       WatcherController = watcherController;
@@ -328,7 +327,6 @@ namespace Tail2Jump
       Deactivated += MainWindowDeactivated;
       Title = BASE_TITLE;
       VsList = new ThreadSafeObservableCollection<IOpenWithInfo>();
-
       LogController.AddLog(LogType.Valid, " >> Congratulation Dude, T2J has loaded without any fatal Errors d-_-b ");
     }
 
@@ -371,7 +369,7 @@ namespace Tail2Jump
     private void HandleDrop(DragEventArgs e)
     {
       if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-      var paths = (string[]) e.Data.GetData(DataFormats.FileDrop);
+      var paths = (string[])e.Data.GetData(DataFormats.FileDrop);
 
       foreach (var path in paths.Where(path => path != null))
       {

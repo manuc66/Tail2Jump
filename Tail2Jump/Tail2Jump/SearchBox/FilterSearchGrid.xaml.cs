@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using Be.Manuc66.Library.General;
 using Be.Manuc66.Library.WPF;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Tai2JumpInfra.Events;
 using Tail2Jump.Interfaces;
 
@@ -12,7 +11,7 @@ namespace Tail2Jump.SearchBox
   /// <summary>
   /// Logique d'interaction pour DebugConsoleGrid.xaml
   /// </summary>
-  public partial class FilterSearchGrid : UserControl, INotifyPropertyChanged, IFilterSearchGrid
+  public partial class FilterSearchGrid : INotifyPropertyChanged, IFilterSearchGrid
   {
     #region Dependency properties
     #region TextSearch
@@ -78,7 +77,7 @@ namespace Tail2Jump.SearchBox
 
     private void TextSearchPropertyChangedCallback(DependencyPropertyChangedEventArgs e)
     {
-      EventAggregator.GetEvent<SearchInfoChanged>().Publish((string) e.NewValue);
+      EventAggregator.GetEvent<SearchInfoChanged>().Publish((string)e.NewValue);
     }
 
     // Create the OnPropertyChanged method to raise the event

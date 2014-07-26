@@ -12,12 +12,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Be.Manuc66.Library;
 using Be.Manuc66.Library.FileIO;
-using Be.Manuc66.Library.General;
 using Be.Manuc66.Library.Threading;
 using log4net;
-using Microsoft.Practices.Prism.Events;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Tai2JumpInfra.Events;
 
 namespace PartialView

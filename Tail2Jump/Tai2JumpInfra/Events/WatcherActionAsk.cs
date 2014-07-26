@@ -1,8 +1,8 @@
-﻿using Microsoft.Practices.Prism.Events;
+﻿using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace Tai2JumpInfra.Events
 {
-  public class WatcherActionAsk : CompositePresentationEvent<WatcherAction>
+  public class WatcherActionAsk : PubSubEvent<WatcherAction>
   {
   }
 }
