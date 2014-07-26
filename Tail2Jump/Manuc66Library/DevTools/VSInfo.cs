@@ -1,20 +1,20 @@
 ﻿using System;
-using Be.Manuc66.Library.WPF;
 using EnvDTE;
 using log4net;
+using Microsoft.Practices.Prism.Mvvm;
 
 namespace Be.Manuc66.Library.DevTools
 {
-  public class VSInfo : ViewModelBase, IOpenWithInfo
+  public class VsInfo : BindableBase, IOpenWithInfo
   {
     private string _solutionPath;
     private _DTE _vs;
     private bool _inDebug;
     private string _displayName;
     private const int TYPE_SORT_ORDER = 1;
-    private readonly ILog _log = LogManager.GetLogger(typeof(VSInfo));
+    private readonly ILog _log = LogManager.GetLogger(typeof(VsInfo));
 
-    public VSInfo(string solutionPath, _DTE vs, string displayName, bool inDebug)
+    public VsInfo(string solutionPath, _DTE vs, string displayName, bool inDebug)
     {
       _displayName = displayName;
       SolutionPath = solutionPath;
@@ -24,35 +24,22 @@ namespace Be.Manuc66.Library.DevTools
     public string SolutionPath
     {
       get { return _solutionPath; }
-      set
-      {
-        if (_solutionPath == value) return;
-        _solutionPath = value;
-        OnPropertyChanged("SolutionPath");
-      }
+      set { SetProperty(ref _solutionPath, value); }
     }
     public _DTE Vs
     {
       get { return _vs; }
-      set
-      {
-        if (_vs == value) return;
-        _vs = value; OnPropertyChanged("Vs");
-      }
+      set { SetProperty(ref _vs, value); }
     }
     public bool InDebug
     {
       get { return _inDebug; }
-      set
-      {
-        if (_inDebug == value) return;
-        _inDebug = value; OnPropertyChanged("InDebug");
-      }
+      set { SetProperty(ref _inDebug, value); }
     }
     public int TypeSortOrder { get { return TYPE_SORT_ORDER; } }
     public string DisplayName { get { return SolutionPath; } }
 
-    public void Set(VSInfo other)
+    public void Set(VsInfo other)
     {
       if (other == null)
       {
@@ -71,9 +58,9 @@ namespace Be.Manuc66.Library.DevTools
       if (other == null) return -1;
       int result = TypeSortOrder.CompareTo(other.TypeSortOrder);
       if (result != 0) return result;
-      if (other is VSInfo && _displayName != null)
+      if (other is VsInfo && _displayName != null)
       {
-        result = String.Compare(_displayName, ((VSInfo)other)._displayName, StringComparison.Ordinal);
+        result = String.Compare(_displayName, ((VsInfo)other)._displayName, StringComparison.Ordinal);
       }
       else
       {

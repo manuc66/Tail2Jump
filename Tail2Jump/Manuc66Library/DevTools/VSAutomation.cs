@@ -18,9 +18,9 @@ namespace Be.Manuc66.Library.DevTools
     public static extern IBindCtx CreateBindCtx(int reserved);
 
     [STAThread]
-    public List<VSInfo> GetAllVs()
+    public List<VsInfo> GetAllVs()
     {
-      var result = new List<VSInfo>();
+      var result = new List<VsInfo>();
       try
       {
         IEnumMoniker pMonkEnum;
@@ -61,7 +61,7 @@ namespace Be.Manuc66.Library.DevTools
                 }
                 //#endif
 
-                result.Add(new VSInfo(solName, idee, displayName, indebug));
+                result.Add(new VsInfo(solName, idee, displayName, indebug));
               }
             }
           }

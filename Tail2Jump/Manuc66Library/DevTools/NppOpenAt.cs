@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Be.Manuc66.Library.WPF;
 
 namespace Be.Manuc66.Library.DevTools
 {
-  public class NppOpenAt : ViewModelBase, IOpenWithInfo
+  public class NppOpenAt : IOpenWithInfo
   {
-    private const int s_TypeSortOrder = 2;
+    private const int TYPE_SORT_ORDER = 2;
     private static string s_nppLocation;
 
     public static bool IsNppAvailble()
@@ -42,7 +41,7 @@ namespace Be.Manuc66.Library.DevTools
 
     public int TypeSortOrder
     {
-      get { return s_TypeSortOrder; }
+      get { return TYPE_SORT_ORDER; }
     }
     public string DisplayName { get { return "Notepad++"; } }
 

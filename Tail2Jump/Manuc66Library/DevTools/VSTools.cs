@@ -21,7 +21,7 @@ namespace Be.Manuc66.Library.DevTools
         throw new ArgumentNullException("vsList");
       }
 
-      List<VSInfo> tmpVsList = _vsAutomation.GetAllVs();
+      List<VsInfo> tmpVsList = _vsAutomation.GetAllVs();
 
       RemoveMissingVs(vsList, tmpVsList);
 
@@ -42,9 +42,9 @@ namespace Be.Manuc66.Library.DevTools
       }
     }
 
-    private static void RemoveMissingVs(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    private static void RemoveMissingVs(IList<IOpenWithInfo> vsList, IEnumerable<VsInfo> tmpVsList)
     {
-      var toRemove = vsList.Where(openWithInfo => openWithInfo is VSInfo && !tmpVsList.Contains(openWithInfo)).ToList();
+      var toRemove = vsList.Where(openWithInfo => openWithInfo is VsInfo && !tmpVsList.Contains(openWithInfo)).ToList();
       toRemove.ForEach(x => vsList.Remove(x));
     }
 
@@ -56,22 +56,22 @@ namespace Be.Manuc66.Library.DevTools
       }
     }
 
-    private static void UpdateExisting(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    private static void UpdateExisting(IList<IOpenWithInfo> vsList, IEnumerable<VsInfo> tmpVsList)
     {
-      foreach (VSInfo vsInfo in tmpVsList)
+      foreach (VsInfo vsInfo in tmpVsList)
       {
         var found = TryGet(vsList, vsInfo);
 
         if (found != null)
         {
-          ((VSInfo) found).Set(vsInfo);
+          ((VsInfo)found).Set(vsInfo);
         }
       }
     }
 
-    private static void AddNewVs(IList<IOpenWithInfo> vsList, IEnumerable<VSInfo> tmpVsList)
+    private static void AddNewVs(IList<IOpenWithInfo> vsList, IEnumerable<VsInfo> tmpVsList)
     {
-      foreach (VSInfo vsInfo in tmpVsList)
+      foreach (VsInfo vsInfo in tmpVsList)
       {
         var found = TryGet(vsList, vsInfo);
 
@@ -82,7 +82,7 @@ namespace Be.Manuc66.Library.DevTools
       }
     }
 
-    private static IOpenWithInfo TryGet(IList<IOpenWithInfo> vsList, VSInfo vsInfo)
+    private static IOpenWithInfo TryGet(IList<IOpenWithInfo> vsList, VsInfo vsInfo)
     {
       int index = vsList.IndexOf(vsInfo);
       IOpenWithInfo found = index < 0 ? null : vsList[index];
@@ -91,7 +91,7 @@ namespace Be.Manuc66.Library.DevTools
 
     private static bool IsInDebug(IOpenWithInfo vsInfo)
     {
-      return vsInfo is VSInfo && ((VSInfo)vsInfo).InDebug;
+      return vsInfo is VsInfo && ((VsInfo)vsInfo).InDebug;
     }
 
     public FilePathWithLineInfo GetFilePathWithLineNumber(string originalString)

@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
-using Be.Manuc66.Library.WPF;
 
 namespace Be.Manuc66.Library.FileIO
 {
-  public class TailLineCache : ViewModelBase, ITailLineCache
+  public class TailLineCache : ITailLineCache
   {
-    private int _lineIndexed;
     private ReaderWriterLockSlim _locker;
     private List<string> _cache = new List<string>();
+    public int LineIndexed { get; private set; }
     public TailLineCache()
     {
       _locker = new ReaderWriterLockSlim();
@@ -105,18 +104,6 @@ namespace Be.Manuc66.Library.FileIO
         else
         {
           AddData(new TailEventData(string.Empty, line, 0, 0), filter);
-        }
-      }
-    }
-    public int LineIndexed
-    {
-      get { return _lineIndexed; }
-      private set
-      {
-        if (_lineIndexed != value)
-        {
-          _lineIndexed = value;
-          OnPropertyChanged("LineIndexed");
         }
       }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using Be.Manuc66.Library.WPF;
 using Tai2JumpInfra;
 
 namespace Tail2Jump.Objects
