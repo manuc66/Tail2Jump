@@ -12,6 +12,7 @@ using log4net;
 using Microsoft.Practices.Prism.Mvvm;
 using PartialView;
 using Tai2JumpInfra;
+using Tai2JumpInfra.MonitoringInstanceStates;
 using Tail2Jump.Config.Objects;
 using Tail2Jump.Enums;
 using Tail2Jump.GUI;
@@ -135,7 +136,7 @@ namespace Tail2Jump.Controller
             result.TailerId = id;
             result.SetDisplayedName();
             result.IsOnScreen = true;
-            result.Status = MonitoringInstanceStatus.Stopped;
+            result.State = new StoppedMonitoringInstance();
 
             ListWatcher.Add(result);
           }
@@ -247,7 +248,7 @@ namespace Tail2Jump.Controller
         result = tailer.Start();
         if (result)
         {
-          toStart.Status = MonitoringInstanceStatus.Started;
+          toStart.State = new StartedMonitoringInstance();
         }
         else
         {
@@ -292,7 +293,7 @@ namespace Tail2Jump.Controller
         result = tailer.Stop();
         if (result)
         {
-          toStop.Status = MonitoringInstanceStatus.Stopped;
+          toStop.State = new StoppedMonitoringInstance();
         }
       }
       return result;

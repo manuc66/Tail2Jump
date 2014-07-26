@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Controls;
+using Tai2JumpInfra.MonitoringInstanceStates;
 
 namespace Tai2JumpInfra
 {
@@ -7,7 +8,7 @@ namespace Tai2JumpInfra
   public interface IMonitoringInstance
   {
     bool IsOnScreen { get; set; }
-    MonitoringInstanceStatus Status { get; set; }
+    MonitoringInstanceState State { get; set; }
     bool IncludeSubdirectories { get; set; }
     bool Notified { get; set; }
     string TitleName { get; set; }

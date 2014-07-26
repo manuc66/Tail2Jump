@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using Microsoft.Practices.Prism.Mvvm;
 using Tai2JumpInfra;
+using Tai2JumpInfra.MonitoringInstanceStates;
 
 namespace Tail2Jump.Objects
 {
@@ -8,7 +9,7 @@ namespace Tail2Jump.Objects
   {
     #region Members
     private bool _isOnScreen;
-    private MonitoringInstanceStatus _status;
+    private MonitoringInstanceState _state;
     private bool _includeSubdirectories;
     private bool _notified;
     private string _titleName;
@@ -24,10 +25,10 @@ namespace Tail2Jump.Objects
       get { return _isOnScreen; }
       set { SetProperty(ref _isOnScreen, value); }
     }
-    public MonitoringInstanceStatus Status
+    public MonitoringInstanceState State
     {
-      get { return _status; }
-      set { SetProperty(ref _status, value); }
+      get { return _state; }
+      set { SetProperty(ref _state, value); }
     }
     public bool IncludeSubdirectories
     {

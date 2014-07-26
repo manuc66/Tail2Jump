@@ -81,7 +81,10 @@
     <Compile Include="IMonitoringInstance.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MonitoringInstanceStatus.cs" />
+    <Compile Include="MonitoringInstanceStates\MonitoringInstanceState.cs" />
+    <Compile Include="MonitoringInstanceStates\PausedMonitoringInstance.cs" />
+    <Compile Include="MonitoringInstanceStates\StartedMonitoringInstance.cs" />
+    <Compile Include="MonitoringInstanceStates\StoppedMonitoringInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

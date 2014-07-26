@@ -376,22 +376,8 @@ namespace Tail2Jump
 
     void m_monitoringPanel_eSelectionChanged(IEnumerable<IMonitoringInstance> e)
     {
-      CanStop = false;
-      CanStart = false;
-      foreach (IMonitoringInstance item in e)
-      {
-        switch (item.Status)
-        {
-          case MonitoringInstanceStatus.Started:
-            CanStop = true;
-            break;
-          case MonitoringInstanceStatus.None:
-          case MonitoringInstanceStatus.Paused:
-          case MonitoringInstanceStatus.Stopped:
-            CanStart = true;
-            break;
-        }
-      }
+      CanStop = e.Any(x => x.State.CanStop);
+      CanStart = e.Any(x => x.State.CanStart);
       StartCommand.RaiseCanExecuteChanged();
       StopCommand.RaiseCanExecuteChanged();
     }

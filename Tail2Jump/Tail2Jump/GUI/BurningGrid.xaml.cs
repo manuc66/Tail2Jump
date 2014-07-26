@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Management;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Be.Manuc66.Library.General;
 using Be.Manuc66.Library.WPF;
@@ -14,54 +14,54 @@ namespace Tail2Jump.GUI
   /// <summary>
   /// Logique d'interaction pour BurningGrid.xaml
   /// </summary>
-  public partial class BurningGrid : UserControl, INotifyPropertyChanged
+  public partial class BurningGrid : INotifyPropertyChanged
   {
 
     #region Members
-    private string m_CPUTemperature = string.Empty;
+    private string _cpuTemperature = string.Empty;
 
-    private bool m_Running;
-    private double m_AskedCPUWork;
-    private const double CurrentCPUWork = 100;
+    private bool _running;
+    private double _askedCpuWork;
+    private const double CURRENT_CPU_WORK = 100;
 
     #endregion // Members
 
     #region Properties
     public static int Tier { get { return RenderCapability.Tier >> 16; } }
 
-    public string CPUTemperature
+    public string CpuTemperature
     {
-      get { return m_CPUTemperature; }
+      get { return _cpuTemperature; }
       set
       {
-        if (m_CPUTemperature != value)
+        if (_cpuTemperature != value)
         {
-          m_CPUTemperature = value;
-          OnPropertyChanged("CPUTemperature");
+          _cpuTemperature = value;
+          OnPropertyChanged();
         }
       }
     }
-    public double AskedCPUWork
+    public double AskedCpuWork
     {
-      get { return m_AskedCPUWork; }
+      get { return _askedCpuWork; }
       set
       {
-        if (m_AskedCPUWork != value)
+        if (_askedCpuWork != value)
         {
-          m_AskedCPUWork = value;
-          OnPropertyChanged("AskedCPUWork");
+          _askedCpuWork = value;
+          OnPropertyChanged();
         }
       }
     }
     public bool Running
     {
-      get { return m_Running; }
+      get { return _running; }
       set
       {
-        if (m_Running != value)
+        if (_running != value)
         {
-          m_Running = value;
-          OnPropertyChanged("Running");
+          _running = value;
+          OnPropertyChanged();
         }
       }
     }
@@ -74,19 +74,19 @@ namespace Tail2Jump.GUI
     {
       get
       {
-        return m_CanStartToBurn;
+        return _canStartToBurn;
       }
       set
       {
-        if (m_CanStartToBurn != value)
+        if (_canStartToBurn != value)
         {
-          m_CanStartToBurn = value;
-          OnPropertyChanged("CanStartToBurn");
+          _canStartToBurn = value;
+          OnPropertyChanged();
           StartToBurnCommand.RaiseCanExecuteChanged();
         }
       }
     }
-    private bool m_CanStartToBurn = true;
+    private bool _canStartToBurn = true;
     #endregion // Commands
     #endregion // Dependency properties
 
@@ -98,7 +98,7 @@ namespace Tail2Jump.GUI
 
       DataContext = this;
       InitDebugConsoleGrid();
-      string support = string.Empty;
+      string support;
       if (Tier == 0)
       {
         support = "None";
@@ -139,17 +139,13 @@ namespace Tail2Jump.GUI
     #region Methods
     public bool InitDebugConsoleGrid()
     {
-      const bool result = false;
-
       StartToBurnCommand = new SimpleCommand<IEmpty>(e => CanStartToBurn, e => GoToBurn());
-
-      new PerformanceCounter("Memory", "Available MBytes");
-      return result;
+      return false;
     }
 
 
     // Create the OnPropertyChanged method to raise the event
-    protected void OnPropertyChanged(string name)
+    protected void OnPropertyChanged([CallerMemberName]string name = "")
     {
       PropertyChangedEventHandler handler = PropertyChanged;
       if (handler != null)
@@ -172,7 +168,7 @@ namespace Tail2Jump.GUI
 
         for (int i = 0; i < cpuLoadThread.Length; i++)
         {
-          cpuLoadThread[i] = new Thread(cpuLoadProc)
+          cpuLoadThread[i] = new Thread(CpuLoadProc)
           {
             IsBackground = true,
             Name = "CPU Load Thread",
@@ -183,16 +179,16 @@ namespace Tail2Jump.GUI
         }
       }
     }
-    void cpuLoadProc()
+    void CpuLoadProc()
     {
       var stopWatch = new Stopwatch();
       stopWatch.Start();
 
       while (Running)
       {
-        if (stopWatch.ElapsedMilliseconds > AskedCPUWork)
+        if (stopWatch.ElapsedMilliseconds > AskedCpuWork)
         {
-          Thread.Sleep(100 - (int)AskedCPUWork);
+          Thread.Sleep(100 - (int)AskedCpuWork);
           stopWatch.Reset();
           stopWatch.Start();
         }
@@ -212,7 +208,7 @@ namespace Tail2Jump.GUI
         while (enumerator.MoveNext())
         {
           ManagementBaseObject tempObject = enumerator.Current;
-          CPUTemperature = tempObject["CurrentTemperature"].ToString();
+          CpuTemperature = tempObject["CurrentTemperature"].ToString();
         }
 
         Thread.Sleep(1000);
@@ -223,13 +219,13 @@ namespace Tail2Jump.GUI
 
     public void StartThreadDeConsommation()
     {
-      var newThread = new Thread(BurnCpuThread) {Priority = ThreadPriority.Highest};
+      var newThread = new Thread(BurnCpuThread) { Priority = ThreadPriority.Highest };
       newThread.Start();
     }
 
     public void StartThreadCoreTemp()
     {
-      ThreadPool.QueueUserWorkItem(x_ => RetrieveCoreTemp());
+      ThreadPool.QueueUserWorkItem(x => RetrieveCoreTemp());
     }
 
     public void BurnCpuThread()
@@ -237,7 +233,7 @@ namespace Tail2Jump.GUI
       int temp = 0;
       while (Running)
       {
-        if (AskedCPUWork > CurrentCPUWork)
+        if (AskedCpuWork > CURRENT_CPU_WORK)
         {
           temp = temp + 2;
           temp = temp - 2;
