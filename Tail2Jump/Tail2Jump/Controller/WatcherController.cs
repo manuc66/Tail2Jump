@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Be.Manuc66.Library.FileIO;
 using Be.Manuc66.Library.WPF;
 using log4net;
+using Microsoft.Practices.Prism.Mvvm;
 using PartialView;
 using Tai2JumpInfra;
 using Tail2Jump.Config.Objects;
@@ -19,7 +20,7 @@ using Tail2Jump.Objects;
 
 namespace Tail2Jump.Controller
 {
-  public class WatcherController : ViewModelBase, IWatcherController
+  public class WatcherController : BindableBase, IWatcherController
   {
     private Dictionary<int, Tailer> _tailers;
     private int _tailerCounter;

@@ -1,9 +1,10 @@
 ﻿using System;
+using Microsoft.Practices.Prism.Mvvm;
 using Tail2Jump.Enums;
 
 namespace Tail2Jump.Objects
 {
-  public class LogInstance : ViewModelBase
+  public class LogInstance : BindableBase
   {
     #region Members
 

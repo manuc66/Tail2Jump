@@ -1,7 +1,6 @@
 ﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
         xmlns:local="clr-namespace:Tail2Jump" 
-        xmlns:manuc66="clr-namespace:Be.Manuc66.Library;assembly=Manuc66Library" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -16,7 +15,7 @@
         Icon="tail.ico" 
         Background="White" 
         AllowDrop="True"
-        x:Name="parent"
+        x:Name="Parent"
         WindowStyle="SingleBorderWindow">
     <Window.Resources>
 
@@ -66,7 +65,7 @@
                 </Grid.ColumnDefinitions>
                 <CheckBox IsEnabled="{Binding CanAutoScrollToEnd}" IsChecked="{Binding AutoScrollToEnd}"  Grid.Column="0" VerticalAlignment="Center" Content="AutoScroll" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060" />
                 <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding FlashWindow}" IsEnabled="{Binding CanBlink}" VerticalAlignment="Center" Content="Blink" HorizontalAlignment="Center" Foreground="#FFCECECE" Background="#FF706060"/>
-                <ComboBox Grid.Column="2" Style="{StaticResource SMComboBoxStyle}" x:Name="comboSelecOpenIn" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding VsList}" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Margin="10,0.48,11,2.52">
+                <ComboBox Grid.Column="2" Style="{StaticResource SMComboBoxStyle}" x:Name="ComboSelecOpenIn" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding VsList}" HorizontalAlignment="Stretch" Grid.ColumnSpan="3" Margin="10,0.48,11,2.52">
                     <ComboBox.Resources>
                         <DataTemplate DataType="{x:Type devTools:VsInfo}">
                             <TextBlock HorizontalAlignment="Right" TextTrimming="None"  Text="{Binding SolutionPath}">
@@ -86,10 +85,10 @@
                         </DataTemplate>
                     </ComboBox.Resources>
                 </ComboBox>
-                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnClear" Grid.Column="5" HorizontalAlignment="Stretch" Content="Clear" Margin="6,0" Command="{Binding ClearCommand}" Height="22" >
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="BtnClear" Grid.Column="5" HorizontalAlignment="Stretch" Content="Clear" Margin="6,0" Command="{Binding ClearCommand}" Height="22" >
 
                 </Button>
-                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStart" Grid.Column="6" HorizontalAlignment="Stretch" Content="Start" Margin="6,0,0,0" Command="{Binding StartCommand}" Height="22" >
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="BtnStart" Grid.Column="6" HorizontalAlignment="Stretch" Content="Start" Margin="6,0,0,0" Command="{Binding StartCommand}" Height="22" >
                     <Button.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FF1C7848" Offset="0"/>
@@ -97,7 +96,7 @@
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>
-                <Button Style="{StaticResource SMButtonStyle}" x:Name="btnStop" Grid.Column="7" HorizontalAlignment="Stretch" Content="Stop" Margin="6,0" Command="{Binding StopCommand}" Height="22" >
+                <Button Style="{StaticResource SMButtonStyle}" x:Name="BtnStop" Grid.Column="7" HorizontalAlignment="Stretch" Content="Stop" Margin="6,0" Command="{Binding StopCommand}" Height="22" >
                     <Button.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FF9B2222" Offset="0"/>
@@ -113,7 +112,7 @@
                     <Style>
                         <Setter Property="Control.Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=DataContext.MenuSearchIsChecked, ElementName=parent}" Value="True">
+                            <DataTrigger Binding="{Binding Path=DataContext.MenuSearchIsChecked, ElementName=Parent}" Value="True">
                                 <Setter Property="Control.Visibility" Value="Visible"></Setter>
                             </DataTrigger>
                         </Style.Triggers>

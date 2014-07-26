@@ -1,9 +1,10 @@
 ﻿using System.Windows.Controls;
+using Microsoft.Practices.Prism.Mvvm;
 using Tai2JumpInfra;
 
 namespace Tail2Jump.Objects
 {
-  public class MonitoringInstance : ViewModelBase, IMonitoringInstance
+  public class MonitoringInstance : BindableBase, IMonitoringInstance
   {
     #region Members
     private bool _isOnScreen;

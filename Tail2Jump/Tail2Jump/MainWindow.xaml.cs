@@ -27,8 +27,6 @@ namespace Tail2Jump
   /// </summary>
   public partial class MainWindow : INotifyPropertyChanged, IMainWindow
   {
-    #region Variables
-
     private bool _canStart;
     private bool _canStop;
     private bool _canBlink;
@@ -46,11 +44,9 @@ namespace Tail2Jump
     private static readonly ILog Log = LogManager.GetLogger(typeof(MainWindow));
     private bool _flashingStarted;
     private IOpenWithInfo _openIn;
-    ThreadSafeObservableCollection<IOpenWithInfo> _vsList;
+    private ThreadSafeObservableCollection<IOpenWithInfo> _vsList;
     private readonly VSTools _mVsTools;
-    #endregion
 
-    #region Properties
     public ThreadSafeObservableCollection<IOpenWithInfo> VsList
     {
       get { return _vsList; }
@@ -279,11 +275,11 @@ namespace Tail2Jump
     private ILogController LogController { get; set; }
     private readonly IPartialView _textView;
     private readonly IEventAggregator _eventAggregator;
-    #endregion
+
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    #region Constructor
+
     public MainWindow(IWatcherController watcherController, ILogController logController, IPartialView partialView, IEventAggregator eventAggregator, VSTools vsTools)
     {
       InitializeComponent();
@@ -400,8 +396,7 @@ namespace Tail2Jump
     }
 
 
-    #endregion
-    #region Event Handlers
+
     private void MainWindowDeactivated(object sender, EventArgs e)
     {
       this.StopFlashingWindow();
@@ -461,8 +456,7 @@ namespace Tail2Jump
       }
     }
 
-    #endregion
-    #region Methods
+
     // Create the OnPropertyChanged method to raise the event
     protected void OnPropertyChanged(string name)
     {
@@ -476,7 +470,7 @@ namespace Tail2Jump
       _mVsTools.RefreshVSList(VsList, ref _openIn);
       Dispatcher.Invoke(DispatcherPriority.DataBind, new Action(() =>
       {
-        comboSelecOpenIn.SelectedItem = _openIn;
+        ComboSelecOpenIn.SelectedItem = _openIn;
       }));
     }
 
@@ -507,11 +501,10 @@ namespace Tail2Jump
         CanClear = true;
       }
     }
-    #endregion
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      _eventAggregator.GetEvent<OpenInChanged>().Publish(comboSelecOpenIn.SelectedItem as IOpenWithInfo);
+      _eventAggregator.GetEvent<OpenInChanged>().Publish(ComboSelecOpenIn.SelectedItem as IOpenWithInfo);
     }
   }
 }

@@ -1,15 +1,16 @@
 ﻿using System;
 using Be.Manuc66.Library.WPF;
+using Microsoft.Practices.Prism.Mvvm;
 using Tail2Jump.Enums;
 using Tail2Jump.Interfaces;
 using Tail2Jump.Objects;
 
 namespace Tail2Jump.Controller
 {
-  public class LogController : ViewModelBase, ILogController
+  public class LogController : BindableBase, ILogController
   {
     #region Properties
-    public ThreadSafeObservableCollection<LogInstance> ListLogs 
+    public ThreadSafeObservableCollection<LogInstance> ListLogs
     {
       get { return _listLogs; }
       set
@@ -22,8 +23,8 @@ namespace Tail2Jump.Controller
       }
     }
     #endregion // Properties
-    
-    #region Members 
+
+    #region Members
     private ThreadSafeObservableCollection<LogInstance> _listLogs;
     #endregion // Members
 
@@ -34,7 +35,7 @@ namespace Tail2Jump.Controller
 
     public void AddLog(LogType type, string text, Exception exception = null)
     {
-      var tempLog = new LogInstance(text,type);
+      var tempLog = new LogInstance(text, type);
       if (exception != null && type == LogType.Exception)
       {
         tempLog.Exception = exception;
@@ -45,7 +46,7 @@ namespace Tail2Jump.Controller
         _listLogs.RemoveAt(100);
       }
 
-      _listLogs.Insert(0,tempLog);
+      _listLogs.Insert(0, tempLog);
     }
   }
 }

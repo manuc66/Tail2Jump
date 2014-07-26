@@ -115,7 +115,6 @@
     <Compile Include="WPF\EventToCommand.cs" />
     <Compile Include="WPF\ICommand.cs" />
     <Compile Include="WPF\SimpleCommand.cs" />
-    <Compile Include="WPF\EmptyConverter.cs" />
     <Compile Include="Threading\TemporisedEvent.cs" />
     <Compile Include="DevTools\MessageFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
