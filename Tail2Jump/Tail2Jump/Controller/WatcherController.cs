@@ -37,14 +37,7 @@ namespace Tail2Jump.Controller
     public ThreadSafeObservableCollection<IMonitoringInstance> ListWatcher
     {
       get { return _listWatcher; }
-      set
-      {
-        if (_listWatcher != value)
-        {
-          _listWatcher = value;
-          OnPropertyChanged("ListWatcher");
-        }
-      }
+      set { SetProperty(ref _listWatcher, value); }
     }
     public ITailLineCache FileAcessor
     {

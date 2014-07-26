@@ -12,62 +12,42 @@ namespace Tail2Jump.Objects
     private LogType _type;
     private Exception _exception;
     private DateTime _datetime;
+    private string _displayedDatetime;
+
     #endregion // Members
 
     #region Properties
     public string Text
     {
       get { return _text; }
-      set
-      {
-        if (_text != value)
-        {
-          _text = value;
-          OnPropertyChanged("Text");
-        }
-      }
+      set { SetProperty(ref _text, value); }
     }
     public LogType Type
     {
       get { return _type; }
-      set
-      {
-        if (_type != value)
-        {
-          _type = value;
-          OnPropertyChanged("Exception");
-        }
-      }
+      set { SetProperty(ref _type, value); }
     }
     public Exception Exception
     {
       get { return _exception; }
-      set
-      {
-        if (_exception != value)
-        {
-          _exception = value;
-          OnPropertyChanged("Exception");
-        }
-      }
+      set { SetProperty(ref _exception, value); }
     }
     public DateTime Datetime
     {
       get { return _datetime; }
       set
       {
-        if (_datetime != value)
-        {
-          _datetime = value;
-          OnPropertyChanged("Datetime");
-          OnPropertyChanged("DisplayedDatetime");
-        }
+        SetProperty(ref _datetime, value);
+        DisplayedDatetime = _datetime.ToLongTimeString();
       }
     }
+
     public string DisplayedDatetime
     {
-      get { return _datetime.ToLongTimeString(); }
+      get { return _displayedDatetime; }
+      set { SetProperty(ref _displayedDatetime, value); }
     }
+
     #endregion // properties
 
     #region Constructor

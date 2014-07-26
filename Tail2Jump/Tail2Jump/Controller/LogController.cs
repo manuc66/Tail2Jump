@@ -13,14 +13,7 @@ namespace Tail2Jump.Controller
     public ThreadSafeObservableCollection<LogInstance> ListLogs
     {
       get { return _listLogs; }
-      set
-      {
-        if (_listLogs != value)
-        {
-          _listLogs = value;
-          OnPropertyChanged("ListLogs");
-        }
-      }
+      set { SetProperty(ref _listLogs, value); }
     }
     #endregion // Properties
 

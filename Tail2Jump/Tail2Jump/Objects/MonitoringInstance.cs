@@ -22,110 +22,47 @@ namespace Tail2Jump.Objects
     public bool IsOnScreen
     {
       get { return _isOnScreen; }
-      set
-      {
-        if (_isOnScreen != value)
-        {
-          _isOnScreen = value;
-          OnPropertyChanged("IsOnScreen");
-        }
-      }
+      set { SetProperty(ref _isOnScreen, value); }
     }
     public MonitoringInstanceStatus Status
     {
       get { return _status; }
-      set
-      {
-        if (_status != value)
-        {
-          _status = value;
-          OnPropertyChanged("Status");
-        }
-      }
+      set { SetProperty(ref _status, value); }
     }
     public bool IncludeSubdirectories
     {
       get { return _includeSubdirectories; }
-      set
-      {
-        if (_includeSubdirectories != value)
-        {
-          _includeSubdirectories = value;
-          OnPropertyChanged("IncludeSubdirectories");
-        }
-      }
+      set { SetProperty(ref _includeSubdirectories, value); }
     }
     public bool Notified
     {
       get { return _notified; }
-      set
-      {
-        if (_notified != value)
-        {
-          _notified = value;
-          OnPropertyChanged("Notified");
-        }
-      }
+      set { SetProperty(ref _notified, value); }
     }
     public string TitleName
     {
       get { return _titleName; }
-      set
-      {
-        if (_titleName != value)
-        {
-          _titleName = value;
-          OnPropertyChanged("TitleName");
-        }
-      }
+      set { SetProperty(ref _titleName, value); }
     }
     public string FullDirectoryPath
     {
       get { return _fullDirectoryPath; }
-      set
-      {
-        if (_fullDirectoryPath != value)
-        {
-          _fullDirectoryPath = value;
-          OnPropertyChanged("FullDirectoryPath");
-        }
-      }
+      set { SetProperty(ref _fullDirectoryPath, value); }
     }
     public Image Picture
     {
       get { return _picture; }
-      set
-      {
-        if (_picture != value)
-        {
-          _picture = value;
-          OnPropertyChanged("Picture");
-        }
-      }
+      set { SetProperty(ref _picture, value); }
     }
     public int TailerId
     {
       get { return _tailerId; }
-      set
-      {
-        if (_tailerId != value)
-        {
-          _tailerId = value;
-          OnPropertyChanged("TailerId");
-        }
-      }
+      set { SetProperty(ref _tailerId, value); }
     }
     public string Filter
     {
       get { return _filter; }
-      set
-      {
-        if (_filter != value)
-        {
-          _filter = value;
-          OnPropertyChanged("Filter");
-        }
-      }
+      set { SetProperty(ref _filter, value); }
     }
     #endregion // properties
 
