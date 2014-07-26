@@ -11,12 +11,7 @@ namespace Be.Manuc66.Library.FileIO
 {
   public class Tailer
   {
-    #region Delegates
-
     public delegate void ValueChangedHandler<in T>(object sender, T oldValue, T newValue);
-
-    #endregion
-
     private readonly ILog _log = LogManager.GetLogger(typeof(Tailer));
     private readonly object _monitorPreviousSeekPosition = new object();
     private FileSystemWatcher _fileSystemWatcher;
@@ -64,7 +59,7 @@ namespace Be.Manuc66.Library.FileIO
 
         var len = GetFileActualLength(filePath);
 
-        SetPreviousPosition(filePath, len);
+        StorePreviousPosition(filePath, len);
 
       }
 
@@ -108,12 +103,8 @@ namespace Be.Manuc66.Library.FileIO
       return len;
     }
 
-    private void SetPreviousPosition(string filePath, long pos)
+    private void StorePreviousPosition(string filePath, long pos)
     {
-      if (pos == 0)
-      {
-
-      }
       lock (_monitorPreviousSeekPosition)
       {
         _previousSeekPositions[filePath] = pos;
@@ -209,7 +200,7 @@ namespace Be.Manuc66.Library.FileIO
       {
         if (_previousSeekPositions.ContainsKey(e.FullPath))
         {
-          SetPreviousPosition(e.FullPath, 0);
+          StorePreviousPosition(e.FullPath, 0);
         }
       }
     }
@@ -228,10 +219,10 @@ namespace Be.Manuc66.Library.FileIO
         {
           if (!_previousSeekPositions.ContainsKey(fsEvent.FullPath))
           {
-            SetPreviousPosition(fsEvent.FullPath, 0);
+            StorePreviousPosition(fsEvent.FullPath, 0);
           }
         }
-        byte[] bytesRead  = ReadAvaibleBytes(fsEvent.FullPath);
+        byte[] bytesRead = ReadAvaibleBytes(fsEvent.FullPath);
 
         if (bytesRead.Length <= 0) return;
 
@@ -249,7 +240,7 @@ namespace Be.Manuc66.Library.FileIO
           lock (_monitorPreviousSeekPosition)
           {
             fileSeekPos = GetPreviousPosition(fsEvent.FullPath);
-            SetPreviousPosition(fsEvent.FullPath, fileSeekPos + byteConsumed);
+            StorePreviousPosition(fsEvent.FullPath, fileSeekPos + byteConsumed);
           }
 
           toShow = stringRead.Substring(0, indexNewLine);
@@ -273,7 +264,7 @@ namespace Be.Manuc66.Library.FileIO
     private byte[] ReadAvaibleBytes(string fullPath)
     {
       //read from current seek position to end of file
-      using (FileStream fs = OpenFileShareMode(fullPath))
+      using (var fs = OpenFileShareMode(fullPath))
       {
         if (fs == null)
         {
@@ -291,7 +282,7 @@ namespace Be.Manuc66.Library.FileIO
           _log.Error("File seek did not do what I want...");
         }
 
-        SetPreviousPosition(fullPath, pos);
+        StorePreviousPosition(fullPath, pos);
 
         long size = fileLength - pos;
         if (size <= 0)
@@ -311,8 +302,8 @@ namespace Be.Manuc66.Library.FileIO
         Array.Copy(bytesRead, toReturn, numBytes);
 
         return toReturn;
-      }
 
+      }
     }
 
     private long GetActualFilePos(string fullPath, FileStream fs, out long fileLength)
@@ -336,7 +327,7 @@ namespace Be.Manuc66.Library.FileIO
 
         //seems like if the file has been reseted!
         _log.Error("File reset detected: " + fullPath);
-        SetPreviousPosition(fullPath, 0);
+        StorePreviousPosition(fullPath, 0);
         pos = 0;
       }
       return pos;
