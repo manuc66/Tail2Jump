@@ -56,10 +56,10 @@ namespace Tail2Jump.Objects
 
     }
 
-    public LogInstance(string text_, LogType type_)
+    public LogInstance(string text, LogType type)
     {
-      _text = text_;
-      _type = type_;
+      _text = text;
+      _type = type;
       _datetime = DateTime.Now;
     }
     #endregion // Constructor

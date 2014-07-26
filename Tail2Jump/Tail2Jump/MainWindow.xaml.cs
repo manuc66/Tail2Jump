@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -55,7 +56,7 @@ namespace Tail2Jump
         if (_vsList != value)
         {
           _vsList = value;
-          OnPropertyChanged("VSList");
+          OnPropertyChanged();
         }
       }
     }
@@ -67,7 +68,7 @@ namespace Tail2Jump
         if (_filterList != value)
         {
           _filterList = value;
-          OnPropertyChanged("FilterList");
+          OnPropertyChanged();
         }
       }
     }
@@ -79,7 +80,7 @@ namespace Tail2Jump
         if (_locationList != value)
         {
           _locationList = value;
-          OnPropertyChanged("OpenInVS");
+          OnPropertyChanged();
         }
       }
     }
@@ -92,7 +93,7 @@ namespace Tail2Jump
         if (_menuSearchIsChecked != value)
         {
           _menuSearchIsChecked = value;
-          OnPropertyChanged("MenuSearchIsChecked");
+          OnPropertyChanged();
         }
       }
     }
@@ -110,7 +111,7 @@ namespace Tail2Jump
       set
       {
         if (_flashingStarted != value)
-        { _flashingStarted = value; OnPropertyChanged("FlashingStarted"); }
+        { _flashingStarted = value; OnPropertyChanged(); }
       }
     }
     public bool CanStart
@@ -122,7 +123,7 @@ namespace Tail2Jump
       set
       {
         if (_canStart != value)
-        { _canStart = value; OnPropertyChanged("CanStart"); StartCommand.RaiseCanExecuteChanged(); }
+        { _canStart = value; OnPropertyChanged(); StartCommand.RaiseCanExecuteChanged(); }
       }
     }
     public bool CanBlink
@@ -134,7 +135,7 @@ namespace Tail2Jump
       set
       {
         if (_canBlink != value)
-        { _canBlink = value; OnPropertyChanged("CanBlink"); }
+        { _canBlink = value; OnPropertyChanged(); }
       }
     }
     public bool CanStop
@@ -146,7 +147,7 @@ namespace Tail2Jump
       set
       {
         if (_canStop != value)
-        { _canStop = value; OnPropertyChanged("CanStop"); StopCommand.RaiseCanExecuteChanged(); }
+        { _canStop = value; OnPropertyChanged(); StopCommand.RaiseCanExecuteChanged(); }
       }
     }
     public bool CanClear
@@ -160,7 +161,7 @@ namespace Tail2Jump
         if (_canClear != value)
         {
           _canClear = value;
-          OnPropertyChanged("CanClear");
+          OnPropertyChanged();
           ClearCommand.RaiseCanExecuteChanged();
         }
       }
@@ -176,7 +177,7 @@ namespace Tail2Jump
         if (_canChangeRecursive != value)
         {
           _canChangeRecursive = value;
-          OnPropertyChanged("CanChangeRecursive");
+          OnPropertyChanged();
         }
       }
     }
@@ -191,7 +192,7 @@ namespace Tail2Jump
         if (_canAutoScrollToEnd != value)
         {
           _canAutoScrollToEnd = value;
-          OnPropertyChanged("CanAutoScrollToEnd");
+          OnPropertyChanged();
         }
       }
     }
@@ -206,7 +207,7 @@ namespace Tail2Jump
         if (_includeSubdirectories != value)
         {
           _includeSubdirectories = value;
-          OnPropertyChanged("IncludeSubdirectories");
+          OnPropertyChanged();
         }
       }
     }
@@ -221,7 +222,7 @@ namespace Tail2Jump
         if (_parentDirectory != value)
         {
           _parentDirectory = value;
-          OnPropertyChanged("ParentDirectory");
+          OnPropertyChanged();
         }
       }
     }
@@ -236,7 +237,7 @@ namespace Tail2Jump
         if (_filter != value)
         {
           _filter = value;
-          OnPropertyChanged("Filter");
+          OnPropertyChanged();
         }
       }
     }
@@ -251,7 +252,7 @@ namespace Tail2Jump
         if (_flashWindow != value)
         {
           _flashWindow = value;
-          OnPropertyChanged("FlashWindow");
+          OnPropertyChanged();
         }
       }
     }
@@ -266,7 +267,7 @@ namespace Tail2Jump
         if (_textView.AutoScroll != value)
         {
           _textView.AutoScroll = value;
-          OnPropertyChanged("AutoScrollToEnd");
+          OnPropertyChanged();
         }
       }
     }
@@ -458,7 +459,7 @@ namespace Tail2Jump
 
 
     // Create the OnPropertyChanged method to raise the event
-    protected void OnPropertyChanged(string name)
+    protected void OnPropertyChanged([CallerMemberName]string name = "")
     {
       var handler = PropertyChanged;
       if (handler == null) return;
