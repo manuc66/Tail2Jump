@@ -146,19 +146,16 @@ namespace PartialView
       if (scrollview == null)
       {
         Debugger.Break();
+        return;
       }
-      else
-      {
-        _txtBoxHScroll = scrollview.Template.FindName("PART_HorizontalScrollBar", scrollview) as ScrollBar;
+      _txtBoxHScroll = scrollview.Template.FindName("PART_HorizontalScrollBar", scrollview) as ScrollBar;
+      if (_txtBoxHScroll == null) return;
 
-        if (_txtBoxHScroll == null) return;
+      hscroll.Maximum = 0.0;
 
-        hscroll.Maximum = 0.0;
+      WatchMaximumScroll();
 
-        WatchMaximumScroll();
-
-        WatchViewportSize();
-      }
+      WatchViewportSize();
     }
 
     private void WatchViewportSize()
