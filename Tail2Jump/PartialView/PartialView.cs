@@ -78,8 +78,7 @@ namespace PartialView
     #region Variables
     private int _curentStart;
     readonly Paragraph _paragraph = new Paragraph();
-    private readonly double _charWidth;
-    private readonly double _charHeight;
+    private readonly CharSize _charSize;
     private ScrollBar _txtBoxHScroll;
     private double _viewPortSize;
     private double _scrollMaximum;
@@ -109,20 +108,26 @@ namespace PartialView
       doc.Blocks.Add(_paragraph);
 
 
-      var formattedText = new FormattedText("M" + Environment.NewLine,
-                  CultureInfo.GetCultureInfo("en-us"),
-                  FlowDirection.LeftToRight,
-                  new Typeface(TxtBoxTailContent.FontFamily, TxtBoxTailContent.FontStyle, TxtBoxTailContent.FontWeight, TxtBoxTailContent.FontStretch),
-                  TxtBoxTailContent.FontSize,
-                  Brushes.Black);
-      _charWidth = formattedText.Width;
-      _charHeight = formattedText.Height;
+      _charSize = GetCharSize();
       Loaded += PartialView_Loaded;
 
 
       _autoScroll = new TemporisedEvent(250);
       _autoScroll.eHandle += m_autoScroll_eHandle;
       _hyperLinkBuilder = hyperLinkBuilder;
+    }
+
+    private CharSize GetCharSize()
+    {
+      var formattedText = new FormattedText("M" + Environment.NewLine,
+        CultureInfo.GetCultureInfo("en-us"),
+        FlowDirection.LeftToRight,
+        new Typeface(TxtBoxTailContent.FontFamily, TxtBoxTailContent.FontStyle, TxtBoxTailContent.FontWeight,
+          TxtBoxTailContent.FontStretch),
+        TxtBoxTailContent.FontSize,
+        Brushes.Black);
+      var charSize = new CharSize(formattedText.Width, formattedText.Height);
+      return charSize;
     }
 
     protected void OnPropertyChanged(string name)
@@ -230,7 +235,7 @@ namespace PartialView
 
     private void ComputeViewPortSize()
     {
-      var sz = (TxtBoxTailContent.ActualHeight / _charHeight) - 0.5;
+      var sz = (TxtBoxTailContent.ActualHeight / _charSize.Height) - 0.5;
       _viewPortSize = (int)sz;
     }
 
@@ -371,7 +376,7 @@ namespace PartialView
     private void RefreshDocumentWidth(FlowDocument doc, IEnumerable<string> toDisplay)
     {
       int maxLineLenght = toDisplay.Aggregate(0, (currentMaxLenght, line) => Math.Max(currentMaxLenght, line.Length));
-      double sizeW = maxLineLenght * _charWidth + 10.0;
+      double sizeW = maxLineLenght * _charSize.Width + 10.0;
       if ((double.IsNaN(doc.PageWidth) || doc.PageWidth < sizeW) && !double.IsInfinity(sizeW) && !double.IsNaN(sizeW))
       {
         doc.PageWidth = sizeW;
