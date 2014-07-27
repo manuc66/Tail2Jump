@@ -91,6 +91,7 @@ namespace PartialView
       if (fileAcessor == null) throw new ArgumentNullException("fileAcessor");
       InitializeComponent();
       _fileAcessor = fileAcessor;
+      _hyperLinkBuilder = hyperLinkBuilder;
       DataContext = this;
 
       eventAggregator.GetEvent<SearchInfoChanged>().Subscribe(data => { TextSearch = data; RefreshView(); });
@@ -104,7 +105,6 @@ namespace PartialView
 
       _autoScroll = new TemporisedEvent(250);
       _autoScroll.eHandle += m_autoScroll_eHandle;
-      _hyperLinkBuilder = hyperLinkBuilder;
     }
 
     private static void AddParagraph(RichTextBox txtBoxTailContent)
@@ -299,6 +299,7 @@ namespace PartialView
 
     private void FillParagraph(IEnumerable<string> toDisplay, Paragraph paragraph)
     {
+      TextAppender textAppender = CreateTextAppender();
       foreach (var line in toDisplay)
       {
         if (line == null)
@@ -306,7 +307,7 @@ namespace PartialView
           Log.Debug("bug here!");
           continue;
         }
-        WriteLine(line, paragraph);
+        WriteLine(line, paragraph, textAppender);
       }
     }
 
@@ -317,20 +318,37 @@ namespace PartialView
       return paragraph;
     }
 
-    private void WriteLine(string line, Paragraph paragraph)
+
+    private void WriteLine(string line, Paragraph paragraph, TextAppender textAppender)
     {
+      var text = ParseText(line);
+
+      foreach (var simpleText in text)
+      {
+        simpleText.Visit(paragraph, textAppender);
+      }
+    }
+
+    private static List<SimpleText> ParseText(string line)
+    {
+      var text = new List<SimpleText>();
       var textToAdd = new StringBuilder();
-      string[] words = line.Split(new[] { " " }, StringSplitOptions.None);
-      for (int i = 0; i < words.Length; i++)
+      const string space = " ";
+      string[] words = line.Split(new[] { space }, StringSplitOptions.None);
+      int i = 0;
+      while (i < words.Length)
       {
         string word = words[i];
-        if ((word.EndsWith(LINE_FR) || word.EndsWith(LINE_EN)) && i < words.Length - 1)
+
+        string nextWord = i < words.Length - 1 ? words[i + 1] : string.Empty;
+        if ((word.EndsWith(LINE_FR) || word.EndsWith(LINE_EN)) && string.IsNullOrEmpty(nextWord))
         {
-          CreateTextAppender().AddText(paragraph, textToAdd.ToString());
-          string linkText = word + " " + words[i + 1];
-          var textLink = _hyperLinkBuilder.GetHyperLink(linkText);
-          paragraph.Inlines.Add(textLink);
-          ++i;
+          string linkText = word + space + nextWord;
+
+          text.Add(new SimpleText { Text = textToAdd.ToString() });
+          textToAdd.Length = 0;
+          text.Add(new HyperLinkText { Text = linkText });
+          i++;
         }
         else
         {
@@ -338,26 +356,29 @@ namespace PartialView
         }
         if (i < words.Length - 1)
         {
-          textToAdd.Append(" ");
+          textToAdd.Append(space);
         }
+        i++;
       }
 
       textToAdd.Append(Environment.NewLine);
-      CreateTextAppender().AddText(paragraph, textToAdd.ToString());
+
+      text.Add(new SimpleText { Text = textToAdd.ToString() });
+      textToAdd.Length = 0;
+      return text;
     }
+
+
 
     private TextAppender CreateTextAppender()
     {
       if (string.IsNullOrEmpty(TextSearch) || !TextSearchActivated)
       {
-        return new TextAppender();
+        return new TextAppender(_hyperLinkBuilder);
       }
-      else
-      {
-        var comparisonType = IgnoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-        var textMatcher = new TextMatcher(TextSearch, comparisonType);
-        return new FilteredTextAppender(textMatcher, _highLightColor);
-      }
+      var comparisonType = IgnoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+      var textMatcher = new TextMatcher(TextSearch, comparisonType);
+      return new FilteredTextAppender(textMatcher, _highLightColor, _hyperLinkBuilder);
     }
 
     private FlowDocument ResetDocument()
@@ -380,6 +401,26 @@ namespace PartialView
     private void TxtBoxTailContent_Initialized(object sender, EventArgs e)
     {
       ComputeViewPortSize();
+    }
+  }
+
+
+  class SimpleText
+  {
+    public string Text { get; set; }
+
+
+    public virtual void Visit(Paragraph paragraph, TextAppender textAppender)
+    {
+      textAppender.Accept(paragraph, this);
+    }
+  }
+  class HyperLinkText : SimpleText
+  {
+
+    public override void Visit(Paragraph paragraph, TextAppender textAppender)
+    {
+      textAppender.Accept(paragraph, this);
     }
   }
 }

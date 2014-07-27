@@ -9,7 +9,8 @@ namespace PartialView.TextAppenders
     private readonly Brush _highLightColor;
     private readonly TextMatcher _textMatcher;
 
-    public FilteredTextAppender(TextMatcher textMatcher, Brush highLightColor)
+    public FilteredTextAppender(TextMatcher textMatcher, Brush highLightColor, IHyperLinkBuilder hyperLinkBuilder)
+      : base(hyperLinkBuilder)
     {
       _highLightColor = highLightColor;
       _textMatcher = textMatcher;

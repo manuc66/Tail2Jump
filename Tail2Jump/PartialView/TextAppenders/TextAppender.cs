@@ -5,6 +5,13 @@ namespace PartialView.TextAppenders
 {
   internal class TextAppender
   {
+    private readonly IHyperLinkBuilder _hyperLinkBuilder;
+
+    public TextAppender(IHyperLinkBuilder hyperLinkBuilder)
+    {
+      _hyperLinkBuilder = hyperLinkBuilder;
+    }
+
     public virtual void AddText(Paragraph paragraph, string textToAdd)
     {
       if (string.IsNullOrEmpty(textToAdd)) return;
@@ -38,5 +45,15 @@ namespace PartialView.TextAppenders
       return new Run(part);
     }
 
+    public void Accept(Paragraph paragraph, HyperLinkText hyperLinkText)
+    {
+      var textLink = _hyperLinkBuilder.GetHyperLink(hyperLinkText.Text);
+      paragraph.Inlines.Add(textLink);
+    }
+
+    public void Accept(Paragraph paragraph, SimpleText simpleText)
+    {
+      AddText(paragraph, simpleText.Text);
+    }
   }
 }
