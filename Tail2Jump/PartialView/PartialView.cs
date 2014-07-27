@@ -173,25 +173,21 @@ namespace PartialView
 
     private void WatchViewportSize()
     {
-      DependencyPropertyDescriptor dpdView = DependencyPropertyDescriptor.FromProperty(ScrollBar.ViewportSizeProperty, typeof(ScrollBar));
-      if (dpdView != null)
-      {
-        dpdView.AddValueChanged(_txtBoxHScroll, UpdateHorizViewportSize);
-      }
+      var dpdView = DependencyPropertyDescriptor.FromProperty(ScrollBar.ViewportSizeProperty, typeof(ScrollBar));
+      if (dpdView == null) return;
+      dpdView.AddValueChanged(_txtBoxHScroll, UpdateHorizViewportSize);
+    }
+
+    private void WatchMaximumScroll()
+    {
+      var dpdMax = DependencyPropertyDescriptor.FromProperty(RangeBase.MaximumProperty, typeof(ScrollBar));
+      if (dpdMax == null) return;
+      dpdMax.AddValueChanged(_txtBoxHScroll, UpdateHorizScrollMaximum);
     }
 
     private void UpdateHorizViewportSize(object sender, EventArgs args)
     {
       hscroll.ViewportSize = _txtBoxHScroll.ViewportSize;
-    }
-
-    private void WatchMaximumScroll()
-    {
-      DependencyPropertyDescriptor dpdMax = DependencyPropertyDescriptor.FromProperty(RangeBase.MaximumProperty, typeof(ScrollBar));
-      if (dpdMax != null)
-      {
-        dpdMax.AddValueChanged(_txtBoxHScroll, UpdateHorizScrollMaximum);
-      }
     }
 
     private void UpdateHorizScrollMaximum(object sender, EventArgs args)
@@ -202,18 +198,14 @@ namespace PartialView
     void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
     {
       hscroll.ViewportSize = e.ViewportWidth;
-      if (_txtBoxHScroll != null)
-      {
-        hscroll.Value += e.HorizontalChange;
-      }
+      if (_txtBoxHScroll == null) return;
+      hscroll.Value += e.HorizontalChange;
     }
     private void hscroll_Scroll(object sender, ScrollEventArgs e)
     {
-      if (_txtBoxHScroll != null)
-      {
-        TxtBoxTailContent.ScrollToHorizontalOffset(e.NewValue);
-        _txtBoxHScroll.Value = e.NewValue;
-      }
+      if (_txtBoxHScroll == null) return;
+      TxtBoxTailContent.ScrollToHorizontalOffset(e.NewValue);
+      _txtBoxHScroll.Value = e.NewValue;
     }
     private void scroller_Scroll(object sender, ScrollEventArgs e)
     {
@@ -249,11 +241,10 @@ namespace PartialView
 
     void m_autoScroll_eHandle(object sender, EventArgs data)
     {
-      if (AutoScroll)
-      {
-        Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => RefreshView(true)));
-      }
+      if (!AutoScroll) return;
+      Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => RefreshView(true)));
     }
+
     public void RefreshView(bool scrollDown = false)
     {
       if (_fileAcessor == null)
