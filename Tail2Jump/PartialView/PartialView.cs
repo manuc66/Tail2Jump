@@ -242,10 +242,20 @@ namespace PartialView
     void m_autoScroll_eHandle(object sender, EventArgs data)
     {
       if (!AutoScroll) return;
-      Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => RefreshView(true)));
+      Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(RefreshViewAndScrollDown));
     }
 
-    public void RefreshView(bool scrollDown = false)
+    public void RefreshView()
+    {
+      RefreshView(ComputeCurrentStart());
+    }
+
+    public void RefreshViewAndScrollDown()
+    {
+      RefreshView(ComputeCurrentStartScrollDown());
+    }
+
+    private void RefreshView(int curentStart)
     {
       if (_fileAcessor == null)
         return;
@@ -257,7 +267,8 @@ namespace PartialView
         var viewSize = (int)_viewPortSize;
         RefreshScrollMaximum(viewSize);
 
-        RefreshCurrentStart(scrollDown);
+        _curentStart = curentStart;
+        scroller.Value = _curentStart;
         var toDisplay = _fileAcessor.GetLines(_curentStart, viewSize);
 
         FillTextView(toDisplay);
@@ -269,31 +280,22 @@ namespace PartialView
       scroller.Maximum = _fileAcessor.LineIndexed - viewSize;
     }
 
-    private void RefreshCurrentStart(bool scrollDown)
+    private int ComputeCurrentStart()
     {
-      int currentStart = ComputeCurrentStart(scrollDown);
-      _curentStart = currentStart;
-      scroller.Value = _curentStart;
+      int currentStart = Math.Min(_fileAcessor.LineIndexed - (int)_viewPortSize, _curentStart);
+      if (AutoScroll && Mouse.LeftButton != MouseButtonState.Pressed)
+      {
+        _autoScroll.Set();
+      }
+      return Math.Max(currentStart, 0);
     }
 
-    private int ComputeCurrentStart(bool scrollDown)
+    private int ComputeCurrentStartScrollDown()
     {
       int currentStart;
-      if (scrollDown && AutoScroll)
+      if (true)
       {
         currentStart = Math.Max(_fileAcessor.LineIndexed - (int)_viewPortSize, 0);
-      }
-      else
-      {
-        currentStart = Math.Min(_fileAcessor.LineIndexed - (int)_viewPortSize, _curentStart);
-        if (AutoScroll && Mouse.LeftButton != MouseButtonState.Pressed)
-        {
-          _autoScroll.Set();
-        }
-      }
-      if (currentStart < 0)
-      {
-        currentStart = 0;
       }
       return currentStart;
     }

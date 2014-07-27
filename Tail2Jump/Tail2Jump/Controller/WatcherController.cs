@@ -313,7 +313,7 @@ namespace Tail2Jump.Controller
         _fileAcessorFiltered.Clear();
       }
 
-      _partialView.RefreshView(true);
+      _partialView.RefreshViewAndScrollDown();
     }
 
     public void ApplyFilter(string filter)
@@ -324,7 +324,7 @@ namespace Tail2Jump.Controller
       _isFilterActivated = true;
 
 
-      _partialView.Dispatcher.BeginInvoke(new Action(() => _partialView.RefreshView(true)));
+      _partialView.Dispatcher.BeginInvoke(new Action(() => _partialView.RefreshViewAndScrollDown()));
     }
 
     public void ResetFilter()
@@ -332,7 +332,7 @@ namespace Tail2Jump.Controller
       _isFilterActivated = false;
       _filterValue = string.Empty;
 
-      _partialView.Dispatcher.BeginInvoke(new Action(() => _partialView.RefreshView(true)));
+      _partialView.Dispatcher.BeginInvoke(new Action(() => _partialView.RefreshViewAndScrollDown()));
     }
     private void m_Tailer_eMoreData(Tailer sender, TailEventData newData)
     {

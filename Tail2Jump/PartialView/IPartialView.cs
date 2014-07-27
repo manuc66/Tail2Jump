@@ -10,6 +10,7 @@ namespace PartialView
     bool TextSearchActivated { get; set; }
     bool IgnoreCase { get; set; }
     Dispatcher Dispatcher { get; }
-    void RefreshView(bool scrollDown = false);
+    void RefreshView();
+    void RefreshViewAndScrollDown();
   }
 }
