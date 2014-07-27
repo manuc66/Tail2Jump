@@ -16,6 +16,7 @@ using Be.Manuc66.Library.FileIO;
 using Be.Manuc66.Library.Threading;
 using log4net;
 using Microsoft.Practices.Prism.PubSubEvents;
+using PartialView.TextAppenders;
 using Tai2JumpInfra.Events;
 
 namespace PartialView
@@ -25,6 +26,8 @@ namespace PartialView
   /// </summary>
   public partial class PartialView : IPartialView
   {
+    private bool _textSearchActivated;
+
     public double ScrollMaximum
     {
       get
@@ -202,11 +205,17 @@ namespace PartialView
     private void RichTextBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
       if (e == null) return;
-      scroller.Value -= e.Delta / 120.0;
-      _curentStart = (int)scroller.Value;
+      SetCurrentStart(e.Delta / 120.0);
       e.Handled = true;
       RefreshView();
     }
+
+    private void SetCurrentStart(double value)
+    {
+      scroller.Value -= value;
+      _curentStart = (int)value;
+    }
+
     private void txtBox_SizeChanged(object sender, SizeChangedEventArgs e)
     {
       ComputeViewPortSize();
@@ -234,29 +243,28 @@ namespace PartialView
 
     public void RefreshView()
     {
-      RefreshView(ComputeCurrentStart());
+      RefreshView(ComputeCurrentStart(), (int)_viewPortSize);
     }
 
     public void RefreshViewAndScrollDown()
     {
-      RefreshView(ComputeCurrentStartScrollDown());
+      RefreshView(ComputeCurrentStartScrollDown(), (int)_viewPortSize);
     }
 
-    private void RefreshView(int curentStart)
+    private void RefreshView(int start, int lenght)
     {
       if (_fileAcessor == null)
         return;
 
       RefreshVerticalScrollBarMaximum();
 
-      var viewSize = (int)_viewPortSize;
-      RefreshScrollMaximum(viewSize);
+      RefreshScrollMaximum(lenght);
 
-      _curentStart = curentStart;
-      scroller.Value = _curentStart;
-      var toDisplay = _fileAcessor.GetLines(_curentStart, viewSize);
+      SetCurrentStart(start);
 
-      FillTextView(toDisplay);
+      var content = _fileAcessor.GetLines(start, lenght);
+
+      Display(content);
     }
 
     private void RefreshScrollMaximum(int viewSize)
@@ -276,15 +284,10 @@ namespace PartialView
 
     private int ComputeCurrentStartScrollDown()
     {
-      int currentStart;
-      if (true)
-      {
-        currentStart = Math.Max(_fileAcessor.LineIndexed - (int)_viewPortSize, 0);
-      }
-      return currentStart;
+      return Math.Max(_fileAcessor.LineIndexed - (int)_viewPortSize, 0);
     }
 
-    private void FillTextView(IList<string> toDisplay)
+    private void Display(IList<string> toDisplay)
     {
       var doc = ResetDocument();
       var paragraph = CreateParagraph(doc);
@@ -323,7 +326,7 @@ namespace PartialView
         string word = words[i];
         if ((word.EndsWith(LINE_FR) || word.EndsWith(LINE_EN)) && i < words.Length - 1)
         {
-          AddText(paragraph, textToAdd);
+          CreateTextAppender().AddText(paragraph, textToAdd.ToString());
           string linkText = word + " " + words[i + 1];
           var textLink = _hyperLinkBuilder.GetHyperLink(linkText);
           paragraph.Inlines.Add(textLink);
@@ -340,7 +343,22 @@ namespace PartialView
       }
 
       textToAdd.Append(Environment.NewLine);
-      AddText(paragraph, textToAdd);
+      CreateTextAppender().AddText(paragraph, textToAdd.ToString());
+    }
+
+    private TextAppender CreateTextAppender()
+    {
+      if (string.IsNullOrEmpty(TextSearch) || !TextSearchActivated)
+      {
+        return new TextAppender();
+      }
+      else
+      {
+        StringComparison comparisonType;
+        comparisonType = IgnoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+        var textMatcher = new TextMatcher(TextSearch, comparisonType);
+        return new FilteredTextAppender(textMatcher, _highLightColor);
+      }
     }
 
     private FlowDocument ResetDocument()
@@ -357,48 +375,6 @@ namespace PartialView
       if ((double.IsNaN(doc.PageWidth) || doc.PageWidth < sizeW) && !double.IsInfinity(sizeW) && !double.IsNaN(sizeW))
       {
         doc.PageWidth = sizeW;
-      }
-    }
-
-    private void AddText(Paragraph paragraph, StringBuilder textToAdd)
-    {
-      if (textToAdd.Length != 0)
-      {
-        var parts = new List<string>();
-        var all = textToAdd.ToString();
-        if (string.IsNullOrEmpty(TextSearch) || !TextSearchActivated)
-        {
-          parts.Add(all);
-        }
-        else
-        {
-          while (!string.IsNullOrEmpty(all))
-          {
-            var index = IgnoreCase ? all.ToLower().IndexOf(TextSearch.ToLower(), StringComparison.Ordinal) : all.IndexOf(TextSearch, StringComparison.Ordinal);
-            if (index >= 0)
-            {
-              parts.Add(all.Substring(0, index));
-              parts.Add(all.Substring(index, TextSearch.Length));
-              all = all.Substring(index + TextSearch.Length);
-            }
-            else
-            {
-              parts.Add(all);
-              all = string.Empty;
-            }
-          }
-        }
-        foreach (var part in parts)
-        {
-          var run = new Run(part);
-          if (!string.IsNullOrEmpty(TextSearch) && ((!IgnoreCase && part.Equals(TextSearch)) || part.ToLower().Equals(TextSearch.ToLower())))
-          {
-            run.Background = _highLightColor;
-          }
-          run.TextDecorations = null;
-          paragraph.Inlines.Add(run);
-          textToAdd.Length = 0;
-        }
       }
     }
 
