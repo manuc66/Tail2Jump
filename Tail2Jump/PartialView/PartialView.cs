@@ -264,9 +264,6 @@ namespace PartialView
       lock (_refreshViewLock)
       {
         var viewSize = (int)_viewPortSize;
-        if (viewSize == 0)
-        {
-        }
         RefreshScrollMaximum(viewSize);
 
         RefreshCurrentStart(scrollDown);
