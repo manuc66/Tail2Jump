@@ -25,7 +25,6 @@ namespace PartialView
   /// </summary>
   public partial class PartialView : IPartialView
   {
-    #region Properties
     public double ScrollMaximum
     {
       get
@@ -44,7 +43,6 @@ namespace PartialView
     public bool AutoScroll { get; set; }
 
 
-    #region TextSearch
     public string TextSearch
     {
       get { return (string)GetValue(TextSearchProperty); }
@@ -52,8 +50,7 @@ namespace PartialView
     }
     public static readonly DependencyProperty TextSearchProperty = DependencyProperty.Register(
       "TextSearch", typeof(string), typeof(PartialView), new PropertyMetadata(string.Empty, TextSearchPropertyChangedCallback));
-    #endregion // TextSearch
-    #region TextSearchActivated
+
     public bool TextSearchActivated
     {
       get { return (bool)GetValue(TextSearchActivatedProperty); }
@@ -61,8 +58,7 @@ namespace PartialView
     }
     public static readonly DependencyProperty TextSearchActivatedProperty = DependencyProperty.Register(
       "TextSearchActivated", typeof(bool), typeof(PartialView), new PropertyMetadata(false));
-    #endregion // TextSearch
-    #region IgnoreCase
+
     public bool IgnoreCase
     {
       get { return (bool)GetValue(IgnoreCaseProperty); }
@@ -70,12 +66,8 @@ namespace PartialView
     }
     public static readonly DependencyProperty IgnoreCaseProperty = DependencyProperty.Register(
       "IgnoreCase", typeof(bool), typeof(PartialView), new PropertyMetadata(true, TextSearchPropertyChangedCallback));
-    #endregion // IgnoreCase
 
 
-    #endregion
-
-    #region Variables
     private int _curentStart;
     private readonly CharSize _charSize;
     private ScrollBar _txtBoxHScroll;
@@ -86,7 +78,6 @@ namespace PartialView
     private readonly TemporisedEvent _autoScroll;
     const string LINE_FR = ":ligne";
     const string LINE_EN = ":line";
-    #endregion
 
     public event PropertyChangedEventHandler PropertyChanged;
     private readonly ITailLineCache _fileAcessor;
