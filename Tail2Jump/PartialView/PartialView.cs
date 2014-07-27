@@ -77,7 +77,6 @@ namespace PartialView
 
     #region Variables
     private int _curentStart;
-    readonly Paragraph _paragraph = new Paragraph();
     private readonly CharSize _charSize;
     private ScrollBar _txtBoxHScroll;
     private double _viewPortSize;
@@ -104,9 +103,7 @@ namespace PartialView
       eventAggregator.GetEvent<SearchInfoChanged>().Subscribe(data => { TextSearch = data; RefreshView(); });
       eventAggregator.GetEvent<SearchActivationStatusChanged>().Subscribe(activation => { TextSearchActivated = activation; });
 
-      FlowDocument doc = TxtBoxTailContent.Document;
-      doc.Blocks.Add(_paragraph);
-
+      AddParagraph(TxtBoxTailContent);
 
       _charSize = GetCharSize();
       Loaded += PartialView_Loaded;
@@ -115,6 +112,12 @@ namespace PartialView
       _autoScroll = new TemporisedEvent(250);
       _autoScroll.eHandle += m_autoScroll_eHandle;
       _hyperLinkBuilder = hyperLinkBuilder;
+    }
+
+    private static void AddParagraph(RichTextBox txtBoxTailContent)
+    {
+      FlowDocument doc = txtBoxTailContent.Document;
+      doc.Blocks.Add(new Paragraph());
     }
 
     private CharSize GetCharSize()
