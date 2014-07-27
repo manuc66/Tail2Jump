@@ -1,6 +1,6 @@
 using System;
 
-namespace PartialView.TextAppenders
+namespace PartialView
 {
   internal class TextMatcher
   {
