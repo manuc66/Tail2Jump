@@ -425,10 +425,6 @@ namespace PartialView
       }
     }
 
-    private void TxtBoxTailContent_OnLayoutUpdated(object sender, EventArgs e)
-    {
-    }
-
     private void TxtBoxTailContent_Initialized(object sender, EventArgs e)
     {
       ComputeViewPortSize();

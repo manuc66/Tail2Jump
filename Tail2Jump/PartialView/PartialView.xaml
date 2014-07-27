@@ -34,7 +34,6 @@
                 HorizontalScrollBarVisibility="Hidden"
                 VerticalScrollBarVisibility="Hidden"
                 ScrollViewer.ScrollChanged="scrollview_ScrollChanged"
-                LayoutUpdated="TxtBoxTailContent_OnLayoutUpdated"
                 IsUndoEnabled="False"
                 RenderOptions.CachingHint="Cache"
                 RenderOptions.EdgeMode="Unspecified"
