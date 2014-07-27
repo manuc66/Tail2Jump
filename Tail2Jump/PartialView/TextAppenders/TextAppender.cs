@@ -17,20 +17,20 @@ namespace PartialView.TextAppenders
     {
       foreach (var part in parts)
       {
-        var run = CreateRun(part);
-        run.TextDecorations = null;
-        paragraph.Inlines.Add(run);
+        AddPart(paragraph, part);
       }
+    }
+
+    private void AddPart(Paragraph paragraph, string part)
+    {
+      var run = CreateRun(part);
+      run.TextDecorations = null;
+      paragraph.Inlines.Add(run);
     }
 
     protected virtual List<string> GetParts(string textToAdd)
     {
-      var parts = new List<string>();
-      var all = textToAdd;
-
-      parts.Add(all);
-
-      return parts;
+      return new List<string> { textToAdd };
     }
 
     protected virtual Run CreateRun(string part)

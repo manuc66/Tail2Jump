@@ -354,8 +354,7 @@ namespace PartialView
       }
       else
       {
-        StringComparison comparisonType;
-        comparisonType = IgnoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+        var comparisonType = IgnoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
         var textMatcher = new TextMatcher(TextSearch, comparisonType);
         return new FilteredTextAppender(textMatcher, _highLightColor);
       }
@@ -381,7 +380,6 @@ namespace PartialView
     private void TxtBoxTailContent_Initialized(object sender, EventArgs e)
     {
       ComputeViewPortSize();
-
     }
   }
 }

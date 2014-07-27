@@ -18,25 +18,41 @@ namespace PartialView.TextAppenders
     protected override List<string> GetParts(string textToAdd)
     {
       var parts = new List<string>();
-      var all = textToAdd;
-      while (!string.IsNullOrEmpty(all))
+      var remaining = textToAdd;
+      while (!string.IsNullOrEmpty(remaining))
       {
-        var index = _textMatcher.GetFirstMatchStartIndex(all);
+        var index = _textMatcher.GetFirstMatchStartIndex(remaining);
         int length = _textMatcher.PatternLenght;
 
-        if (index >= 0)
+        if (index < 0)
         {
-          parts.Add(all.Substring(0, index));
-          parts.Add(all.Substring(index, length));
-          all = all.Substring(index + length);
+          parts.Add(remaining);
+          break;
         }
-        else
-        {
-          parts.Add(all);
-          all = string.Empty;
-        }
+
+        parts.AddRange(new[]{
+          Before(remaining, index),
+          Between(remaining, index, index + length)}
+          );
+
+        remaining = AllAfter(remaining, index, length);
       }
       return parts;
+    }
+
+    private static string Between(string remaining, int start, int end)
+    {
+      return remaining.Substring(start, end - start);
+    }
+
+    private static string AllAfter(string remaining, int index, int length)
+    {
+      return remaining.Substring(index + length);
+    }
+
+    private static string Before(string remaining, int index)
+    {
+      return remaining.Substring(0, index);
     }
 
     protected override Run CreateRun(string part)
