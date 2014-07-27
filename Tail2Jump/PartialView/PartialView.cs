@@ -82,7 +82,6 @@ namespace PartialView
     private double _viewPortSize;
     private double _scrollMaximum;
     private static readonly ILog Log = LogManager.GetLogger(typeof(PartialView));
-    private readonly object _refreshViewLock = new object();
     private readonly SolidColorBrush _highLightColor = Brushes.Yellow;
     private readonly TemporisedEvent _autoScroll;
     const string LINE_FR = ":ligne";
@@ -262,17 +261,14 @@ namespace PartialView
 
       RefreshVerticalScrollBarMaximum();
 
-      lock (_refreshViewLock)
-      {
-        var viewSize = (int)_viewPortSize;
-        RefreshScrollMaximum(viewSize);
+      var viewSize = (int)_viewPortSize;
+      RefreshScrollMaximum(viewSize);
 
-        _curentStart = curentStart;
-        scroller.Value = _curentStart;
-        var toDisplay = _fileAcessor.GetLines(_curentStart, viewSize);
+      _curentStart = curentStart;
+      scroller.Value = _curentStart;
+      var toDisplay = _fileAcessor.GetLines(_curentStart, viewSize);
 
-        FillTextView(toDisplay);
-      }
+      FillTextView(toDisplay);
     }
 
     private void RefreshScrollMaximum(int viewSize)
