@@ -34,6 +34,14 @@
            ScrollViewer.HorizontalScrollBarVisibility="Auto"
            ScrollViewer.VerticalScrollBarVisibility="Auto">
 
+    <ListBox.ContextMenu>
+      <ContextMenu>
+        <MenuItem Header="Copy" Click="OnCopyClick" />
+        <MenuItem Header="Copy all" Click="OnCopyAllClick" />
+        <Separator />
+        <MenuItem Header="Select all" Click="OnSelectAllClick" />
+      </ContextMenu>
+    </ListBox.ContextMenu>
 
     <ListBox.ItemTemplate>
       <DataTemplate>

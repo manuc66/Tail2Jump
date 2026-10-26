@@ -13,6 +13,21 @@
         DragDrop.AllowDrop="True"
         x:CompileBindings="False">
 
+  <Window.Styles>
+    <Style Selector="TextBlock.logvalid">
+      <Setter Property="Foreground" Value="#FF9ACD32" />
+    </Style>
+    <Style Selector="TextBlock.logerror">
+      <Setter Property="Foreground" Value="#FFFFA500" />
+    </Style>
+    <Style Selector="TextBlock.logexception">
+      <Setter Property="Foreground" Value="#FFFFD54F" />
+    </Style>
+    <Style Selector="TextBlock.logcritical">
+      <Setter Property="Foreground" Value="#FFFF5555" />
+    </Style>
+  </Window.Styles>
+
   <Grid ColumnDefinitions="Auto,*">
 
     <!-- Watchers panel -->
@@ -79,12 +94,12 @@
               Padding="0"
               VerticalAlignment="Stretch"
               ToolTip.Tip="Show/hide the watchers panel">
-        <TextBlock Text="‹" FontSize="16" Foreground="#FFB8B7B7" />
+        <TextBlock Text="{Binding PanelToggleGlyph}" FontSize="16" Foreground="#FFB8B7B7" />
       </Button>
 
       <Grid Grid.Column="1" RowDefinitions="*,Auto,Auto,Auto">
 
-        <views:LogTextView Grid.Row="0" Margin="2" />
+        <views:LogTextView Grid.Row="0" Name="LogView" Margin="2" />
 
         <!-- Toolbar -->
         <Grid Grid.Row="1" Margin="5,0,5,5" ColumnDefinitions="Auto,Auto,*,Auto,Auto">
@@ -163,9 +178,21 @@
                    FontSize="11">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="{Binding DisplayedDatetime}" Foreground="#FF888888" />
-                  <TextBlock Text="{Binding Text}" />
+                <StackPanel Margin="0,1">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding DisplayedDatetime}" Foreground="#FF888888" />
+                    <TextBlock Text="{Binding Text}"
+                               Classes.logvalid="{Binding IsValid}"
+                               Classes.logerror="{Binding IsError}"
+                               Classes.logexception="{Binding IsException}"
+                               Classes.logcritical="{Binding IsCritical}" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding ExceptionText}"
+                             IsVisible="{Binding HasException}"
+                             FontSize="10"
+                             Foreground="#FFFF8888"
+                             TextWrapping="Wrap"
+                             MaxLines="4" />
                 </StackPanel>
               </DataTemplate>
             </ListBox.ItemTemplate>

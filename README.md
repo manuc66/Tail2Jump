@@ -59,10 +59,15 @@ Done:
 - thread-safe line cache and watcher engine
 - JSON configuration
 - Avalonia shell: watcher list, log view, filtering and search highlighting,
-  console, editor detection, drag and drop, new-watcher and multi-location dialogs,
-  `file:line` links, `Ctrl+F` / `Ctrl+N` / `Ctrl+Shift+N` shortcuts
+  colored console with exceptions, editor detection, drag and drop, new-watcher and
+  multi-location dialogs, `file:line` links
+- log view: line selection and copy (`Ctrl+C` / `Ctrl+A`), smart auto-scroll that
+  pauses when you scroll up
+- window attention: title flash on Linux/macOS, native `FlashWindowEx` on Windows
+- shortcuts: `Ctrl+F` (search), `Ctrl+N` (new watcher), `Ctrl+Shift+N` (multi),
+  `Ctrl+Shift+C` (console)
 
 Still to port:
-- window blink / notifications
+- per-watcher notifications and paused state
 - stress-test and chart panels
 - UI tests

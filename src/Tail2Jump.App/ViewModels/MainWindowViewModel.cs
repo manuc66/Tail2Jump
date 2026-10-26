@@ -92,6 +92,9 @@ namespace Tail2Jump.ViewModels
     /// <summary>Raised after <see cref="Lines"/> changed, so the view can scroll to the end.</summary>
     public event Action LinesUpdated;
 
+    /// <summary>Raised when new lines arrive and window blinking is enabled.</summary>
+    public event Action AttentionRequested;
+
     public string Title
     {
       get { return _title; }
@@ -135,8 +138,14 @@ namespace Tail2Jump.ViewModels
     public bool IsPanelCollapsed
     {
       get { return _isPanelCollapsed; }
-      set { SetProperty(ref _isPanelCollapsed, value); }
+      set
+      {
+        if (!SetProperty(ref _isPanelCollapsed, value)) return;
+        OnPropertyChanged(nameof(PanelToggleGlyph));
+      }
     }
+
+    public string PanelToggleGlyph => IsPanelCollapsed ? "›" : "‹";
 
     public string SearchText
     {
@@ -353,7 +362,15 @@ namespace Tail2Jump.ViewModels
 
     private void OnDataUpdated()
     {
-      PostToUi(() => RefreshLines());
+      PostToUi(() =>
+      {
+        RefreshLines();
+
+        if (FlashWindow)
+        {
+          AttentionRequested?.Invoke();
+        }
+      });
     }
 
     public void RefreshLines(bool reset = false)
