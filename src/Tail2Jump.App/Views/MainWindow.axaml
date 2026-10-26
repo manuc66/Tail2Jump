@@ -60,6 +60,8 @@
             <Button Command="{Binding RemoveWatcherCommand}" ToolTip.Tip="Remove selected watchers" Padding="8,2">
               <Image Source="/Assets/Images/delete.png" Width="16" Height="16" />
             </Button>
+            <Button Command="{Binding AddAdvancedWatcherCommand}" Content="Advanced…"
+                    ToolTip.Tip="Watch several locations at once" Padding="8,2" />
           </StackPanel>
           <StackPanel Grid.Row="1" Spacing="2" Margin="0,8,0,0">
             <CheckBox Content="Search" IsChecked="{Binding ShowSearch}" FontSize="12" />

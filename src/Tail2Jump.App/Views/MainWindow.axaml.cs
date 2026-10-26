@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -28,6 +29,7 @@ namespace Tail2Jump.App.Views
       if (_viewModel != null)
       {
         _viewModel.NewWatcherDialog = ShowNewWatcherDialogAsync;
+        _viewModel.AdvancedWatcherDialog = ShowAdvancedWatcherDialogAsync;
       }
 
       base.OnDataContextChanged(e);
@@ -37,7 +39,20 @@ namespace Tail2Jump.App.Views
     {
       if (_viewModel == null) return;
 
-      if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+      if (e.Key == Key.N && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+      {
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+        {
+          _ = _viewModel.AddAdvancedWatchersAsync();
+        }
+        else
+        {
+          _ = _viewModel.AddWatcherAsync();
+        }
+
+        e.Handled = true;
+      }
+      else if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
       {
         _viewModel.ShowSearch = true;
         SearchBox.Focus();
@@ -82,6 +97,13 @@ namespace Tail2Jump.App.Views
     {
       var dialog = new NewWatcherWindow();
       var result = await dialog.ShowDialog<NewWatcherInput>(this);
+      return result;
+    }
+
+    private async Task<IReadOnlyList<NewWatcherInput>> ShowAdvancedWatcherDialogAsync()
+    {
+      var dialog = new AdvancedWatcherWindow();
+      var result = await dialog.ShowDialog<IReadOnlyList<NewWatcherInput>>(this);
       return result;
     }
   }

@@ -51,6 +51,7 @@ namespace Tail2Jump.ViewModels
       _uiContext = SynchronizationContext.Current;
 
       AddWatcherCommand = new RelayCommand(() => _ = AddWatcherAsync());
+      AddAdvancedWatcherCommand = new RelayCommand(() => _ = AddAdvancedWatchersAsync());
       RemoveWatcherCommand = new RelayCommand(RemoveSelectedWatchers, () => SelectedWatchers.Count > 0);
       StartCommand = new RelayCommand(StartWatched, () => CanStart);
       StopCommand = new RelayCommand(StopWatched, () => CanStop);
@@ -67,6 +68,8 @@ namespace Tail2Jump.ViewModels
 
     public Func<System.Threading.Tasks.Task<NewWatcherInput>> NewWatcherDialog { get; set; }
 
+    public Func<System.Threading.Tasks.Task<IReadOnlyList<NewWatcherInput>>> AdvancedWatcherDialog { get; set; }
+
     public ThreadSafeObservableCollection<IMonitoringInstance> Watchers => _engine.ListWatcher;
 
     public ObservableCollection<LogLineViewModel> Lines => _lines;
@@ -79,6 +82,7 @@ namespace Tail2Jump.ViewModels
     public ThreadSafeObservableCollection<LogInstance> Logs => _log.ListLogs;
 
     public RelayCommand AddWatcherCommand { get; }
+    public RelayCommand AddAdvancedWatcherCommand { get; }
     public RelayCommand RemoveWatcherCommand { get; }
     public RelayCommand StartCommand { get; }
     public RelayCommand StopCommand { get; }
@@ -226,6 +230,29 @@ namespace Tail2Jump.ViewModels
       if (input == null) return;
 
       CreateWatcher(input.Path, input.Filter, input.IncludeSubdirectories);
+    }
+
+    public async System.Threading.Tasks.Task AddAdvancedWatchersAsync()
+    {
+      if (AdvancedWatcherDialog == null) return;
+
+      IReadOnlyList<NewWatcherInput> inputs;
+      try
+      {
+        inputs = await AdvancedWatcherDialog();
+      }
+      catch (Exception error)
+      {
+        AddLog(LogType.Exception, "Failed to open the advanced watcher dialog", error);
+        return;
+      }
+
+      if (inputs == null) return;
+
+      foreach (var input in inputs)
+      {
+        CreateWatcher(input.Path, input.Filter, input.IncludeSubdirectories);
+      }
     }
 
     public IMonitoringInstance CreateWatcher(string path, string filter, bool includeSubdirectories)

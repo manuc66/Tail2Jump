@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:Tail2Jump.App.Views"
+        x:Class="Tail2Jump.App.Views.AdvancedWatcherWindow"
+        Title="Watch multiple locations"
+        Width="760"
+        Height="440"
+        MinWidth="560"
+        MinHeight="300"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF252526"
+        x:CompileBindings="False">
+
+  <Grid Margin="12" RowDefinitions="Auto,*,Auto,Auto">
+
+    <StackPanel Grid.Row="0" Margin="0,0,0,8">
+      <TextBlock Text="Watch multiple locations" FontSize="20" Foreground="White" />
+      <TextBlock Text="Each row creates an independent watcher."
+                 FontSize="11" Foreground="#FFB8B7B7" />
+    </StackPanel>
+
+    <ListBox Grid.Row="1"
+             Name="CriteriaList"
+             ItemsSource="{Binding Criteria}"
+             SelectedItem="{Binding SelectedCriterion}"
+             Background="#FF1C1C1C"
+             BorderBrush="{StaticResource PanelBorderBrush}">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="views:WatcherCriterion">
+          <Grid ColumnDefinitions="*,130,Auto,Auto" Margin="0,2">
+            <TextBox Grid.Column="0" Text="{Binding Path}" Watermark="/var/log or /var/log/app.log" Margin="0,0,6,0" />
+            <TextBox Grid.Column="1" Text="{Binding Filter}" Watermark="*.log" Margin="0,0,6,0" />
+            <CheckBox Grid.Column="2" Content="Recursive" IsChecked="{Binding IncludeSubdirectories}" Margin="0,0,6,0" />
+            <Button Grid.Column="3" Content="Browse…" Click="OnBrowseClick" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6" Margin="0,8">
+      <Button Content="Add row" Click="OnAddClick" />
+      <Button Content="Remove selected" Click="OnRemoveClick" />
+    </StackPanel>
+
+    <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" Margin="0,6,0,0">
+      <TextBlock Grid.Column="0" Text="Empty paths are ignored." Foreground="#FF888888" VerticalAlignment="Center" />
+      <Button Grid.Column="1" Content="Cancel" MinWidth="100" Margin="0,0,8,0" Click="OnCancelClick" />
+      <Button Grid.Column="2" Content="Start" MinWidth="100" Background="#FF1C7848" Click="OnStartClick" />
+    </Grid>
+  </Grid>
+</Window>

@@ -58,12 +58,11 @@ Done:
 - cross-platform file tailer (FileSystemWatcher based)
 - thread-safe line cache and watcher engine
 - JSON configuration
-- Avalonia shell: watcher list, log view, filtering, console, editor detection,
-  drag and drop, new-watcher dialog, `file:line` links
+- Avalonia shell: watcher list, log view, filtering and search highlighting,
+  console, editor detection, drag and drop, new-watcher and multi-location dialogs,
+  `file:line` links, `Ctrl+F` / `Ctrl+N` / `Ctrl+Shift+N` shortcuts
 
 Still to port:
-- advanced watcher dialog
-- search highlighting
 - window blink / notifications
 - stress-test and chart panels
 - UI tests
