@@ -9,7 +9,7 @@ namespace Tail2Jump.Logging
   public interface ILogController
   {
     ThreadSafeObservableCollection<LogInstance> ListLogs { get; }
-    void AddLog(LogType type, string text, Exception exception = null);
+    void AddLog(LogType type, string text, Exception? exception = null);
   }
 
   public class LogController : ObservableObject, ILogController
@@ -27,7 +27,7 @@ namespace Tail2Jump.Logging
       _listLogs = new ThreadSafeObservableCollection<LogInstance>();
     }
 
-    public void AddLog(LogType type, string text, Exception exception = null)
+    public void AddLog(LogType type, string text, Exception? exception = null)
     {
       var tempLog = new LogInstance(text, type);
       if (exception != null && type == LogType.Exception)

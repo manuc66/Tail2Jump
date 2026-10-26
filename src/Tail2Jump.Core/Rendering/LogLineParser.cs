@@ -23,7 +23,7 @@ namespace Tail2Jump.Rendering
     public string Text { get; }
 
     /// <summary>Text with non-breaking spaces, so the UI keeps the indentation.</summary>
-    public string DisplayText => Text?.Replace(' ', '\u00A0');
+    public string DisplayText => Text.Replace(' ', '\u00A0');
 
     public bool IsHyperLink => Kind == LogLineSegmentKind.HyperLink;
 
@@ -46,7 +46,7 @@ namespace Tail2Jump.Rendering
     /// Parses a line and highlights the occurrences of <paramref name="searchText"/>.
     /// When the search text is empty, the result is the same as <see cref="Parse(string)"/>.
     /// </summary>
-    public static IReadOnlyList<LogLineSegment> Parse(string line, string searchText, bool ignoreCase = true)
+    public static IReadOnlyList<LogLineSegment> Parse(string? line, string? searchText, bool ignoreCase = true)
     {
       if (string.IsNullOrEmpty(searchText))
       {
@@ -95,7 +95,7 @@ namespace Tail2Jump.Rendering
       }
     }
 
-    public static IReadOnlyList<LogLineSegment> Parse(string line)
+    public static IReadOnlyList<LogLineSegment> Parse(string? line)
     {
       var segments = new List<LogLineSegment>();
       if (line == null) return segments;
@@ -167,7 +167,7 @@ namespace Tail2Jump.Rendering
     /// <summary>
     /// Splits a "file|content" cache line into its file name and content.
     /// </summary>
-    public static (string FileName, string Content) SplitFileName(string line)
+    public static (string FileName, string Content) SplitFileName(string? line)
     {
       if (line == null) return (string.Empty, string.Empty);
 

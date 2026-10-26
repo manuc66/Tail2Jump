@@ -18,8 +18,8 @@ namespace Tail2Jump.App.Views
   {
     private const double BottomThreshold = 8;
 
-    private MainWindowViewModel _viewModel;
-    private ScrollViewer _scrollViewer;
+    private MainWindowViewModel? _viewModel;
+    private ScrollViewer? _scrollViewer;
     private bool _stickToBottom = true;
     private bool _scrollingProgrammatically;
 
@@ -75,7 +75,7 @@ namespace Tail2Jump.App.Views
       base.OnDataContextChanged(e);
     }
 
-    private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
       if (e.PropertyName != nameof(MainWindowViewModel.AutoScroll) || _viewModel == null) return;
       if (!_viewModel.AutoScroll) return;
@@ -90,7 +90,7 @@ namespace Tail2Jump.App.Views
       ScrollToEnd();
     }
 
-    private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
       if (_scrollViewer == null || _scrollingProgrammatically) return;
 
@@ -118,7 +118,7 @@ namespace Tail2Jump.App.Views
       }, DispatcherPriority.Background);
     }
 
-    private void OnSegmentPointerPressed(object sender, PointerPressedEventArgs e)
+    private void OnSegmentPointerPressed(object? sender, PointerPressedEventArgs e)
     {
       if (sender is not TextBlock { DataContext: LogLineSegment segment }) return;
       if (!segment.IsHyperLink) return;
@@ -132,7 +132,7 @@ namespace Tail2Jump.App.Views
 
     public void SelectAllLines() => LinesList.Selection.SelectAll();
 
-    private void OnKeyDown(object sender, KeyEventArgs e)
+    private void OnKeyDown(object? sender, KeyEventArgs e)
     {
       if (!e.KeyModifiers.HasFlag(KeyModifiers.Control)) return;
 
@@ -148,11 +148,11 @@ namespace Tail2Jump.App.Views
       }
     }
 
-    private void OnCopyClick(object sender, RoutedEventArgs e) => CopyLines(all: false);
+    private void OnCopyClick(object? sender, RoutedEventArgs e) => CopyLines(all: false);
 
-    private void OnCopyAllClick(object sender, RoutedEventArgs e) => CopyLines(all: true);
+    private void OnCopyAllClick(object? sender, RoutedEventArgs e) => CopyLines(all: true);
 
-    private void OnSelectAllClick(object sender, RoutedEventArgs e) => LinesList.Selection.SelectAll();
+    private void OnSelectAllClick(object? sender, RoutedEventArgs e) => LinesList.Selection.SelectAll();
 
     private async void CopyLines(bool all)
     {

@@ -10,10 +10,10 @@ namespace Tail2Jump.Objects
     private MonitoringInstanceState _state = new StoppedMonitoringInstance();
     private bool _includeSubdirectories;
     private bool _notified;
-    private string _titleName;
-    private string _fullDirectoryPath;
+    private string? _titleName;
+    private string? _fullDirectoryPath;
     private int _tailerId;
-    private string _filter;
+    private string? _filter;
 
     public bool IsOnScreen
     {
@@ -58,13 +58,13 @@ namespace Tail2Jump.Objects
       set { SetProperty(ref _notified, value); }
     }
 
-    public string TitleName
+    public string? TitleName
     {
       get { return _titleName; }
       set { SetProperty(ref _titleName, value); }
     }
 
-    public string FullDirectoryPath
+    public string? FullDirectoryPath
     {
       get { return _fullDirectoryPath; }
       set { SetProperty(ref _fullDirectoryPath, value); }
@@ -76,7 +76,7 @@ namespace Tail2Jump.Objects
       set { SetProperty(ref _tailerId, value); }
     }
 
-    public string Filter
+    public string? Filter
     {
       get { return _filter; }
       set { SetProperty(ref _filter, value); }

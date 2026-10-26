@@ -14,7 +14,7 @@ namespace Tail2Jump.App
 {
   public partial class App : Application
   {
-    private ServiceProvider _services;
+    private ServiceProvider? _services;
 
     public override void Initialize()
     {

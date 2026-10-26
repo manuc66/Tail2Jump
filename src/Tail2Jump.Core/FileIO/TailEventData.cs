@@ -2,10 +2,10 @@ namespace Be.Manuc66.Library.FileIO
 {
   public class TailEventData
   {
-    public TailEventData(string fileName, string data, long fileSeekPos, uint byteLength)
+    public TailEventData(string? fileName, string? data, long fileSeekPos, uint byteLength)
     {
-      FileName = fileName;
-      NewLines = data;
+      FileName = fileName ?? string.Empty;
+      NewLines = data ?? string.Empty;
       FileSeekPos = fileSeekPos;
       ByteLenght = byteLength;
     }

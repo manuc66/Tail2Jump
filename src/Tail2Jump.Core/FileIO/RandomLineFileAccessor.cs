@@ -25,7 +25,7 @@ namespace Be.Manuc66.Library.FileIO
       NewLineByteDef = new UTF8Encoding().GetBytes(Environment.NewLine);
     }
 
-    public RandomLineFileAccessor(string filePath, ILogger log = null)
+    public RandomLineFileAccessor(string filePath, ILogger? log = null)
     {
       _filePath = filePath;
       _log = log ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;

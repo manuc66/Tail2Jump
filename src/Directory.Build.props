@@ -2,9 +2,13 @@
   <!-- Common settings for the cross-platform (Avalonia) solution. -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <Deterministic>true</Deterministic>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- Compiler warnings (including nullable warnings) break the build. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Avalonia's XAML compiler reports obsolete/deprecated usage as warnings; also fail. -->
+    <WarningsAsErrors>$(WarningsAsErrors);AVLN5001;AVLN2000;AVLN2100;AVLN2200</WarningsAsErrors>
   </PropertyGroup>
 </Project>

@@ -25,6 +25,9 @@ dotnet build Tail2Jump.Avalonia.sln
 dotnet test  Tail2Jump.Avalonia.sln
 ```
 
+The build is strict: nullable reference types, the .NET analyzers and
+warnings-as-errors are enabled (including Avalonia XAML warnings).
+
 The legacy Windows solution (`Tail2Jump.sln`) can still be built with Visual Studio
 on Windows.
 

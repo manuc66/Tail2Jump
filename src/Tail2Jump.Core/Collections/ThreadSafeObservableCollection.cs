@@ -12,7 +12,7 @@ namespace Be.Manuc66.Library.Collections
   /// </summary>
   public class ThreadSafeObservableCollection<T> : ObservableCollection<T>
   {
-    private readonly SynchronizationContext _context;
+    private readonly SynchronizationContext? _context;
     private readonly ReaderWriterLockSlim _lock;
 
     public ThreadSafeObservableCollection()

@@ -25,12 +25,12 @@ namespace Tail2Jump.ViewModels
     private readonly WatcherEngine _engine;
     private readonly ILogController _log;
     private readonly EditorTools _editorTools = new EditorTools();
-    private readonly SynchronizationContext _uiContext;
+    private readonly SynchronizationContext? _uiContext;
     private readonly ObservableCollection<LogLineViewModel> _lines = new ObservableCollection<LogLineViewModel>();
 
     private int _renderedLineCount;
-    private ITailLineCache _renderedCache;
-    private IOpenWithInfo _openIn;
+    private ITailLineCache? _renderedCache;
+    private IOpenWithInfo? _openIn;
     private bool _autoScroll = true;
     private bool _flashWindow;
     private bool _showSearch;
@@ -69,9 +69,9 @@ namespace Tail2Jump.ViewModels
       RefreshEditors();
     }
 
-    public Func<System.Threading.Tasks.Task<NewWatcherInput>> NewWatcherDialog { get; set; }
+    public Func<System.Threading.Tasks.Task<NewWatcherInput?>>? NewWatcherDialog { get; set; }
 
-    public Func<System.Threading.Tasks.Task<IReadOnlyList<NewWatcherInput>>> AdvancedWatcherDialog { get; set; }
+    public Func<System.Threading.Tasks.Task<IReadOnlyList<NewWatcherInput>?>>? AdvancedWatcherDialog { get; set; }
 
     public ThreadSafeObservableCollection<IMonitoringInstance> Watchers => _engine.ListWatcher;
 
@@ -93,10 +93,10 @@ namespace Tail2Jump.ViewModels
     public RelayCommand TogglePanelCommand { get; }
 
     /// <summary>Raised after <see cref="Lines"/> changed, so the view can scroll to the end.</summary>
-    public event Action LinesUpdated;
+    public event Action? LinesUpdated;
 
     /// <summary>Raised when new lines arrive and window blinking is enabled.</summary>
-    public event Action AttentionRequested;
+    public event Action? AttentionRequested;
 
     public string Title
     {
@@ -206,7 +206,7 @@ namespace Tail2Jump.ViewModels
       }
     }
 
-    public IOpenWithInfo OpenIn
+    public IOpenWithInfo? OpenIn
     {
       get { return _openIn; }
       set { SetProperty(ref _openIn, value); }
@@ -240,7 +240,7 @@ namespace Tail2Jump.ViewModels
     {
       if (NewWatcherDialog == null) return;
 
-      NewWatcherInput input;
+      NewWatcherInput? input;
       try
       {
         input = await NewWatcherDialog();
@@ -260,7 +260,7 @@ namespace Tail2Jump.ViewModels
     {
       if (AdvancedWatcherDialog == null) return;
 
-      IReadOnlyList<NewWatcherInput> inputs;
+      IReadOnlyList<NewWatcherInput>? inputs;
       try
       {
         inputs = await AdvancedWatcherDialog();
@@ -279,7 +279,7 @@ namespace Tail2Jump.ViewModels
       }
     }
 
-    public IMonitoringInstance CreateWatcher(string path, string filter, bool includeSubdirectories)
+    public IMonitoringInstance? CreateWatcher(string path, string filter, bool includeSubdirectories)
     {
       var instance = _engine.CreateWatcher(path, filter, includeSubdirectories);
       if (instance == null)
@@ -288,7 +288,7 @@ namespace Tail2Jump.ViewModels
         return null;
       }
 
-      CFG.RememberCriterion(instance.FullDirectoryPath, instance.Filter, instance.IncludeSubdirectories);
+      CFG.RememberCriterion(instance.FullDirectoryPath ?? string.Empty, instance.Filter ?? "*", instance.IncludeSubdirectories);
       CFG.Save();
 
       AddLog(LogType.Valid, $"Watching \"{instance.FullDirectoryPath}\" ({instance.Filter})");
@@ -465,12 +465,12 @@ namespace Tail2Jump.ViewModels
       OpenIn = current != null && Editors.Contains(current) ? current : Editors.FirstOrDefault();
     }
 
-    public void AddLog(LogType type, string text, Exception exception = null)
+    public void AddLog(LogType type, string text, Exception? exception = null)
     {
       _log.AddLog(type, text, exception);
     }
 
-    private void OnWatchersChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void OnWatchersChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
       OnPropertyChanged(nameof(WatcherCount));
       RaiseStateChanged();

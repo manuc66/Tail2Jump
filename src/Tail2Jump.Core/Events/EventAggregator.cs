@@ -20,9 +20,9 @@ namespace Be.Manuc66.Library.Events
     {
       lock (_lock)
       {
-        if (_events.TryGetValue(typeof(TEvent), out EventBase existing))
+        if (_events.TryGetValue(typeof(TEvent), out var existing) && existing is TEvent typed)
         {
-          return (TEvent)existing;
+          return typed;
         }
 
         var created = new TEvent();

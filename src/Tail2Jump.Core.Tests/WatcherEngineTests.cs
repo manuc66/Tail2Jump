@@ -13,8 +13,8 @@ namespace Tail2Jump.Core.Tests
   [TestFixture]
   public class WatcherEngineTests
   {
-    private string _directory;
-    private string _file;
+    private string _directory = null!;
+    private string _file = null!;
 
     [SetUp]
     public void SetUp()
@@ -45,7 +45,7 @@ namespace Tail2Jump.Core.Tests
       var instance = engine.CreateWatcher(_directory, "*.log");
 
       Assert.That(instance, Is.Not.Null);
-      Assert.That(instance.State, Is.InstanceOf<StartedMonitoringInstance>());
+      Assert.That(instance!.State, Is.InstanceOf<StartedMonitoringInstance>());
       Assert.That(engine.ListWatcher, Has.Count.EqualTo(1));
     }
 
@@ -72,7 +72,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var engine = new WatcherEngine(new TailLineCache(), new TailLineCache());
 
-      Assert.DoesNotThrow(() => engine.RemoveWatcher((System.Collections.Generic.ICollection<Tai2JumpInfra.IMonitoringInstance>)null));
+      Assert.DoesNotThrow(() => engine.RemoveWatcher((System.Collections.Generic.ICollection<Tai2JumpInfra.IMonitoringInstance>)null!));
     }
 
     [Test]
@@ -81,7 +81,7 @@ namespace Tail2Jump.Core.Tests
       using var engine = new WatcherEngine(new TailLineCache(), new TailLineCache());
       var instance = engine.CreateWatcher(_directory, "*.log");
 
-      engine.RemoveWatcher(instance);
+      engine.RemoveWatcher(instance!);
 
       Assert.That(engine.ListWatcher, Is.Empty);
     }
@@ -156,7 +156,7 @@ namespace Tail2Jump.Core.Tests
 
       public void Clear() => _inner.Clear();
 
-      public void AddData(TailEventData tailData, string filter = null)
+      public void AddData(TailEventData tailData, string? filter = null)
       {
         _inner.AddData(tailData, filter);
 
@@ -166,7 +166,7 @@ namespace Tail2Jump.Core.Tests
         _releaseAdd.Wait(TimeSpan.FromSeconds(10));
       }
 
-      public void AddData(ITailLineCache other, string filter) => _inner.AddData(other, filter);
+      public void AddData(ITailLineCache other, string? filter) => _inner.AddData(other, filter);
 
       public void Dispose() => _inner.Dispose();
     }

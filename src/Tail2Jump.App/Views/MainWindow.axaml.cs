@@ -17,9 +17,9 @@ namespace Tail2Jump.App.Views
   {
     private const int TitleFlashMaxTicks = 10;
 
-    private MainWindowViewModel _viewModel;
-    private DispatcherTimer _titleFlashTimer;
-    private string _baseTitle;
+    private MainWindowViewModel? _viewModel;
+    private DispatcherTimer? _titleFlashTimer;
+    private string? _baseTitle;
     private int _titleFlashTicks;
 
     public MainWindow()
@@ -76,7 +76,7 @@ namespace Tail2Jump.App.Views
       _titleFlashTimer.Start();
     }
 
-    private void OnTitleFlashTick(object sender, EventArgs e)
+    private void OnTitleFlashTick(object? sender, EventArgs e)
     {
       Title = Title == _baseTitle ? "● " + _baseTitle : _baseTitle;
 
@@ -101,7 +101,7 @@ namespace Tail2Jump.App.Views
 
       if (!string.IsNullOrEmpty(_baseTitle))
       {
-        Title = _baseTitle;
+        Title = _baseTitle!;
       }
     }
 
@@ -122,7 +122,7 @@ namespace Tail2Jump.App.Views
       FlashWindowEx(ref info);
     }
 
-    private void OnKeyDown(object sender, KeyEventArgs e)
+    private void OnKeyDown(object? sender, KeyEventArgs e)
     {
       if (_viewModel == null) return;
 
@@ -177,14 +177,14 @@ namespace Tail2Jump.App.Views
       }
     }
 
-    private void OnWatchersSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnWatchersSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
       if (_viewModel == null) return;
 
-      _viewModel.SetSelection(WatchersList.SelectedItems.OfType<IMonitoringInstance>());
+      _viewModel.SetSelection(WatchersList.SelectedItems?.OfType<IMonitoringInstance>() ?? System.Linq.Enumerable.Empty<IMonitoringInstance>());
     }
 
-    private void OnDragOver(object sender, DragEventArgs e)
+    private void OnDragOver(object? sender, DragEventArgs e)
     {
       e.DragEffects = e.DataTransfer?.Contains(DataFormat.File) == true
         ? DragDropEffects.Copy
@@ -192,27 +192,30 @@ namespace Tail2Jump.App.Views
       e.Handled = true;
     }
 
-    private void OnDrop(object sender, DragEventArgs e)
+    private void OnDrop(object? sender, DragEventArgs e)
     {
       if (_viewModel == null) return;
 
       var paths = e.DataTransfer?.TryGetFiles()?
         .Select(file => file.TryGetLocalPath())
-        .Where(path => path != null);
+        .Where(path => path != null)
+        .Select(path => path!)
+        .ToList();
+
       if (paths == null) return;
 
       _viewModel.HandleDrop(paths);
       e.Handled = true;
     }
 
-    private async Task<NewWatcherInput> ShowNewWatcherDialogAsync()
+    private async Task<NewWatcherInput?> ShowNewWatcherDialogAsync()
     {
       var dialog = new NewWatcherWindow();
       var result = await dialog.ShowDialog<NewWatcherInput>(this);
       return result;
     }
 
-    private async Task<IReadOnlyList<NewWatcherInput>> ShowAdvancedWatcherDialogAsync()
+    private async Task<IReadOnlyList<NewWatcherInput>?> ShowAdvancedWatcherDialogAsync()
     {
       var dialog = new AdvancedWatcherWindow();
       var result = await dialog.ShowDialog<IReadOnlyList<NewWatcherInput>>(this);

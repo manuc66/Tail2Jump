@@ -8,7 +8,7 @@ namespace Tail2Jump.Core.Tests
   [TestFixture]
   public class FileLocationParserTests
   {
-    private string _file;
+    private string _file = null!;
 
     [SetUp]
     public void SetUp()
@@ -29,8 +29,8 @@ namespace Tail2Jump.Core.Tests
       var result = FileLocationParser.Parse($"{_file}:42");
 
       Assert.That(result, Is.Not.Null);
-      Assert.That(result.FilePath, Is.EqualTo(_file));
-      Assert.That(result.LineNumber, Is.EqualTo(42));
+      Assert.That(result!.FilePath, Is.EqualTo(_file));
+      Assert.That(result!.LineNumber, Is.EqualTo(42));
     }
 
     [Test]
@@ -39,7 +39,7 @@ namespace Tail2Jump.Core.Tests
       var result = FileLocationParser.Parse($"{_file}:line 42");
 
       Assert.That(result, Is.Not.Null);
-      Assert.That(result.LineNumber, Is.EqualTo(42));
+      Assert.That(result!.LineNumber, Is.EqualTo(42));
     }
 
     [Test]
@@ -48,7 +48,7 @@ namespace Tail2Jump.Core.Tests
       var result = FileLocationParser.Parse($"{_file}:ligne 42");
 
       Assert.That(result, Is.Not.Null);
-      Assert.That(result.LineNumber, Is.EqualTo(42));
+      Assert.That(result!.LineNumber, Is.EqualTo(42));
     }
 
     [Test]
@@ -57,7 +57,7 @@ namespace Tail2Jump.Core.Tests
       var result = FileLocationParser.Parse($"{_file}(42,7)");
 
       Assert.That(result, Is.Not.Null);
-      Assert.That(result.LineNumber, Is.EqualTo(42));
+      Assert.That(result!.LineNumber, Is.EqualTo(42));
     }
 
     [Test]

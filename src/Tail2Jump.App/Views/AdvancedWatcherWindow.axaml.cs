@@ -67,7 +67,7 @@ namespace Tail2Jump.App.Views
 
     public ObservableCollection<WatcherCriterion> Criteria { get; } = new ObservableCollection<WatcherCriterion>();
 
-    public WatcherCriterion SelectedCriterion { get; set; }
+    public WatcherCriterion? SelectedCriterion { get; set; }
 
     private void OnAddClick(object sender, RoutedEventArgs e)
     {

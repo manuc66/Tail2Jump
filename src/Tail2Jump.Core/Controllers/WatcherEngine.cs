@@ -26,15 +26,15 @@ namespace Tail2Jump.Controllers
     private readonly ITailLineCache _fileAccessorFiltered;
     private readonly ILogger _log;
     private int _tailerCounter;
-    private string _filterValue;
+    private string? _filterValue;
     private bool _isFilterActivated;
     private bool _disposed;
 
-    public WatcherEngine(ITailLineCache fileAccessor, ITailLineCache filteredFileAccessor, ILogger<WatcherEngine> log = null)
+    public WatcherEngine(ITailLineCache fileAccessor, ITailLineCache filteredFileAccessor, ILogger<WatcherEngine>? log = null)
     {
       _fileAccessor = fileAccessor ?? throw new ArgumentNullException(nameof(fileAccessor));
       _fileAccessorFiltered = filteredFileAccessor ?? throw new ArgumentNullException(nameof(filteredFileAccessor));
-      _log = (ILogger)log ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+      _log = log is null ? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance : log;
       ListWatcher = new ThreadSafeObservableCollection<IMonitoringInstance>();
     }
 
@@ -43,12 +43,12 @@ namespace Tail2Jump.Controllers
     public ITailLineCache FileAccessor => _isFilterActivated ? _fileAccessorFiltered : _fileAccessor;
 
     /// <summary>Raised (on a background thread) when new lines have been added.</summary>
-    public event Action DataUpdated;
+    public event Action? DataUpdated;
 
     /// <summary>Raised (on a background thread) when the filter changes.</summary>
-    public event Action FilterChanged;
+    public event Action? FilterChanged;
 
-    public IMonitoringInstance CreateWatcher(string path, string filter = "*", bool includeSubdirectories = false)
+    public IMonitoringInstance? CreateWatcher(string path, string filter = "*", bool includeSubdirectories = false)
     {
       if (string.IsNullOrWhiteSpace(path)) return null;
 
@@ -116,7 +116,7 @@ namespace Tail2Jump.Controllers
     {
       if (toStart == null) return false;
 
-      Tailer tailer;
+      Tailer? tailer;
       lock (_locker)
       {
         _tailers.TryGetValue(toStart.TailerId, out tailer);
@@ -152,7 +152,7 @@ namespace Tail2Jump.Controllers
     {
       if (toStop == null) return false;
 
-      Tailer tailer;
+      Tailer? tailer;
       lock (_locker)
       {
         _tailers.TryGetValue(toStop.TailerId, out tailer);
@@ -186,7 +186,7 @@ namespace Tail2Jump.Controllers
 
       lock (_locker)
       {
-        if (!_tailers.TryGetValue(toRemove.TailerId, out Tailer tailer)) return;
+        if (!_tailers.TryGetValue(toRemove.TailerId, out Tailer? tailer)) return;
 
         tailer.eMoreData -= OnMoreData;
         tailer.Stop();

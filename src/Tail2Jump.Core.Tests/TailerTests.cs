@@ -11,8 +11,8 @@ namespace Tail2Jump.Core.Tests
   [TestFixture]
   public class TailerTests
   {
-    private string _directory;
-    private string _file;
+    private string _directory = null!;
+    private string _file = null!;
 
     [SetUp]
     public void SetUp()
@@ -143,10 +143,19 @@ namespace Tail2Jump.Core.Tests
     [Test]
     public void Start_WithAnUnreadableSubdirectory_DoesNotThrow()
     {
+      if (OperatingSystem.IsWindows())
+      {
+        Assert.Ignore("chmod is only available on Unix");
+      }
+
       var lockedDirectory = Path.Combine(_directory, "locked");
       Directory.CreateDirectory(lockedDirectory);
       File.WriteAllText(Path.Combine(lockedDirectory, "secret.log"), "hidden");
-      File.SetUnixFileMode(lockedDirectory, UnixFileMode.None);
+
+      if (!OperatingSystem.IsWindows())
+      {
+        File.SetUnixFileMode(lockedDirectory, UnixFileMode.None);
+      }
 
       try
       {

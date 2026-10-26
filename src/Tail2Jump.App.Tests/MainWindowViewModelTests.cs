@@ -16,11 +16,11 @@ namespace Tail2Jump.App.Tests
   [TestFixture]
   public class MainWindowViewModelTests
   {
-    private string _configPath;
-    private string _directory;
-    private string _file;
-    private WatcherEngine _engine;
-    private MainWindowViewModel _viewModel;
+    private string _configPath = null!;
+    private string _directory = null!;
+    private string _file = null!;
+    private WatcherEngine _engine = null!;
+    private MainWindowViewModel _viewModel = null!;
 
     [SetUp]
     public void SetUp()
@@ -70,7 +70,7 @@ namespace Tail2Jump.App.Tests
     public void SetSelection_UpdatesTheStartAndStopCommands()
     {
       var instance = _viewModel.CreateWatcher(_directory, "*.log", false);
-      _viewModel.SetSelection(new[] { instance });
+      _viewModel.SetSelection(new[] { instance! });
 
       Assert.That(_viewModel.CanStop, Is.True);
       Assert.That(_viewModel.CanStart, Is.False);

@@ -142,7 +142,7 @@ namespace Tail2Jump.Monitoring
     /// guest and guest_nice are already accounted for in user/nice, so they are
     /// excluded from the total.
     /// </summary>
-    public static CpuTimes ParseLinuxCpuLine(string line)
+    public static CpuTimes ParseLinuxCpuLine(string? line)
     {
       if (string.IsNullOrWhiteSpace(line)) return new CpuTimes(0, 0);
 

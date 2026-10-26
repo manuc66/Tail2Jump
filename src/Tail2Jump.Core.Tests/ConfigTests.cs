@@ -8,7 +8,7 @@ namespace Tail2Jump.Core.Tests
   [TestFixture]
   public class AppConfigTests
   {
-    private string _configPath;
+    private string _configPath = null!;
 
     [SetUp]
     public void SetUp()
@@ -81,7 +81,7 @@ namespace Tail2Jump.Core.Tests
     [Test]
     public void Load_WithNullCollections_NormalizesThem()
     {
-      Directory.CreateDirectory(Path.GetDirectoryName(_configPath));
+      Directory.CreateDirectory(Path.GetDirectoryName(_configPath)!);
       File.WriteAllText(_configPath, "{\"Search\":null,\"DirectoryHistory\":null,\"FilterHistory\":null}");
 
       Assert.That(CFG.Load(), Is.True);
@@ -94,7 +94,7 @@ namespace Tail2Jump.Core.Tests
     [Test]
     public void Save_DoesNotLeaveATemporaryFile()
     {
-      Directory.CreateDirectory(Path.GetDirectoryName(_configPath));
+      Directory.CreateDirectory(Path.GetDirectoryName(_configPath)!);
 
       Assert.That(CFG.Save(), Is.True);
       Assert.That(File.Exists(_configPath), Is.True);

@@ -9,7 +9,7 @@ namespace Be.Manuc66.Library.FileIO
   {
     private static readonly string[] NewLineSeparators = { "\r\n", "\n", "\r" };
 
-    private ReaderWriterLockSlim _locker;
+    private ReaderWriterLockSlim? _locker;
     private List<string> _cache = new List<string>();
 
     public int LineIndexed { get; private set; }
@@ -60,7 +60,7 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    public void AddData(TailEventData tailData, string filter = null)
+    public void AddData(TailEventData tailData, string? filter = null)
     {
       if (tailData?.NewLines == null || _locker == null) return;
 
@@ -98,7 +98,7 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    public void AddData(ITailLineCache other, string filter)
+    public void AddData(ITailLineCache other, string? filter)
     {
       if (other == null || _locker == null) return;
       if (string.IsNullOrEmpty(filter)) filter = null;

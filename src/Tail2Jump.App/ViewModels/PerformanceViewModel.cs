@@ -16,12 +16,12 @@ namespace Tail2Jump.ViewModels
     private static readonly TimeSpan SampleInterval = TimeSpan.FromSeconds(1);
 
     private readonly ISystemMetrics _metrics;
-    private readonly SynchronizationContext _uiContext;
-    private Timer _timer;
+    private readonly SynchronizationContext? _uiContext;
+    private Timer? _timer;
     private bool _isRunning;
     private bool _disposed;
 
-    public PerformanceViewModel(ISystemMetrics metrics, SynchronizationContext uiContext = null)
+    public PerformanceViewModel(ISystemMetrics metrics, SynchronizationContext? uiContext = null)
     {
       _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
       _uiContext = uiContext;

@@ -8,7 +8,7 @@ namespace Be.Manuc66.Library.DevTools
 {
   public class FilePathWithLineInfo
   {
-    public string FilePath { get; set; }
+    public string FilePath { get; set; } = string.Empty;
     public int LineNumber { get; set; }
   }
 
@@ -25,7 +25,7 @@ namespace Be.Manuc66.Library.DevTools
   /// </summary>
   public static class FileLocationParser
   {
-    public static FilePathWithLineInfo Parse(string originalString)
+    public static FilePathWithLineInfo? Parse(string originalString)
     {
       if (string.IsNullOrWhiteSpace(originalString)) return null;
 
@@ -49,7 +49,7 @@ namespace Be.Manuc66.Library.DevTools
         : text;
     }
 
-    private static bool TryParseDotNetStyle(string text, out FilePathWithLineInfo result)
+    private static bool TryParseDotNetStyle(string text, out FilePathWithLineInfo? result)
     {
       result = null;
 
@@ -68,7 +68,7 @@ namespace Be.Manuc66.Library.DevTools
       return true;
     }
 
-    private static bool TryParseColonStyle(string text, out FilePathWithLineInfo result)
+    private static bool TryParseColonStyle(string text, out FilePathWithLineInfo? result)
     {
       result = null;
 
@@ -134,7 +134,7 @@ namespace Be.Manuc66.Library.DevTools
       }
     }
 
-    public int CompareTo(IOpenWithInfo other)
+    public int CompareTo(IOpenWithInfo? other)
     {
       if (other == null) return -1;
 
@@ -143,13 +143,13 @@ namespace Be.Manuc66.Library.DevTools
       return string.Compare(DisplayName, other.DisplayName, StringComparison.Ordinal);
     }
 
-    public bool Equals(IOpenWithInfo other)
+    public bool Equals(IOpenWithInfo? other)
     {
       return other != null && TypeSortOrder == other.TypeSortOrder &&
              string.Equals(DisplayName, other.DisplayName, StringComparison.Ordinal);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
       return Equals(obj as IOpenWithInfo);
     }
@@ -194,22 +194,22 @@ namespace Be.Manuc66.Library.DevTools
       }
     }
 
-    public int CompareTo(IOpenWithInfo other)
+    public int CompareTo(IOpenWithInfo? other)
     {
       if (other == null) return -1;
       return TypeSortOrder.CompareTo(other.TypeSortOrder);
     }
 
-    public bool Equals(IOpenWithInfo other) => other is SystemDefaultOpenWith;
+    public bool Equals(IOpenWithInfo? other) => other is SystemDefaultOpenWith;
 
-    public override bool Equals(object obj) => obj is SystemDefaultOpenWith;
+    public override bool Equals(object? obj) => obj is SystemDefaultOpenWith;
 
     public override int GetHashCode() => typeof(SystemDefaultOpenWith).GetHashCode();
   }
 
   public static class ExecutableLocator
   {
-    public static string Find(string executable)
+    public static string? Find(string executable)
     {
       if (string.IsNullOrWhiteSpace(executable)) return null;
 
@@ -259,7 +259,7 @@ namespace Be.Manuc66.Library.DevTools
       ("Notepad++", "notepad++", "-n{line} \"{file}\""),
     };
 
-    public FilePathWithLineInfo GetFilePathWithLineNumber(string originalString)
+    public FilePathWithLineInfo? GetFilePathWithLineNumber(string originalString)
     {
       return FileLocationParser.Parse(originalString);
     }
@@ -282,7 +282,7 @@ namespace Be.Manuc66.Library.DevTools
       return editors;
     }
 
-    public void RefreshEditors(IList<IOpenWithInfo> editors, ref IOpenWithInfo openIn)
+    public void RefreshEditors(IList<IOpenWithInfo> editors, ref IOpenWithInfo? openIn)
     {
       if (editors == null) throw new ArgumentNullException(nameof(editors));
 

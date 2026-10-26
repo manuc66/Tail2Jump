@@ -16,21 +16,21 @@ namespace Be.Manuc66.Library.FileIO
     private readonly ILogger _log;
     private readonly object _monitorPreviousSeekPosition = new object();
     private readonly Dictionary<string, long> _previousSeekPositions = new Dictionary<string, long>();
-    private FileSystemWatcher _fileSystemWatcher;
+    private FileSystemWatcher? _fileSystemWatcher;
     private bool _disposed;
 
-    public Tailer(ILogger<Tailer> log = null)
+    public Tailer(ILogger<Tailer>? log = null)
     {
-      _log = (ILogger)log ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+      _log = log is null ? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance : log;
     }
 
-    public string Filter { get; set; }
+    public string? Filter { get; set; }
 
-    public string ParentDirectory { get; set; }
+    public string? ParentDirectory { get; set; }
 
     public bool IncludeSubdirectories { get; set; }
 
-    public event Action<Tailer, TailEventData> eMoreData;
+    public event Action<Tailer, TailEventData>? eMoreData;
 
     public bool Start()
     {
@@ -38,7 +38,7 @@ namespace Be.Manuc66.Library.FileIO
 
       try
       {
-        string directoryName;
+        string? directoryName;
         if (Directory.Exists(ParentDirectory))
         {
           directoryName = Path.GetFullPath(ParentDirectory);
@@ -57,6 +57,7 @@ namespace Be.Manuc66.Library.FileIO
         if (!Directory.Exists(directoryName)) return false;
 
         ParentDirectory = directoryName;
+        Filter ??= "*";
 
         StopWatcher();
 
@@ -150,7 +151,7 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    private FileStream OpenFileShareMode(string filePath)
+    private FileStream? OpenFileShareMode(string filePath)
     {
       try
       {

@@ -13,7 +13,7 @@ namespace Be.Manuc66.Library.Threading
     public delegate void EventHandler(object sender, EventArgs data);
 
     private readonly object _lockObject = new object();
-    private Timer _timer;
+    private Timer? _timer;
     private bool _disposed;
 
     public event EventHandler eHandle = delegate { };
@@ -41,7 +41,7 @@ namespace Be.Manuc66.Library.Threading
       }
     }
 
-    private void OnTimer(object state)
+    private void OnTimer(object? state)
     {
       lock (_lockObject)
       {

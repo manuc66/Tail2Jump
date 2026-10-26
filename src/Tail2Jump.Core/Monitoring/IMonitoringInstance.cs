@@ -9,10 +9,10 @@ namespace Tai2JumpInfra
     MonitoringInstanceState State { get; set; }
     bool IncludeSubdirectories { get; set; }
     bool Notified { get; set; }
-    string TitleName { get; set; }
-    string FullDirectoryPath { get; set; }
+    string? TitleName { get; set; }
+    string? FullDirectoryPath { get; set; }
     int TailerId { get; set; }
-    string Filter { get; set; }
+    string? Filter { get; set; }
     string Status { get; }
     bool IsStarted { get; }
     void SetDisplayedName();

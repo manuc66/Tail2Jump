@@ -22,7 +22,7 @@ namespace Tail2Jump.ViewModels
       private set { SetProperty(ref _segments, value); }
     }
 
-    public void ApplySearch(string searchText, bool ignoreCase)
+    public void ApplySearch(string? searchText, bool ignoreCase)
     {
       Segments = LogLineParser.Parse(RawLine, searchText, ignoreCase);
     }

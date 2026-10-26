@@ -13,8 +13,8 @@ namespace Tail2Jump.App.Charts
   /// </summary>
   public class SparklineChart : Control
   {
-    public static readonly StyledProperty<IEnumerable<double>> ValuesProperty =
-      AvaloniaProperty.Register<SparklineChart, IEnumerable<double>>(nameof(Values));
+    public static readonly StyledProperty<IEnumerable<double>?> ValuesProperty =
+      AvaloniaProperty.Register<SparklineChart, IEnumerable<double>?>(nameof(Values));
 
     public static readonly StyledProperty<double> MaximumProperty =
       AvaloniaProperty.Register<SparklineChart, double>(nameof(Maximum), 100.0);
@@ -41,7 +41,7 @@ namespace Tail2Jump.App.Charts
       ClipToBounds = true;
     }
 
-    public IEnumerable<double> Values
+    public IEnumerable<double>? Values
     {
       get { return GetValue(ValuesProperty); }
       set { SetValue(ValuesProperty, value); }
@@ -88,7 +88,7 @@ namespace Tail2Jump.App.Charts
       }
     }
 
-    private void OnValuesChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void OnValuesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
       InvalidateVisual();
     }

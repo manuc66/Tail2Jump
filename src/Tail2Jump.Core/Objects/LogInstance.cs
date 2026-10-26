@@ -6,13 +6,13 @@ namespace Tail2Jump.Objects
 {
   public class LogInstance : ObservableObject
   {
-    private string _text;
+    private string? _text;
     private LogType _type;
-    private Exception _exception;
+    private Exception? _exception;
     private DateTime _datetime;
-    private string _displayedDatetime;
+    private string? _displayedDatetime;
 
-    public string Text
+    public string? Text
     {
       get { return _text; }
       set { SetProperty(ref _text, value); }
@@ -21,13 +21,29 @@ namespace Tail2Jump.Objects
     public LogType Type
     {
       get { return _type; }
-      set { SetProperty(ref _type, value); }
+      set
+      {
+        if (SetProperty(ref _type, value))
+        {
+          OnPropertyChanged(nameof(IsValid));
+          OnPropertyChanged(nameof(IsError));
+          OnPropertyChanged(nameof(IsException));
+          OnPropertyChanged(nameof(IsCritical));
+        }
+      }
     }
 
-    public Exception Exception
+    public Exception? Exception
     {
       get { return _exception; }
-      set { SetProperty(ref _exception, value); }
+      set
+      {
+        if (SetProperty(ref _exception, value))
+        {
+          OnPropertyChanged(nameof(HasException));
+          OnPropertyChanged(nameof(ExceptionText));
+        }
+      }
     }
 
     public DateTime Datetime
@@ -40,7 +56,7 @@ namespace Tail2Jump.Objects
       }
     }
 
-    public string DisplayedDatetime
+    public string? DisplayedDatetime
     {
       get { return _displayedDatetime; }
       set { SetProperty(ref _displayedDatetime, value); }
@@ -52,13 +68,13 @@ namespace Tail2Jump.Objects
     public bool IsValid => Type == LogType.Valid;
 
     public bool HasException => Exception != null;
-    public string ExceptionText => Exception?.ToString();
+    public string? ExceptionText => Exception?.ToString();
 
     public LogInstance()
     {
     }
 
-    public LogInstance(string text, LogType type)
+    public LogInstance(string? text, LogType type)
     {
       _text = text;
       _type = type;
