@@ -13,6 +13,8 @@ namespace Tai2JumpInfra
     string FullDirectoryPath { get; set; }
     int TailerId { get; set; }
     string Filter { get; set; }
+    string Status { get; }
+    bool IsStarted { get; }
     void SetDisplayedName();
   }
 }

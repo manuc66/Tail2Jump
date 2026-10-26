@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Tail2Jump.App.Views.LogTextView"
+             x:CompileBindings="False">
+
+  <UserControl.Styles>
+    <Style Selector="TextBlock.hyperlink">
+      <Setter Property="Foreground" Value="{StaticResource HyperLinkBrush}" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="TextBlock.hyperlink:pointerover">
+      <Setter Property="TextDecorations" Value="Underline" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="Padding" Value="1,0" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+  </UserControl.Styles>
+
+  <ListBox Name="LinesList"
+           ItemsSource="{Binding Lines}"
+           Background="{StaticResource LogBackgroundBrush}"
+           Foreground="{StaticResource LogForegroundBrush}"
+           FontFamily="monospace"
+           FontSize="13"
+           Padding="2"
+           BorderThickness="0"
+           SelectionMode="Multiple"
+           ScrollViewer.HorizontalScrollBarVisibility="Auto"
+           ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <ItemsControl ItemsSource="{Binding Segments}" HorizontalAlignment="Left">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Text}"
+                         Classes.hyperlink="{Binding IsHyperLink}"
+                         PointerPressed="OnSegmentPointerPressed" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
+</UserControl>

@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Tail2Jump.App.Views.NewWatcherWindow"
+        Title="Add new Watcher"
+        Width="560"
+        Height="210"
+        MinWidth="420"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF252526"
+        CanResize="False"
+        x:CompileBindings="False">
+
+  <Grid Margin="14" RowDefinitions="Auto,Auto,Auto,*,Auto" ColumnDefinitions="110,*">
+
+    <TextBlock Grid.Row="0" Grid.Column="0" Text="File / folder path" VerticalAlignment="Center" />
+    <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+      <TextBox Grid.Column="0" Name="PathBox" Watermark="/var/log or /var/log/app.log" />
+      <Button Grid.Column="1" Name="BrowseButton" Content="Browse…" Margin="6,0,0,0" Click="OnBrowseClick" />
+    </Grid>
+
+    <TextBlock Grid.Row="1" Grid.Column="0" Text="File / extension" VerticalAlignment="Center" />
+    <TextBox Grid.Row="1" Grid.Column="1" Name="FilterBox" Watermark="*.log" Margin="0,0,0,10" />
+
+    <CheckBox Grid.Row="2" Grid.Column="1" Name="RecursiveBox" Content="Include subdirectories" />
+
+    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Content="Cancel" MinWidth="100" Click="OnCancelClick" />
+      <Button Content="Start" MinWidth="100" Background="#FF1C7848" Click="OnStartClick" />
+    </StackPanel>
+  </Grid>
+</Window>

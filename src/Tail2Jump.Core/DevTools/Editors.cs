@@ -29,10 +29,24 @@ namespace Be.Manuc66.Library.DevTools
     {
       if (string.IsNullOrWhiteSpace(originalString)) return null;
 
+      originalString = NormalizeLineKeyword(originalString.Trim());
+
       if (TryParseDotNetStyle(originalString, out var dotNetResult)) return dotNetResult;
       if (TryParseColonStyle(originalString, out var colonResult)) return colonResult;
 
       return null;
+    }
+
+    private static string NormalizeLineKeyword(string text)
+    {
+      // "File.cs:line 12" / "File.cs:ligne 12" -> "File.cs:12"
+      var match = System.Text.RegularExpressions.Regex.Match(
+        text, @":(?:line|ligne)\s+(\d+)$",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+      return match.Success
+        ? text.Substring(0, match.Index) + ":" + match.Groups[1].Value
+        : text;
     }
 
     private static bool TryParseDotNetStyle(string text, out FilePathWithLineInfo result)
@@ -146,6 +160,53 @@ namespace Be.Manuc66.Library.DevTools
     }
   }
 
+  /// <summary>
+  /// Opens the file with the desktop default application (no line navigation).
+  /// </summary>
+  public class SystemDefaultOpenWith : IOpenWithInfo
+  {
+    public string DisplayName => "System default application";
+
+    public int TypeSortOrder => 99;
+
+    public bool IsAvailable => true;
+
+    public bool OpenFileAtLine(FilePathWithLineInfo filePathWithLineInfo)
+    {
+      if (filePathWithLineInfo == null) return false;
+
+      string command;
+      if (OperatingSystem.IsWindows()) command = "explorer.exe";
+      else if (OperatingSystem.IsMacOS()) command = "open";
+      else command = "xdg-open";
+
+      try
+      {
+        Process.Start(new ProcessStartInfo(command, $"\"{filePathWithLineInfo.FilePath}\"")
+        {
+          UseShellExecute = false
+        });
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
+    public int CompareTo(IOpenWithInfo other)
+    {
+      if (other == null) return -1;
+      return TypeSortOrder.CompareTo(other.TypeSortOrder);
+    }
+
+    public bool Equals(IOpenWithInfo other) => other is SystemDefaultOpenWith;
+
+    public override bool Equals(object obj) => obj is SystemDefaultOpenWith;
+
+    public override int GetHashCode() => typeof(SystemDefaultOpenWith).GetHashCode();
+  }
+
   public static class ExecutableLocator
   {
     public static string Find(string executable)
@@ -216,6 +277,7 @@ namespace Be.Manuc66.Library.DevTools
         }
       }
 
+      editors.Add(new SystemDefaultOpenWith());
       editors.Sort();
       return editors;
     }

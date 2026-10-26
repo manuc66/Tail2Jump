@@ -1,0 +1,18 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Tail2Jump.App.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
+
+  <Application.Resources>
+    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FF252526" />
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="#FF3F3F46" />
+    <SolidColorBrush x:Key="LogBackgroundBrush" Color="#FF1C1C1C" />
+    <SolidColorBrush x:Key="LogForegroundBrush" Color="#FFB8B7B7" />
+    <SolidColorBrush x:Key="HyperLinkBrush" Color="#FF9ACD32" />
+  </Application.Resources>
+
+</Application>

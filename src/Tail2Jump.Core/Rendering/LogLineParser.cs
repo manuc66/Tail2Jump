@@ -19,6 +19,7 @@ namespace Tail2Jump.Rendering
 
     public LogLineSegmentKind Kind { get; }
     public string Text { get; }
+    public bool IsHyperLink => Kind == LogLineSegmentKind.HyperLink;
   }
 
   /// <summary>

@@ -46,6 +46,10 @@ namespace Tail2Jump.Objects
       set { SetProperty(ref _displayedDatetime, value); }
     }
 
+    public bool IsError => Type == LogType.Error || Type == LogType.Critical;
+    public bool IsException => Type == LogType.Exception;
+    public bool IsValid => Type == LogType.Valid;
+
     public LogInstance()
     {
     }

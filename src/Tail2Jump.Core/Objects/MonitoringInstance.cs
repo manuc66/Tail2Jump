@@ -24,7 +24,26 @@ namespace Tail2Jump.Objects
     public MonitoringInstanceState State
     {
       get { return _state; }
-      set { SetProperty(ref _state, value); }
+      set
+      {
+        if (SetProperty(ref _state, value))
+        {
+          OnPropertyChanged(nameof(Status));
+          OnPropertyChanged(nameof(IsStarted));
+        }
+      }
+    }
+
+    public bool IsStarted => _state is StartedMonitoringInstance;
+
+    public string Status
+    {
+      get
+      {
+        if (_state is StartedMonitoringInstance) return "Started";
+        if (_state is PausedMonitoringInstance) return "Paused";
+        return "Stopped";
+      }
     }
 
     public bool IncludeSubdirectories
