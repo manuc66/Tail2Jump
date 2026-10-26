@@ -19,6 +19,7 @@ namespace Tail2Jump.App.Views
       InitializeComponent();
       AddHandler(DragDrop.DragOverEvent, OnDragOver);
       AddHandler(DragDrop.DropEvent, OnDrop);
+      AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -30,6 +31,23 @@ namespace Tail2Jump.App.Views
       }
 
       base.OnDataContextChanged(e);
+    }
+
+    private void OnKeyDown(object sender, KeyEventArgs e)
+    {
+      if (_viewModel == null) return;
+
+      if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+      {
+        _viewModel.ShowSearch = true;
+        SearchBox.Focus();
+        e.Handled = true;
+      }
+      else if (e.Key == Key.Escape && _viewModel.ShowSearch)
+      {
+        _viewModel.ShowSearch = false;
+        e.Handled = true;
+      }
     }
 
     private void OnWatchersSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -12,10 +12,11 @@ namespace Tail2Jump.Rendering
 
   public class LogLineSegment
   {
-    public LogLineSegment(LogLineSegmentKind kind, string text)
+    public LogLineSegment(LogLineSegmentKind kind, string text, bool isHighlighted = false)
     {
       Kind = kind;
       Text = text;
+      IsHighlighted = isHighlighted;
     }
 
     public LogLineSegmentKind Kind { get; }
@@ -25,6 +26,8 @@ namespace Tail2Jump.Rendering
     public string DisplayText => Text?.Replace(' ', '\u00A0');
 
     public bool IsHyperLink => Kind == LogLineSegmentKind.HyperLink;
+
+    public bool IsHighlighted { get; }
   }
 
   /// <summary>
@@ -38,6 +41,59 @@ namespace Tail2Jump.Rendering
     private const string LineFr = ":ligne";
     private const string LineEn = ":line";
     private const string Space = " ";
+
+    /// <summary>
+    /// Parses a line and highlights the occurrences of <paramref name="searchText"/>.
+    /// When the search text is empty, the result is the same as <see cref="Parse(string)"/>.
+    /// </summary>
+    public static IReadOnlyList<LogLineSegment> Parse(string line, string searchText, bool ignoreCase = true)
+    {
+      if (string.IsNullOrEmpty(searchText))
+      {
+        return Parse(line);
+      }
+
+      var comparison = ignoreCase ? System.StringComparison.OrdinalIgnoreCase : System.StringComparison.Ordinal;
+      var highlighted = new List<LogLineSegment>();
+
+      foreach (var segment in Parse(line))
+      {
+        if (segment.IsHyperLink)
+        {
+          highlighted.Add(segment);
+          continue;
+        }
+
+        AddHighlightedSegments(highlighted, segment.Text, searchText, comparison);
+      }
+
+      return highlighted;
+    }
+
+    private static void AddHighlightedSegments(ICollection<LogLineSegment> segments, string text,
+      string searchText, System.StringComparison comparison)
+    {
+      int index = 0;
+      while (index < text.Length)
+      {
+        int found = text.IndexOf(searchText, index, comparison);
+        if (found < 0)
+        {
+          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text.Substring(index)));
+          break;
+        }
+
+        if (found > index)
+        {
+          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text.Substring(index, found - index)));
+        }
+
+        segments.Add(new LogLineSegment(LogLineSegmentKind.Text,
+          text.Substring(found, searchText.Length), true));
+
+        index = found + searchText.Length;
+      }
+    }
 
     public static IReadOnlyList<LogLineSegment> Parse(string line)
     {

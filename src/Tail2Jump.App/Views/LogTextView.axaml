@@ -11,6 +11,10 @@
     <Style Selector="TextBlock.hyperlink:pointerover">
       <Setter Property="TextDecorations" Value="Underline" />
     </Style>
+    <Style Selector="TextBlock.highlight">
+      <Setter Property="Background" Value="#FFFFD54F" />
+      <Setter Property="Foreground" Value="#FF1C1C1C" />
+    </Style>
     <Style Selector="ListBoxItem">
       <Setter Property="MinHeight" Value="0" />
       <Setter Property="Padding" Value="1,0" />
@@ -43,6 +47,7 @@
             <DataTemplate>
               <TextBlock Text="{Binding DisplayText}"
                          Classes.hyperlink="{Binding IsHyperLink}"
+                         Classes.highlight="{Binding IsHighlighted}"
                          PointerPressed="OnSegmentPointerPressed" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>

@@ -38,7 +38,10 @@ namespace Tail2Jump.ViewModels
     private bool _isPanelCollapsed;
     private string _searchText = string.Empty;
     private bool _searchActivated;
+    private bool _filterActivated;
     private bool _ignoreCase = true;
+    private readonly Be.Manuc66.Library.Threading.TemporisedEvent _searchDebounce =
+      new Be.Manuc66.Library.Threading.TemporisedEvent(200);
     private string _title = BaseTitle;
 
     public MainWindowViewModel(WatcherEngine engine, ILogController log)
@@ -56,6 +59,7 @@ namespace Tail2Jump.ViewModels
 
       _engine.DataUpdated += OnDataUpdated;
       Watchers.CollectionChanged += OnWatchersChanged;
+      _searchDebounce.eHandle += (_, _) => PostToUi(ApplyHighlighting);
 
       CFG.Load();
       RefreshEditors();
@@ -112,7 +116,9 @@ namespace Tail2Jump.ViewModels
       set
       {
         if (!SetProperty(ref _showSearch, value)) return;
-        if (!value) ResetFilter();
+
+        SearchActivated = value;
+        if (!value) FilterActivated = false;
       }
     }
 
@@ -134,16 +140,29 @@ namespace Tail2Jump.ViewModels
       set
       {
         if (!SetProperty(ref _searchText, value)) return;
-        if (SearchActivated) ApplyFilter(value);
+        if (FilterActivated) ApplyFilter(value);
+        ScheduleHighlight();
       }
     }
 
+    /// <summary>Highlights the search text in the displayed lines.</summary>
     public bool SearchActivated
     {
       get { return _searchActivated; }
       set
       {
         if (!SetProperty(ref _searchActivated, value)) return;
+        ScheduleHighlight();
+      }
+    }
+
+    /// <summary>Restricts the displayed lines to the ones matching the search text.</summary>
+    public bool FilterActivated
+    {
+      get { return _filterActivated; }
+      set
+      {
+        if (!SetProperty(ref _filterActivated, value)) return;
         if (value) ApplyFilter(SearchText);
         else ResetFilter();
       }
@@ -152,7 +171,11 @@ namespace Tail2Jump.ViewModels
     public bool IgnoreCase
     {
       get { return _ignoreCase; }
-      set { SetProperty(ref _ignoreCase, value); }
+      set
+      {
+        if (!SetProperty(ref _ignoreCase, value)) return;
+        ScheduleHighlight();
+      }
     }
 
     public IOpenWithInfo OpenIn
@@ -257,6 +280,38 @@ namespace Tail2Jump.ViewModels
       _engine.Clear();
     }
 
+    private void ScheduleHighlight()
+    {
+      if (string.IsNullOrEmpty(_searchText) || !_searchActivated)
+      {
+        ApplyHighlighting();
+        return;
+      }
+
+      _searchDebounce.Set();
+    }
+
+    private void ApplyHighlighting()
+    {
+      var searchText = _searchActivated ? _searchText : null;
+
+      foreach (var line in _lines)
+      {
+        line.ApplySearch(searchText, _ignoreCase);
+      }
+    }
+
+    private void PostToUi(Action action)
+    {
+      if (_uiContext == null)
+      {
+        action();
+        return;
+      }
+
+      _uiContext.Post(_ => action(), null);
+    }
+
     private void ApplyFilter(string filter)
     {
       _engine.ApplyFilter(filter);
@@ -271,13 +326,7 @@ namespace Tail2Jump.ViewModels
 
     private void OnDataUpdated()
     {
-      if (_uiContext == null)
-      {
-        RefreshLines();
-        return;
-      }
-
-      _uiContext.Post(_ => RefreshLines(), null);
+      PostToUi(() => RefreshLines());
     }
 
     public void RefreshLines(bool reset = false)
@@ -306,7 +355,13 @@ namespace Tail2Jump.ViewModels
 
         foreach (var rawLine in batch)
         {
-          _lines.Add(new LogLineViewModel(rawLine));
+          var line = new LogLineViewModel(rawLine);
+          if (_searchActivated && !string.IsNullOrEmpty(_searchText))
+          {
+            line.ApplySearch(_searchText, _ignoreCase);
+          }
+
+          _lines.Add(line);
         }
 
         _renderedLineCount += batch.Length;
@@ -375,6 +430,7 @@ namespace Tail2Jump.ViewModels
     public void Dispose()
     {
       _engine.DataUpdated -= OnDataUpdated;
+      _searchDebounce.Dispose();
       _engine.Dispose();
     }
   }
