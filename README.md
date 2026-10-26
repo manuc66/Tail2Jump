@@ -1,48 +1,69 @@
 # Tail2Jump
 
-Outil de suivi de logs en temps réel : surveillance de plusieurs fichiers, affichage
-en continu, filtrage, recherche et ouverture du fichier dans l'éditeur à la ligne
-indiquée.
+Real-time log tailing tool: watch several files, stream their new lines, filter and
+search the output, and open the referenced source file at the right line.
 
-## Deux implémentations
+![CI](https://github.com/manuc66/Tail2Jump/actions/workflows/ci.yml/badge.svg)
 
-| Répertoire | Technologie | Plateformes |
+## Two implementations
+
+| Directory | Technology | Platforms |
 |---|---|---|
-| `Tail2Jump/` (historique) | WPF / .NET Framework 4.5.1 | Windows uniquement |
-| `src/` (portage) | .NET 10 / Avalonia | Windows, Linux, macOS |
+| `Tail2Jump/` (legacy) | WPF / .NET Framework 4.5.1 | Windows only |
+| `src/` (port) | .NET 10 / Avalonia | Windows, Linux, macOS |
 
-Le portage multiplateforme est **en cours**. La logique métier (tail de fichiers,
-cache de lignes, moteur de surveillance, configuration) est déjà portée et testée ;
-l'interface Avalonia arrive progressivement.
+The cross-platform port is **in progress**. The business logic (file tailing, line
+cache, watcher engine, configuration) is already ported and covered by tests; the
+Avalonia UI is being rebuilt feature by feature.
 
-## Construire et tester le portage
+## Build and test
 
-Prérequis : SDK .NET 10.
+Requires the .NET 10 SDK.
 
 ```bash
 dotnet build Tail2Jump.Avalonia.sln
 dotnet test  Tail2Jump.Avalonia.sln
 ```
 
-Lancer l'application (Linux, Windows, macOS) :
+The legacy Windows solution (`Tail2Jump.sln`) can still be built with Visual Studio
+on Windows.
+
+## Run the Avalonia application
 
 ```bash
 dotnet run --project src/Tail2Jump.App
-# ou en ouvrant directement un fichier / dossier :
+
+# Open a file or a directory straight away:
 dotnet run --project src/Tail2Jump.App -- /var/log
 ```
 
-L'ancienne solution Windows (`Tail2Jump.sln`) reste construisible avec Visual Studio
-sous Windows.
-
-## Structure du portage
+## Project layout
 
 ```
 src/
-  Tail2Jump.Core/        logique métier sans dépendance UI
-  Tail2Jump.Core.Tests/  tests NUnit
+  Tail2Jump.Core/        UI-free business logic
+  Tail2Jump.Core.Tests/  NUnit test suite
+  Tail2Jump.App/         Avalonia desktop application
 ```
 
-La configuration est stockée en JSON dans `$XDG_CONFIG_HOME/Tail2Jump/SaveConfig.json`
-(ou `~/.config/Tail2Jump/SaveConfig.json`). Le chemin peut être forcé avec la variable
-d'environnement `TAIL2JUMP_CONFIG`.
+## Configuration
+
+Configuration is stored as JSON in `$XDG_CONFIG_HOME/Tail2Jump/SaveConfig.json`
+(or `~/.config/Tail2Jump/SaveConfig.json`) and holds the watcher history and filter
+history. The path can be overridden with the `TAIL2JUMP_CONFIG` environment variable.
+
+## Status
+
+Done:
+- cross-platform file tailer (FileSystemWatcher based)
+- thread-safe line cache and watcher engine
+- JSON configuration
+- Avalonia shell: watcher list, log view, filtering, console, editor detection,
+  drag and drop, new-watcher dialog, `file:line` links
+
+Still to port:
+- advanced watcher dialog
+- search highlighting
+- window blink / notifications
+- stress-test and chart panels
+- UI tests
