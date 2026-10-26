@@ -24,6 +24,14 @@ dotnet build Tail2Jump.Avalonia.sln
 dotnet test  Tail2Jump.Avalonia.sln
 ```
 
+Lancer l'application (Linux, Windows, macOS) :
+
+```bash
+dotnet run --project src/Tail2Jump.App
+# ou en ouvrant directement un fichier / dossier :
+dotnet run --project src/Tail2Jump.App -- /var/log
+```
+
 L'ancienne solution Windows (`Tail2Jump.sln`) reste construisible avec Visual Studio
 sous Windows.
 
