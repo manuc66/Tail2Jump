@@ -35,6 +35,7 @@ namespace Tail2Jump.ViewModels
     private bool _flashWindow;
     private bool _showSearch;
     private bool _showConsole;
+    private bool _showPerformance;
     private bool _isPanelCollapsed;
     private string _searchText = string.Empty;
     private bool _searchActivated;
@@ -57,6 +58,8 @@ namespace Tail2Jump.ViewModels
       StopCommand = new RelayCommand(StopWatched, () => CanStop);
       ClearCommand = new RelayCommand(Clear, () => CanClear);
       TogglePanelCommand = new RelayCommand(() => IsPanelCollapsed = !IsPanelCollapsed);
+
+      Performance = new PerformanceViewModel(new Tail2Jump.Monitoring.SystemMetrics(), _uiContext);
 
       _engine.DataUpdated += OnDataUpdated;
       Watchers.CollectionChanged += OnWatchersChanged;
@@ -134,6 +137,18 @@ namespace Tail2Jump.ViewModels
       get { return _showConsole; }
       set { SetProperty(ref _showConsole, value); }
     }
+
+    public bool ShowPerformance
+    {
+      get { return _showPerformance; }
+      set
+      {
+        if (!SetProperty(ref _showPerformance, value)) return;
+        Performance.IsRunning = value;
+      }
+    }
+
+    public PerformanceViewModel Performance { get; }
 
     public bool IsPanelCollapsed
     {
@@ -475,6 +490,7 @@ namespace Tail2Jump.ViewModels
     {
       _engine.DataUpdated -= OnDataUpdated;
       _searchDebounce.Dispose();
+      Performance.Dispose();
       _engine.Dispose();
     }
   }

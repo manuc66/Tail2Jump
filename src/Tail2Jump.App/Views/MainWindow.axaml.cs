@@ -135,6 +135,12 @@ namespace Tail2Jump.App.Views
         _viewModel.ShowConsole = !_viewModel.ShowConsole;
         e.Handled = true;
       }
+      else if (e.Key == Key.P && e.KeyModifiers.HasFlag(KeyModifiers.Control) &&
+               e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+      {
+        _viewModel.ShowPerformance = !_viewModel.ShowPerformance;
+        e.Handled = true;
+      }
       else if (!textBoxHasFocus && e.Key == Key.C && e.KeyModifiers == KeyModifiers.Control)
       {
         LogView.CopySelectionOrAll();

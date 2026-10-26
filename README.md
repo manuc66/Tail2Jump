@@ -64,10 +64,12 @@ Done:
 - log view: line selection and copy (`Ctrl+C` / `Ctrl+A`), smart auto-scroll that
   pauses when you scroll up
 - window attention: title flash on Linux/macOS, native `FlashWindowEx` on Windows
+- portable performance panel: CPU and process memory charts (`/proc` on Linux,
+  `GetSystemTimes` on Windows, `sysctl` on macOS)
 - shortcuts: `Ctrl+F` (search), `Ctrl+N` (new watcher), `Ctrl+Shift+N` (multi),
   `Ctrl+Shift+C` (console)
 
 Still to port:
 - per-watcher notifications and paused state
-- stress-test and chart panels
+- stress-test panel (CPU burner / temperature)
 - UI tests

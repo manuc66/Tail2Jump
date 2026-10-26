@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="using:Tail2Jump.App.Views"
+        xmlns:charts="using:Tail2Jump.App.Charts"
         xmlns:infra="using:Tai2JumpInfra"
         x:Class="Tail2Jump.App.Views.MainWindow"
         Title="{Binding Title}"
@@ -81,6 +82,7 @@
           <StackPanel Grid.Row="1" Spacing="2" Margin="0,8,0,0">
             <CheckBox Content="Search" IsChecked="{Binding ShowSearch}" FontSize="12" />
             <CheckBox Content="Console" IsChecked="{Binding ShowConsole}" FontSize="12" />
+            <CheckBox Content="Performance" IsChecked="{Binding ShowPerformance}" FontSize="12" />
           </StackPanel>
         </Grid>
       </Grid>
@@ -97,7 +99,7 @@
         <TextBlock Text="{Binding PanelToggleGlyph}" FontSize="16" Foreground="#FFB8B7B7" />
       </Button>
 
-      <Grid Grid.Column="1" RowDefinitions="*,Auto,Auto,Auto">
+      <Grid Grid.Column="1" RowDefinitions="*,Auto,Auto,Auto,Auto">
 
         <views:LogTextView Grid.Row="0" Name="LogView" Margin="2" />
 
@@ -165,8 +167,48 @@
           </Grid>
         </Border>
 
-        <!-- Debug console -->
+        <!-- Performance charts -->
         <Border Grid.Row="3"
+                IsVisible="{Binding ShowPerformance}"
+                Height="178"
+                Background="{StaticResource PanelBackgroundBrush}"
+                BorderBrush="{StaticResource PanelBorderBrush}"
+                BorderThickness="0,1,0,0">
+          <Grid ColumnDefinitions="*,*" Margin="6">
+            <StackPanel Grid.Column="0" Margin="0,0,4,0">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="CPU" FontWeight="Bold" Foreground="#FF9ACD32" />
+                <TextBlock Text="{Binding Performance.CpuDisplay}" Foreground="White" />
+              </StackPanel>
+              <charts:SparklineChart Height="128"
+                                     Margin="0,4,0,0"
+                                     Values="{Binding Performance.Cpu.Values}"
+                                     Maximum="100"
+                                     Stroke="#FF9ACD32"
+                                     Fill="#339ACD32" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="4,0,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Memory" FontWeight="Bold" Foreground="#FF64B5F6" />
+                <TextBlock Text="{Binding Performance.MemoryDisplay}" Foreground="White" />
+                <TextBlock Text="{Binding Performance.MemoryDetails}"
+                           Foreground="#FF888888"
+                           FontSize="11"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+              <charts:SparklineChart Height="128"
+                                     Margin="0,4,0,0"
+                                     Values="{Binding Performance.Memory.Values}"
+                                     AutoScale="True"
+                                     Stroke="#FF64B5F6"
+                                     Fill="#3364B5F6" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Debug console -->
+        <Border Grid.Row="4"
                 IsVisible="{Binding ShowConsole}"
                 Height="150"
                 Background="{StaticResource PanelBackgroundBrush}"
