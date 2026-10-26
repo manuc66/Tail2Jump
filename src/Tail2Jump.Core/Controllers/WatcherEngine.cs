@@ -20,6 +20,7 @@ namespace Tail2Jump.Controllers
   public class WatcherEngine : IDisposable
   {
     private readonly object _locker = new object();
+    private readonly object _filterLock = new object();
     private readonly Dictionary<int, Tailer> _tailers = new Dictionary<int, Tailer>();
     private readonly ITailLineCache _fileAccessor;
     private readonly ITailLineCache _fileAccessorFiltered;
@@ -171,6 +172,8 @@ namespace Tail2Jump.Controllers
 
     public void RemoveWatcher(ICollection<IMonitoringInstance> toRemove)
     {
+      if (toRemove == null) return;
+
       foreach (var item in toRemove.ToList())
       {
         RemoveWatcher(item);
@@ -195,8 +198,12 @@ namespace Tail2Jump.Controllers
 
     public void Clear()
     {
-      _fileAccessor.Clear();
-      _fileAccessorFiltered.Clear();
+      lock (_filterLock)
+      {
+        _fileAccessor.Clear();
+        _fileAccessorFiltered.Clear();
+      }
+
       DataUpdated?.Invoke();
     }
 
@@ -208,10 +215,15 @@ namespace Tail2Jump.Controllers
         return;
       }
 
-      _filterValue = filter;
-      _fileAccessorFiltered.Clear();
-      _fileAccessorFiltered.AddData(_fileAccessor, filter);
-      _isFilterActivated = true;
+      // Hold the lock while replaying: a line being appended concurrently must
+      // be either in the replay or added by the live handler, never both.
+      lock (_filterLock)
+      {
+        _filterValue = filter;
+        _fileAccessorFiltered.Clear();
+        _fileAccessorFiltered.AddData(_fileAccessor, filter);
+        _isFilterActivated = true;
+      }
 
       FilterChanged?.Invoke();
       DataUpdated?.Invoke();
@@ -219,8 +231,11 @@ namespace Tail2Jump.Controllers
 
     public void ResetFilter()
     {
-      _isFilterActivated = false;
-      _filterValue = string.Empty;
+      lock (_filterLock)
+      {
+        _isFilterActivated = false;
+        _filterValue = string.Empty;
+      }
 
       FilterChanged?.Invoke();
       DataUpdated?.Invoke();
@@ -228,15 +243,20 @@ namespace Tail2Jump.Controllers
 
     private void OnMoreData(Tailer sender, TailEventData newData)
     {
-      _fileAccessor.AddData(newData);
+      if (_disposed) return;
 
-      if (string.IsNullOrEmpty(_filterValue))
+      lock (_filterLock)
       {
-        _fileAccessorFiltered.Clear();
-      }
-      else
-      {
-        _fileAccessorFiltered.AddData(newData, _filterValue);
+        _fileAccessor.AddData(newData);
+
+        if (string.IsNullOrEmpty(_filterValue))
+        {
+          _fileAccessorFiltered.Clear();
+        }
+        else
+        {
+          _fileAccessorFiltered.AddData(newData, _filterValue);
+        }
       }
 
       DataUpdated?.Invoke();
@@ -258,8 +278,11 @@ namespace Tail2Jump.Controllers
         _tailers.Clear();
       }
 
-      _fileAccessor.Dispose();
-      _fileAccessorFiltered.Dispose();
+      lock (_filterLock)
+      {
+        _fileAccessor.Dispose();
+        _fileAccessorFiltered.Dispose();
+      }
     }
   }
 }

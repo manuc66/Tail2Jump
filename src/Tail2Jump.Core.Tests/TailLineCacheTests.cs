@@ -97,6 +97,27 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void AddData_WithNullContent_DoesNotThrow()
+    {
+      using var cache = new TailLineCache();
+
+      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", null, 0, 0)));
+      Assert.That(cache.LineIndexed, Is.Zero);
+    }
+
+    [Test]
+    public void UsingTheCacheAfterDispose_DoesNotThrow()
+    {
+      var cache = new TailLineCache();
+      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+      cache.Dispose();
+
+      Assert.DoesNotThrow(() => cache.GetLines(0, 1));
+      Assert.DoesNotThrow(() => cache.Clear());
+      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", "more", 0, 0)));
+    }
+
+    [Test]
     public void Clear_RemovesEverything()
     {
       using var cache = new TailLineCache();

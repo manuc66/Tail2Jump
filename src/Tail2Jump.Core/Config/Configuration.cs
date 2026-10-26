@@ -62,6 +62,8 @@ namespace Tail2Jump.Config.Objects
 
     public static bool Save()
     {
+      var temporaryPath = ConfigFilePath + ".tmp";
+
       try
       {
         var directory = Path.GetDirectoryName(ConfigFilePath);
@@ -73,13 +75,38 @@ namespace Tail2Jump.Config.Objects
         Conf ??= new AppConfig();
 
         var json = JsonSerializer.Serialize(Conf, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(ConfigFilePath, json);
+
+        // Write to a temporary file first so an interrupted save cannot corrupt
+        // the configuration.
+        File.WriteAllText(temporaryPath, json);
+        File.Move(temporaryPath, ConfigFilePath, overwrite: true);
         return true;
       }
-      catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is JsonException)
+      catch (Exception e) when (e is IOException || e is UnauthorizedAccessException ||
+                                e is JsonException || e is ArgumentException || e is NotSupportedException)
       {
+        TryDelete(temporaryPath);
         Log.LogError(e, "Fail to save config to {Path}", ConfigFilePath);
         return false;
+      }
+    }
+
+    private static void Normalize(AppConfig config)
+    {
+      config.Search ??= new ListCriterianSearch();
+      config.DirectoryHistory ??= new SerialStringList();
+      config.FilterHistory ??= new SerialStringList();
+    }
+
+    private static void TryDelete(string path)
+    {
+      try
+      {
+        if (File.Exists(path)) File.Delete(path);
+      }
+      catch (Exception)
+      {
+        // Best effort only.
       }
     }
 
@@ -96,9 +123,11 @@ namespace Tail2Jump.Config.Objects
         var json = File.ReadAllText(ConfigFilePath);
         var deserialized = JsonSerializer.Deserialize<AppConfig>(json);
         Conf = deserialized ?? new AppConfig();
+        Normalize(Conf);
         return true;
       }
-      catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is JsonException)
+      catch (Exception e) when (e is IOException || e is UnauthorizedAccessException ||
+                                e is JsonException || e is ArgumentException || e is NotSupportedException)
       {
         Conf = new AppConfig();
         Log.LogError(e, "Fail to load config from {Path}", ConfigFilePath);

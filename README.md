@@ -42,8 +42,9 @@ dotnet run --project src/Tail2Jump.App -- /var/log
 ```
 src/
   Tail2Jump.Core/        UI-free business logic
-  Tail2Jump.Core.Tests/  NUnit test suite
+  Tail2Jump.Core.Tests/  NUnit tests for the business logic
   Tail2Jump.App/         Avalonia desktop application
+  Tail2Jump.App.Tests/   NUnit tests for the view models
 ```
 
 ## Configuration

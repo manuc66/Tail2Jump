@@ -36,56 +36,73 @@ namespace Be.Manuc66.Library.FileIO
     {
       if (string.IsNullOrWhiteSpace(ParentDirectory)) return false;
 
-      string directoryName;
-      if (Directory.Exists(ParentDirectory))
+      try
       {
-        directoryName = ParentDirectory;
-        if (string.IsNullOrWhiteSpace(Filter)) Filter = "*";
-      }
-      else
-      {
-        var targetFile = new FileInfo(ParentDirectory);
-        directoryName = targetFile.DirectoryName;
-        if (string.IsNullOrWhiteSpace(Filter)) Filter = targetFile.Name;
-      }
+        string directoryName;
+        if (Directory.Exists(ParentDirectory))
+        {
+          directoryName = Path.GetFullPath(ParentDirectory);
+          if (string.IsNullOrWhiteSpace(Filter)) Filter = "*";
+        }
+        else
+        {
+          var targetFile = new FileInfo(ParentDirectory);
+          directoryName = targetFile.DirectoryName;
+          if (string.IsNullOrWhiteSpace(Filter)) Filter = targetFile.Name;
+        }
 
-      if (directoryName == null || !Directory.Exists(directoryName))
+        if (directoryName == null) return false;
+
+        directoryName = Path.GetFullPath(directoryName);
+        if (!Directory.Exists(directoryName)) return false;
+
+        ParentDirectory = directoryName;
+
+        StopWatcher();
+
+        lock (_monitorPreviousSeekPosition)
+        {
+          _previousSeekPositions.Clear();
+        }
+
+        var enumerationOptions = new EnumerationOptions
+        {
+          RecurseSubdirectories = IncludeSubdirectories,
+          IgnoreInaccessible = true,
+          MatchType = MatchType.Simple,
+          MatchCasing = MatchCasing.PlatformDefault
+        };
+
+        foreach (string filePath in Directory.EnumerateFiles(directoryName, Filter, enumerationOptions))
+        {
+          StorePreviousPosition(filePath, GetFileActualLength(filePath));
+        }
+
+        _fileSystemWatcher = new FileSystemWatcher
+        {
+          Path = ParentDirectory,
+          NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.Size |
+                         NotifyFilters.Attributes | NotifyFilters.FileName | NotifyFilters.DirectoryName |
+                         NotifyFilters.CreationTime | NotifyFilters.Security,
+          Filter = Filter,
+          IncludeSubdirectories = IncludeSubdirectories
+        };
+
+        _fileSystemWatcher.Changed += TargetFileChanged;
+        _fileSystemWatcher.Created += TargetFileChanged;
+        _fileSystemWatcher.Deleted += TargetFileDeleted;
+        _fileSystemWatcher.Error += FileSystemWatcherError;
+        _fileSystemWatcher.Renamed += FileSystemWatcherRenamed;
+        _fileSystemWatcher.EnableRaisingEvents = true;
+
+        return true;
+      }
+      catch (Exception error)
       {
+        _log.LogError(error, "Failed to watch {Directory} (filter: {Filter})", ParentDirectory, Filter);
+        StopWatcher();
         return false;
       }
-      ParentDirectory = directoryName;
-
-      StopWatcher();
-
-      lock (_monitorPreviousSeekPosition)
-      {
-        _previousSeekPositions.Clear();
-      }
-
-      foreach (string filePath in Directory.EnumerateFiles(directoryName, Filter,
-        IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
-      {
-        StorePreviousPosition(filePath, GetFileActualLength(filePath));
-      }
-
-      _fileSystemWatcher = new FileSystemWatcher
-      {
-        Path = ParentDirectory,
-        NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.Size |
-                       NotifyFilters.Attributes | NotifyFilters.FileName | NotifyFilters.DirectoryName |
-                       NotifyFilters.CreationTime | NotifyFilters.Security,
-        Filter = string.IsNullOrWhiteSpace(Filter) ? "*" : Filter,
-        IncludeSubdirectories = IncludeSubdirectories
-      };
-
-      _fileSystemWatcher.Changed += TargetFileChanged;
-      _fileSystemWatcher.Created += TargetFileChanged;
-      _fileSystemWatcher.Deleted += TargetFileDeleted;
-      _fileSystemWatcher.Error += FileSystemWatcherError;
-      _fileSystemWatcher.Renamed += FileSystemWatcherRenamed;
-      _fileSystemWatcher.EnableRaisingEvents = true;
-
-      return true;
     }
 
     private long GetFileActualLength(string filePath)
@@ -225,7 +242,24 @@ namespace Be.Manuc66.Library.FileIO
 
         string toShow = string.Join(Environment.NewLine, completeLines);
 
-        eMoreData?.Invoke(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
+        var tailEvent = new TailEventData(file, toShow, fileSeekPos, byteConsumed);
+        var handlers = eMoreData;
+        if (handlers != null)
+        {
+          // Invoke each subscriber separately: one failing handler must neither
+          // take down the watcher thread nor prevent the other handlers.
+          foreach (Action<Tailer, TailEventData> handler in handlers.GetInvocationList())
+          {
+            try
+            {
+              handler(this, tailEvent);
+            }
+            catch (Exception error)
+            {
+              _log.LogError(error, "Tail event handler failed for {Path}", fsEvent.FullPath);
+            }
+          }
+        }
       }
     }
 

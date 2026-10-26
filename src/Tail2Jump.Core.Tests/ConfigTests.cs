@@ -79,6 +79,37 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void Load_WithNullCollections_NormalizesThem()
+    {
+      Directory.CreateDirectory(Path.GetDirectoryName(_configPath));
+      File.WriteAllText(_configPath, "{\"Search\":null,\"DirectoryHistory\":null,\"FilterHistory\":null}");
+
+      Assert.That(CFG.Load(), Is.True);
+      Assert.That(CFG.Conf.Search, Is.Not.Null);
+      Assert.That(CFG.Conf.DirectoryHistory, Is.Not.Null);
+      Assert.That(CFG.Conf.FilterHistory, Is.Not.Null);
+      Assert.DoesNotThrow(() => CFG.RememberCriterion("/var/log", "*.log", false));
+    }
+
+    [Test]
+    public void Save_DoesNotLeaveATemporaryFile()
+    {
+      Directory.CreateDirectory(Path.GetDirectoryName(_configPath));
+
+      Assert.That(CFG.Save(), Is.True);
+      Assert.That(File.Exists(_configPath), Is.True);
+      Assert.That(File.Exists(_configPath + ".tmp"), Is.False);
+    }
+
+    [Test]
+    public void Save_WithAnInvalidPath_ReturnsFalseInsteadOfThrowing()
+    {
+      CFG.ConfigFilePath = string.Empty;
+
+      Assert.That(CFG.Save(), Is.False);
+    }
+
+    [Test]
     public void Load_WithMissingFile_InitializesAnEmptyConfiguration()
     {
       Assert.That(CFG.Load(), Is.False);

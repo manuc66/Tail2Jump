@@ -78,7 +78,14 @@ namespace Be.Manuc66.Library.Events
 
       foreach (var subscription in snapshot)
       {
-        subscription(payload);
+        try
+        {
+          subscription(payload);
+        }
+        catch (Exception)
+        {
+          // A failing subscriber must not prevent the others from being notified.
+        }
       }
     }
   }

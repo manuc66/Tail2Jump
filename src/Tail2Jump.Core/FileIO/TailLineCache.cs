@@ -21,7 +21,7 @@ namespace Be.Manuc66.Library.FileIO
 
     public string[] GetLines(int start, int len)
     {
-      if (len < 0) return new string[0];
+      if (len < 0 || _locker == null) return new string[0];
 
       string[] result;
       _locker.EnterReadLock();
@@ -46,6 +46,8 @@ namespace Be.Manuc66.Library.FileIO
 
     public void Clear()
     {
+      if (_locker == null) return;
+
       _locker.EnterWriteLock();
       try
       {
@@ -60,7 +62,7 @@ namespace Be.Manuc66.Library.FileIO
 
     public void AddData(TailEventData tailData, string filter = null)
     {
-      if (tailData == null) return;
+      if (tailData?.NewLines == null || _locker == null) return;
 
       _locker.EnterWriteLock();
       try
@@ -98,7 +100,7 @@ namespace Be.Manuc66.Library.FileIO
 
     public void AddData(ITailLineCache other, string filter)
     {
-      if (other == null) return;
+      if (other == null || _locker == null) return;
       if (string.IsNullOrEmpty(filter)) filter = null;
 
       string[] lines = other.GetLines(0, other.LineIndexed);

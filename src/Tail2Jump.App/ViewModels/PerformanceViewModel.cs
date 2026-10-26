@@ -81,6 +81,8 @@ namespace Tail2Jump.ViewModels
     /// <summary>Adds one sample. Public so it can be driven by tests or a debugger.</summary>
     public void SampleOnce()
     {
+      if (_disposed) return;
+
       double cpu = _metrics.GetCpuUsagePercent();
       double memoryMb = _metrics.GetProcessMemoryBytes() / (1024.0 * 1024.0);
 

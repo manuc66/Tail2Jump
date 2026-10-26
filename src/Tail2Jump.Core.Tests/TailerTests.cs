@@ -131,6 +131,65 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void Start_WithARelativePath_ResolvesIt()
+    {
+      var relativePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), _directory);
+      using var tailer = new Tailer { ParentDirectory = relativePath, Filter = "*.log" };
+
+      Assert.That(tailer.Start(), Is.True);
+      Assert.That(tailer.ParentDirectory, Is.EqualTo(Path.GetFullPath(_directory)));
+    }
+
+    [Test]
+    public void Start_WithAnUnreadableSubdirectory_DoesNotThrow()
+    {
+      var lockedDirectory = Path.Combine(_directory, "locked");
+      Directory.CreateDirectory(lockedDirectory);
+      File.WriteAllText(Path.Combine(lockedDirectory, "secret.log"), "hidden");
+      File.SetUnixFileMode(lockedDirectory, UnixFileMode.None);
+
+      try
+      {
+        using var tailer = new Tailer
+        {
+          ParentDirectory = _directory,
+          Filter = "*.log",
+          IncludeSubdirectories = true
+        };
+
+        Assert.That(() => tailer.Start(), Throws.Nothing);
+      }
+      finally
+      {
+        if (!OperatingSystem.IsWindows())
+        {
+          File.SetUnixFileMode(lockedDirectory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        }
+      }
+    }
+
+    [Test]
+    public void AThrowingSubscriber_DoesNotPreventOtherSubscribers()
+    {
+      bool delivered = false;
+      using var signal = new ManualResetEventSlim(false);
+
+      using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };
+      tailer.eMoreData += (_, _) => throw new InvalidOperationException("boom");
+      tailer.eMoreData += (_, _) =>
+      {
+        delivered = true;
+        signal.Set();
+      };
+
+      Assert.That(tailer.Start(), Is.True);
+      File.AppendAllText(_file, "line" + Environment.NewLine);
+
+      Assert.That(signal.Wait(TimeSpan.FromSeconds(10)), Is.True);
+      Assert.That(delivered, Is.True);
+    }
+
+    [Test]
     public void Stop_IsIdempotent()
     {
       using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };
