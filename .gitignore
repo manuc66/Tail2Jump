@@ -18,3 +18,7 @@ obj
 TestResults
 packages
 /.nuget
+.idea
+.vs
+*.DotSettings.user
+SaveConfig.json
