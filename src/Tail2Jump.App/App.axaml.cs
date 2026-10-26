@@ -38,6 +38,14 @@ namespace Tail2Jump.App
         var window = new MainWindow { DataContext = viewModel };
         desktop.MainWindow = window;
         desktop.ShutdownRequested += (_, _) => viewModel.Dispose();
+
+        foreach (var argument in desktop.Args ?? Array.Empty<string>())
+        {
+          if (System.IO.File.Exists(argument) || System.IO.Directory.Exists(argument))
+          {
+            viewModel.CreateWatcher(argument, "*", false);
+          }
+        }
       }
 
       base.OnFrameworkInitializationCompleted();

@@ -22,7 +22,7 @@
            ItemsSource="{Binding Lines}"
            Background="{StaticResource LogBackgroundBrush}"
            Foreground="{StaticResource LogForegroundBrush}"
-           FontFamily="monospace"
+           FontFamily="DejaVu Sans Mono"
            FontSize="13"
            Padding="2"
            BorderThickness="0"
@@ -41,7 +41,7 @@
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Text}"
+              <TextBlock Text="{Binding DisplayText}"
                          Classes.hyperlink="{Binding IsHyperLink}"
                          PointerPressed="OnSegmentPointerPressed" />
             </DataTemplate>

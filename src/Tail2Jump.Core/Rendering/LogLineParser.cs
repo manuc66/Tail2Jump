@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Tail2Jump.Rendering
@@ -19,6 +20,10 @@ namespace Tail2Jump.Rendering
 
     public LogLineSegmentKind Kind { get; }
     public string Text { get; }
+
+    /// <summary>Text with non-breaking spaces, so the UI keeps the indentation.</summary>
+    public string DisplayText => Text?.Replace(' ', '\u00A0');
+
     public bool IsHyperLink => Kind == LogLineSegmentKind.HyperLink;
   }
 
@@ -84,7 +89,7 @@ namespace Tail2Jump.Rendering
     {
       if (textToAdd.Length == 0) return;
 
-      segments.Add(new LogLineSegment(LogLineSegmentKind.Text, textToAdd.ToString().TrimEnd()));
+      segments.Add(new LogLineSegment(LogLineSegmentKind.Text, textToAdd.ToString()));
       textToAdd.Clear();
     }
 
@@ -92,6 +97,10 @@ namespace Tail2Jump.Rendering
     {
       int colon = word.LastIndexOf(':');
       if (colon <= 0 || colon >= word.Length - 1) return false;
+
+      var pathPart = word.Substring(0, colon);
+      // Avoid treating timestamps such as "23:50:01" as file locations.
+      if (!pathPart.Contains('.') || pathPart.All(char.IsDigit) || pathPart.Contains(':')) return false;
 
       var lineText = word.Substring(colon + 1);
       return int.TryParse(lineText, out int lineNumber) && lineNumber > 0;
