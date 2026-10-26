@@ -1,0 +1,18 @@
+using System.ComponentModel;
+using Tai2JumpInfra.MonitoringInstanceStates;
+
+namespace Tai2JumpInfra
+{
+  public interface IMonitoringInstance : INotifyPropertyChanged
+  {
+    bool IsOnScreen { get; set; }
+    MonitoringInstanceState State { get; set; }
+    bool IncludeSubdirectories { get; set; }
+    bool Notified { get; set; }
+    string TitleName { get; set; }
+    string FullDirectoryPath { get; set; }
+    int TailerId { get; set; }
+    string Filter { get; set; }
+    void SetDisplayedName();
+  }
+}
