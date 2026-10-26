@@ -23,13 +23,15 @@ namespace Be.Manuc66.Library.Collections
 
     private void Invoke(Action action)
     {
-      if (_context == null)
+      // Already on the owning thread (or no synchronization context): run inline so
+      // that Count/Contains are up to date as soon as Add/Remove returns.
+      if (_context == null || ReferenceEquals(SynchronizationContext.Current, _context))
       {
         action();
         return;
       }
 
-      _context.Post(_ => action(), null);
+      _context.Send(_ => action(), null);
     }
 
     protected override void ClearItems()
@@ -158,9 +160,11 @@ namespace Be.Manuc66.Library.Collections
         _lock.EnterWriteLock();
         try
         {
+          // Use the base implementation: calling Add() here would try to take
+          // the (non-recursive) write lock a second time.
           foreach (var item in toAppend)
           {
-            Add(item);
+            base.InsertItem(Count, item);
           }
         }
         finally

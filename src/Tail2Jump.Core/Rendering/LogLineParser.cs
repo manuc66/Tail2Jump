@@ -156,7 +156,9 @@ namespace Tail2Jump.Rendering
 
       var pathPart = word.Substring(0, colon);
       // Avoid treating timestamps such as "23:50:01" as file locations.
-      if (!pathPart.Contains('.') || pathPart.All(char.IsDigit) || pathPart.Contains(':')) return false;
+      if (!pathPart.Contains('.') || pathPart.All(char.IsDigit)) return false;
+      // Do not treat URLs such as "https://host:443" as file locations.
+      if (pathPart.Contains("://")) return false;
 
       var lineText = word.Substring(colon + 1);
       return int.TryParse(lineText, out int lineNumber) && lineNumber > 0;

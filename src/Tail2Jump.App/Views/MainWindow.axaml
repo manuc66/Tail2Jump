@@ -148,7 +148,7 @@
             <TextBox Grid.Column="0"
                      Name="SearchBox"
                      Text="{Binding SearchText}"
-                     Watermark="Filter the displayed lines…"
+                     PlaceholderText="Filter the displayed lines…"
                      Margin="0,0,6,0" />
             <CheckBox Grid.Column="1"
                       Content="Highlight"

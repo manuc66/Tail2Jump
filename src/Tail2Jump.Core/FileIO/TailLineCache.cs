@@ -7,6 +7,8 @@ namespace Be.Manuc66.Library.FileIO
 {
   public class TailLineCache : ITailLineCache
   {
+    private static readonly string[] NewLineSeparators = { "\r\n", "\n", "\r" };
+
     private ReaderWriterLockSlim _locker;
     private List<string> _cache = new List<string>();
 
@@ -19,6 +21,8 @@ namespace Be.Manuc66.Library.FileIO
 
     public string[] GetLines(int start, int len)
     {
+      if (len < 0) return new string[0];
+
       string[] result;
       _locker.EnterReadLock();
       try
@@ -61,7 +65,7 @@ namespace Be.Manuc66.Library.FileIO
       _locker.EnterWriteLock();
       try
       {
-        string[] lines = tailData.NewLines.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = tailData.NewLines.Split(NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
 
         if (filter == null ||
             tailData.FileName.ToLower(CultureInfo.InvariantCulture).Contains(filter.ToLower(CultureInfo.InvariantCulture)))
@@ -95,6 +99,7 @@ namespace Be.Manuc66.Library.FileIO
     public void AddData(ITailLineCache other, string filter)
     {
       if (other == null) return;
+      if (string.IsNullOrEmpty(filter)) filter = null;
 
       string[] lines = other.GetLines(0, other.LineIndexed);
       foreach (var line in lines)

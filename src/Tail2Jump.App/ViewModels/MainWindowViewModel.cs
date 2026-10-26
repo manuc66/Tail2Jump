@@ -288,7 +288,7 @@ namespace Tail2Jump.ViewModels
         return null;
       }
 
-      CFG.AddCriterianSearch(instance.FullDirectoryPath, instance.Filter);
+      CFG.RememberCriterion(instance.FullDirectoryPath, instance.Filter, instance.IncludeSubdirectories);
       CFG.Save();
 
       AddLog(LogType.Valid, $"Watching \"{instance.FullDirectoryPath}\" ({instance.Filter})");

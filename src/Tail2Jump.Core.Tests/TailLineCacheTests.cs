@@ -67,6 +67,36 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void AddData_WithCrLf_SplitsLinesWithoutCarriageReturn()
+    {
+      using var cache = new TailLineCache();
+
+      cache.AddData(new TailEventData("app.log", "one\r\ntwo\r\nthree", 0, 0));
+
+      Assert.That(cache.GetLines(0, 3), Is.EqualTo(new[] { "app.log|one", "app.log|two", "app.log|three" }));
+    }
+
+    [Test]
+    public void AddData_FromAnotherCacheWithoutFilter_DoesNotThrow()
+    {
+      using var source = new TailLineCache();
+      using var target = new TailLineCache();
+      source.AddData(new TailEventData("app.log", "line", 0, 0));
+
+      Assert.DoesNotThrow(() => target.AddData(source, null));
+      Assert.That(target.GetLines(0, 1), Is.EqualTo(new[] { "app.log|line" }));
+    }
+
+    [Test]
+    public void GetLines_WithNegativeLength_ReturnsAnEmptyArray()
+    {
+      using var cache = new TailLineCache();
+      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+
+      Assert.That(cache.GetLines(0, -1), Is.Empty);
+    }
+
+    [Test]
     public void Clear_RemovesEverything()
     {
       using var cache = new TailLineCache();

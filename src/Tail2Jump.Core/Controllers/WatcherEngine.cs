@@ -202,6 +202,12 @@ namespace Tail2Jump.Controllers
 
     public void ApplyFilter(string filter)
     {
+      if (string.IsNullOrEmpty(filter))
+      {
+        ResetFilter();
+        return;
+      }
+
       _filterValue = filter;
       _fileAccessorFiltered.Clear();
       _fileAccessorFiltered.AddData(_fileAccessor, filter);

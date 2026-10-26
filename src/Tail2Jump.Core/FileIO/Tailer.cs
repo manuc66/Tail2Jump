@@ -40,11 +40,13 @@ namespace Be.Manuc66.Library.FileIO
       if (Directory.Exists(ParentDirectory))
       {
         directoryName = ParentDirectory;
+        if (string.IsNullOrWhiteSpace(Filter)) Filter = "*";
       }
       else
       {
         var targetFile = new FileInfo(ParentDirectory);
         directoryName = targetFile.DirectoryName;
+        if (string.IsNullOrWhiteSpace(Filter)) Filter = targetFile.Name;
       }
 
       if (directoryName == null || !Directory.Exists(directoryName))
@@ -202,33 +204,28 @@ namespace Be.Manuc66.Library.FileIO
 
         string stringRead = Encoding.UTF8.GetString(bytesRead, 0, bytesRead.Length);
 
-        string newLine = Environment.NewLine;
-        int indexNewLine = stringRead.LastIndexOf(newLine, StringComparison.Ordinal);
-        if (stringRead.Length > 0 && stringRead != newLine && indexNewLine >= 0)
+        if (!LineSplitter.TrySplitCompleteLines(stringRead, out var completeLines, out int consumedChars))
         {
-          string toShow = stringRead.Substring(0, indexNewLine + newLine.Length);
-
-          long fileSeekPos;
-          string file = Path.GetFileName(fsEvent.FullPath);
-          uint byteConsumed = (uint)Encoding.UTF8.GetByteCount(toShow);
-
-          lock (_monitorPreviousSeekPosition)
-          {
-            fileSeekPos = _previousSeekPositions.TryGetValue(fsEvent.FullPath, out long previous)
-              ? previous
-              : 0;
-            _previousSeekPositions[fsEvent.FullPath] = fileSeekPos + byteConsumed;
-          }
-
-          toShow = stringRead.Substring(0, indexNewLine);
-
-          eMoreData?.Invoke(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
-        }
-        else
-        {
-          _log.LogDebug("Target file changed but no new lines: {ChangeType} - {Path}",
+          _log.LogDebug("Target file changed but no complete line: {ChangeType} - {Path}",
             fsEvent.ChangeType, fsEvent.FullPath);
+          return;
         }
+
+        long fileSeekPos;
+        string file = Path.GetFileName(fsEvent.FullPath);
+        uint byteConsumed = (uint)Encoding.UTF8.GetByteCount(stringRead.Substring(0, consumedChars));
+
+        lock (_monitorPreviousSeekPosition)
+        {
+          fileSeekPos = _previousSeekPositions.TryGetValue(fsEvent.FullPath, out long previous)
+            ? previous
+            : 0;
+          _previousSeekPositions[fsEvent.FullPath] = fileSeekPos + byteConsumed;
+        }
+
+        string toShow = string.Join(Environment.NewLine, completeLines);
+
+        eMoreData?.Invoke(this, new TailEventData(file, toShow, fileSeekPos, byteConsumed));
       }
     }
 

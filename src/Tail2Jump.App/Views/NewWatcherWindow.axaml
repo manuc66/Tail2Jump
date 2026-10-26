@@ -14,12 +14,12 @@
 
     <TextBlock Grid.Row="0" Grid.Column="0" Text="File / folder path" VerticalAlignment="Center" />
     <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-      <TextBox Grid.Column="0" Name="PathBox" Watermark="/var/log or /var/log/app.log" />
+      <TextBox Grid.Column="0" Name="PathBox" PlaceholderText="/var/log or /var/log/app.log" />
       <Button Grid.Column="1" Name="BrowseButton" Content="Browse…" Margin="6,0,0,0" Click="OnBrowseClick" />
     </Grid>
 
     <TextBlock Grid.Row="1" Grid.Column="0" Text="File / extension" VerticalAlignment="Center" />
-    <TextBox Grid.Row="1" Grid.Column="1" Name="FilterBox" Watermark="*.log" Margin="0,0,0,10" />
+    <TextBox Grid.Row="1" Grid.Column="1" Name="FilterBox" PlaceholderText="*.log" Margin="0,0,0,10" />
 
     <CheckBox Grid.Row="2" Grid.Column="1" Name="RecursiveBox" Content="Include subdirectories" />
 

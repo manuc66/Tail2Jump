@@ -66,16 +66,11 @@ namespace Tail2Jump.Monitoring
           return 0;
         }
 
-        long totalDelta = current.Total - _lastTotal;
-        long idleDelta = current.Idle - _lastIdle;
-
+        var previous = new CpuTimes(_lastTotal, _lastIdle);
         _lastTotal = current.Total;
         _lastIdle = current.Idle;
 
-        if (totalDelta <= 0) return 0;
-
-        double usage = (totalDelta - idleDelta) * 100.0 / totalDelta;
-        return Math.Clamp(usage, 0, 100);
+        return ComputeUsagePercent(previous, current);
       }
     }
 
@@ -126,21 +121,47 @@ namespace Tail2Jump.Monitoring
 
     #region Linux
 
-    private static CpuTimes ReadLinuxCpuTimes()
+    /// <summary>
+    /// Computes the CPU usage between two samples. Returns 0 when the counters
+    /// did not move (or went backwards, e.g. after a suspend).
+    /// </summary>
+    public static double ComputeUsagePercent(CpuTimes previous, CpuTimes current)
     {
-      var line = File.ReadLines("/proc/stat").FirstOrDefault();
+      long totalDelta = current.Total - previous.Total;
+      long idleDelta = current.Idle - previous.Idle;
+
+      if (totalDelta <= 0) return 0;
+
+      double usage = (totalDelta - idleDelta) * 100.0 / totalDelta;
+      return Math.Clamp(usage, 0, 100);
+    }
+
+    /// <summary>
+    /// Parses the first line of /proc/stat.
+    /// Format: cpu user nice system idle iowait irq softirq steal guest guest_nice
+    /// guest and guest_nice are already accounted for in user/nice, so they are
+    /// excluded from the total.
+    /// </summary>
+    public static CpuTimes ParseLinuxCpuLine(string line)
+    {
       if (string.IsNullOrWhiteSpace(line)) return new CpuTimes(0, 0);
 
-      // cpu user nice system idle iowait irq softirq steal guest guest_nice
-      var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1)
+      var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Skip(1)
         .Select(value => long.TryParse(value, out long parsed) ? parsed : 0)
         .ToArray();
 
       if (parts.Length < 4) return new CpuTimes(0, 0);
 
       long idle = parts[3] + (parts.Length > 4 ? parts[4] : 0);
-      long total = parts.Sum();
+      long total = parts.Take(8).Sum();
       return new CpuTimes(total, idle);
+    }
+
+    private static CpuTimes ReadLinuxCpuTimes()
+    {
+      var line = File.ReadLines("/proc/stat").FirstOrDefault();
+      return ParseLinuxCpuLine(line);
     }
 
     private static (long Total, long Available) ReadLinuxMemory()

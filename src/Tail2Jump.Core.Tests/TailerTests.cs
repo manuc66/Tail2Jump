@@ -89,6 +89,48 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void Start_WithoutFilter_DefaultsToEverything()
+    {
+      using var tailer = new Tailer { ParentDirectory = _directory };
+
+      Assert.That(tailer.Start(), Is.True);
+      Assert.That(tailer.Filter, Is.EqualTo("*"));
+    }
+
+    [Test]
+    public void Start_WithAFilePath_WatchesTheParentDirectoryForThatFile()
+    {
+      using var tailer = new Tailer { ParentDirectory = _file };
+
+      Assert.That(tailer.Start(), Is.True);
+      Assert.That(tailer.ParentDirectory, Is.EqualTo(_directory));
+      Assert.That(tailer.Filter, Is.EqualTo("app.log"));
+    }
+
+    [Test]
+    public void AppendingLfOnlyLineEndings_RaisesTailEventData()
+    {
+      var received = new List<TailEventData>();
+      using var signal = new ManualResetEventSlim(false);
+
+      using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };
+      tailer.eMoreData += (_, data) =>
+      {
+        lock (received) received.Add(data);
+        signal.Set();
+      };
+      Assert.That(tailer.Start(), Is.True);
+
+      File.AppendAllText(_file, "unix line\n");
+
+      Assert.That(signal.Wait(TimeSpan.FromSeconds(10)), Is.True);
+      lock (received)
+      {
+        Assert.That(received[0].NewLines, Is.EqualTo("unix line"));
+      }
+    }
+
+    [Test]
     public void Stop_IsIdempotent()
     {
       using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };

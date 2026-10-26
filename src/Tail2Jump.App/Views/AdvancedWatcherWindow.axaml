@@ -28,8 +28,8 @@
       <ListBox.ItemTemplate>
         <DataTemplate x:DataType="views:WatcherCriterion">
           <Grid ColumnDefinitions="*,130,Auto,Auto" Margin="0,2">
-            <TextBox Grid.Column="0" Text="{Binding Path}" Watermark="/var/log or /var/log/app.log" Margin="0,0,6,0" />
-            <TextBox Grid.Column="1" Text="{Binding Filter}" Watermark="*.log" Margin="0,0,6,0" />
+            <TextBox Grid.Column="0" Text="{Binding Path}" PlaceholderText="/var/log or /var/log/app.log" Margin="0,0,6,0" />
+            <TextBox Grid.Column="1" Text="{Binding Filter}" PlaceholderText="*.log" Margin="0,0,6,0" />
             <CheckBox Grid.Column="2" Content="Recursive" IsChecked="{Binding IncludeSubdirectories}" Margin="0,0,6,0" />
             <Button Grid.Column="3" Content="Browse…" Click="OnBrowseClick" />
           </Grid>

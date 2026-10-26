@@ -21,6 +21,33 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void ParseLinuxCpuLine_DoesNotCountGuestTwice()
+    {
+      // user nice system idle iowait irq softirq steal guest guest_nice
+      var times = SystemMetrics.ParseLinuxCpuLine("cpu  100 0 50 850 0 0 0 0 20 0");
+
+      Assert.That(times.Total, Is.EqualTo(1000));
+      Assert.That(times.Idle, Is.EqualTo(850));
+    }
+
+    [Test]
+    public void ComputeUsagePercent_ReturnsTheBusyShare()
+    {
+      var previous = new CpuTimes(1000, 800);
+      var current = new CpuTimes(1100, 850);
+
+      Assert.That(SystemMetrics.ComputeUsagePercent(previous, current), Is.EqualTo(50).Within(0.01));
+    }
+
+    [Test]
+    public void ComputeUsagePercent_WithUnchangedCounters_ReturnsZero()
+    {
+      var sample = new CpuTimes(1000, 800);
+
+      Assert.That(SystemMetrics.ComputeUsagePercent(sample, sample), Is.Zero);
+    }
+
+    [Test]
     public void ProcessMemory_IsPositive()
     {
       var metrics = new SystemMetrics();

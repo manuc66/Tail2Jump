@@ -120,6 +120,31 @@ namespace Tail2Jump.Config.Objects
         Utils.AddUnique(new[] { filter }, Conf.FilterHistory);
       }
     }
+
+    /// <summary>
+    /// Remembers a watcher (history + search criteria) without duplicating it.
+    /// </summary>
+    public static void RememberCriterion(string path, string filter, bool recursive)
+    {
+      AddCriterianSearch(path, filter);
+
+      var criterion = new CriterianSearch
+      {
+        PathDirectory = path ?? string.Empty,
+        FileExtension = filter ?? string.Empty,
+        Recursive = recursive
+      };
+
+      bool alreadyKnown = Conf.Search.Any(existing =>
+        string.Equals(existing.PathDirectory, criterion.PathDirectory, StringComparison.Ordinal) &&
+        string.Equals(existing.FileExtension, criterion.FileExtension, StringComparison.Ordinal) &&
+        existing.Recursive == criterion.Recursive);
+
+      if (!alreadyKnown)
+      {
+        Conf.Search.Add(criterion);
+      }
+    }
   }
 
   public static class Utils

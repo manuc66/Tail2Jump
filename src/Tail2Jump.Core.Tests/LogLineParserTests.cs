@@ -27,6 +27,22 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void Parse_WindowsDriveLetterPath_ProducesAHyperLinkSegment()
+    {
+      var segments = LogLineParser.Parse(@"failure at C:\src\Program.cs:42");
+
+      Assert.That(segments.Any(segment => segment.IsHyperLink), Is.True);
+    }
+
+    [Test]
+    public void Parse_UrlWithPort_IsNotTreatedAsAFileLocation()
+    {
+      var segments = LogLineParser.Parse("see https://example.com:443");
+
+      Assert.That(segments.Any(segment => segment.IsHyperLink), Is.False);
+    }
+
+    [Test]
     public void Parse_FrenchLineSuffix_ProducesAHyperLinkSegment()
     {
       var segments = LogLineParser.Parse("Erreur dans File.cs:ligne 12");

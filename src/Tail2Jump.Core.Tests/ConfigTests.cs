@@ -58,6 +58,27 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void RememberCriterion_AddsTheSearchCriterionOnce()
+    {
+      CFG.RememberCriterion("/var/log", "*.log", recursive: false);
+      CFG.RememberCriterion("/var/log", "*.log", recursive: false);
+
+      Assert.That(CFG.Conf.Search, Has.Count.EqualTo(1));
+      Assert.That(CFG.Conf.Search[0].PathDirectory, Is.EqualTo("/var/log"));
+      Assert.That(CFG.Conf.DirectoryHistory, Is.EqualTo(new[] { "/var/log" }));
+      Assert.That(CFG.Conf.FilterHistory, Is.EqualTo(new[] { "*.log" }));
+    }
+
+    [Test]
+    public void RememberCriterion_KeepsRecursiveAndNonRecursiveVariants()
+    {
+      CFG.RememberCriterion("/var/log", "*.log", recursive: false);
+      CFG.RememberCriterion("/var/log", "*.log", recursive: true);
+
+      Assert.That(CFG.Conf.Search, Has.Count.EqualTo(2));
+    }
+
+    [Test]
     public void Load_WithMissingFile_InitializesAnEmptyConfiguration()
     {
       Assert.That(CFG.Load(), Is.False);
