@@ -1,0 +1,24 @@
+# Normalise les fins de ligne : stockage en LF dans le dépôt,
+# conversion selon la plateforme au checkout/commit.
+* text=auto
+
+# Fichiers qui doivent rester en LF
+*.sh   text eol=lf
+*.cs   text
+*.xaml text
+*.csproj text
+*.sln  text
+*.config text
+*.settings text
+*.resx text
+*.md   text eol=lf
+
+# Binaires
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.gif  binary
+*.dll  binary
+*.exe  binary
+*.pdb  binary
+*.snk  binary
