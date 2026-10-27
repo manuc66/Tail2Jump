@@ -5,31 +5,17 @@ search the output, and open the referenced source file at the right line.
 
 ![CI](https://github.com/manuc66/Tail2Jump/actions/workflows/ci.yml/badge.svg)
 
-## Two implementations
-
-| Directory | Technology | Platforms |
-|---|---|---|
-| `Tail2Jump/` (legacy) | WPF / .NET Framework 4.5.1 | Windows only |
-| `src/` (port) | .NET 10 / Avalonia | Windows, Linux, macOS |
-
-The cross-platform port is **in progress**. The business logic (file tailing, line
-cache, watcher engine, configuration) is already ported and covered by tests; the
-Avalonia UI is being rebuilt feature by feature.
-
 ## Build and test
 
 Requires the .NET 10 SDK.
 
 ```bash
-dotnet build Tail2Jump.Avalonia.sln
-dotnet test  Tail2Jump.Avalonia.sln
+dotnet build Tail2Jump.sln
+dotnet test  Tail2Jump.sln
 ```
 
 The build is strict: nullable reference types, the .NET analyzers and
 warnings-as-errors are enabled (including Avalonia XAML warnings).
-
-The legacy Windows solution (`Tail2Jump.sln`) can still be built with Visual Studio
-on Windows.
 
 ## Run the Avalonia application
 
@@ -48,7 +34,12 @@ src/
   Tail2Jump.Core.Tests/  NUnit tests for the business logic
   Tail2Jump.App/         Avalonia desktop application
   Tail2Jump.App.Tests/   NUnit tests for the view models
+benchmarks/
+  Tail2Jump.Benchmarks/  BenchmarkDotNet suites
 ```
+
+The historical WPF implementation was removed; it is still available in the git
+history and under the `legacy-wpf` tag.
 
 ## Performance and memory
 

@@ -16,10 +16,10 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Restore
-        run: dotnet restore Tail2Jump.Avalonia.sln
+        run: dotnet restore Tail2Jump.sln
 
       - name: Build
-        run: dotnet build Tail2Jump.Avalonia.sln --no-restore -c Release
+        run: dotnet build Tail2Jump.sln --no-restore -c Release
 
       - name: Test
-        run: dotnet test Tail2Jump.Avalonia.sln --no-build -c Release
+        run: dotnet test Tail2Jump.sln --no-build -c Release
