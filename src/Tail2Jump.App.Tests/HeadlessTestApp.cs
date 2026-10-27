@@ -15,6 +15,8 @@ namespace Tail2Jump.App.Tests
   {
     public override void Initialize()
     {
+      Styles.Add(new Avalonia.Themes.Fluent.FluentTheme());
+
       Resources["PanelBackgroundBrush"] = new SolidColorBrush(Color.Parse("#FF252526"));
       Resources["PanelBorderBrush"] = new SolidColorBrush(Color.Parse("#FF3F3F46"));
       Resources["LogBackgroundBrush"] = new SolidColorBrush(Color.Parse("#FF1C1C1C"));

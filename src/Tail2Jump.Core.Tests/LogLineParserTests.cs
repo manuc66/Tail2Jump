@@ -51,6 +51,35 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void Segments_CoverTheWholeOriginalLine()
+    {
+      const string line = "at C:\\src\\Program.cs:42 and https://example.com:443";
+
+      var segments = LogLineParser.Parse(line);
+
+      Assert.That(string.Concat(segments.Select(segment => segment.Text)), Is.EqualTo(line));
+    }
+
+    [Test]
+    public void Text_IsMaterializedOnceAndCached()
+    {
+      var segments = LogLineParser.Parse("hello Program.cs:42");
+      var segment = segments[0];
+
+      Assert.That(segment.Text, Is.SameAs(segment.Text));
+      Assert.That(segment.DisplayText, Is.SameAs(segment.DisplayText));
+    }
+
+    [Test]
+    public void DisplayText_ReplacesSpacesWithNonBreakingSpaces()
+    {
+      var segments = LogLineParser.Parse("two words");
+
+      Assert.That(segments[0].Text, Is.EqualTo("two words"));
+      Assert.That(segments[0].DisplayText, Is.EqualTo("two\u00A0words"));
+    }
+
+    [Test]
     public void SplitFileName_SplitsOnTheFirstPipe()
     {
       var (fileName, content) = LogLineParser.SplitFileName("app.log|a|b");

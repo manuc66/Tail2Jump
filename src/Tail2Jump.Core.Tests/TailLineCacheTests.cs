@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using Be.Manuc66.Library.FileIO;
 using NUnit.Framework;
@@ -179,6 +180,53 @@ namespace Tail2Jump.Core.Tests
       target.AddData(source, null);
 
       Assert.That(target.GetLines(0, 10), Is.EqualTo(new[] { "app.log|two", "app.log|three" }));
+    }
+
+    [Test]
+    public void RingBuffer_WrapsWhenTheCapacityIsReached()
+    {
+      using var cache = new TailLineCache(maxLines: 5);
+
+      for (int i = 0; i < 10; i++)
+      {
+        cache.AddData(new TailEventData("app.log", i.ToString(), 0, 0));
+      }
+
+      Assert.That(cache.LineIndexed, Is.EqualTo(10));
+      Assert.That(cache.FirstLineIndex, Is.EqualTo(5));
+      Assert.That(cache.GetLines(5, 5), Is.EqualTo(new[]
+      {
+        "app.log|5", "app.log|6", "app.log|7", "app.log|8", "app.log|9"
+      }));
+    }
+
+    [Test]
+    public void RingBuffer_GrowsBeyondItsInitialCapacity()
+    {
+      using var cache = new TailLineCache(maxLines: 5_000);
+      var lines = System.Linq.Enumerable.Range(0, 2_000).Select(i => "line " + i).ToArray();
+
+      cache.AddData(new TailEventData("app.log", lines, 0, 0));
+
+      Assert.That(cache.LineIndexed, Is.EqualTo(2_000));
+      Assert.That(cache.GetLines(1_990, 10)[0], Is.EqualTo("app.log|line 1990"));
+      Assert.That(cache.GetLines(1_990, 10)[^1], Is.EqualTo("app.log|line 1999"));
+    }
+
+    [Test]
+    public void RingBuffer_ReadAcrossTheWrapBoundary()
+    {
+      using var cache = new TailLineCache(maxLines: 8);
+      var lines = System.Linq.Enumerable.Range(0, 20).Select(i => "line " + i).ToArray();
+
+      cache.AddData(new TailEventData("app.log", lines, 0, 0));
+
+      Assert.That(cache.FirstLineIndex, Is.EqualTo(12));
+      Assert.That(cache.GetLines(12, 8), Is.EqualTo(new[]
+      {
+        "app.log|line 12", "app.log|line 13", "app.log|line 14", "app.log|line 15",
+        "app.log|line 16", "app.log|line 17", "app.log|line 18", "app.log|line 19"
+      }));
     }
 
     [Test]

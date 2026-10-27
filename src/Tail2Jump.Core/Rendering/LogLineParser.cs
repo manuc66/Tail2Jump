@@ -1,6 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Tail2Jump.Rendering
 {
@@ -10,158 +9,195 @@ namespace Tail2Jump.Rendering
     HyperLink
   }
 
+  /// <summary>
+  /// A slice of a log line. The text is kept as a memory slice so parsing a
+  /// line does not allocate one string per word; strings are only materialized
+  /// for the segments actually bound by the UI (and then cached).
+  /// </summary>
   public class LogLineSegment
   {
-    public LogLineSegment(LogLineSegmentKind kind, string text, bool isHighlighted = false)
+    private readonly ReadOnlyMemory<char> _content;
+    private string? _text;
+    private string? _displayText;
+
+    public LogLineSegment(LogLineSegmentKind kind, ReadOnlyMemory<char> content, bool isHighlighted = false)
     {
       Kind = kind;
-      Text = text;
+      _content = content;
       IsHighlighted = isHighlighted;
     }
 
     public LogLineSegmentKind Kind { get; }
-    public string Text { get; }
 
-    /// <summary>Text with non-breaking spaces, so the UI keeps the indentation.</summary>
-    public string DisplayText => Text.Replace(' ', '\u00A0');
+    public ReadOnlyMemory<char> Content => _content;
 
     public bool IsHyperLink => Kind == LogLineSegmentKind.HyperLink;
 
     public bool IsHighlighted { get; }
+
+    /// <summary>Raw text of the segment (allocated on first access).</summary>
+    public string Text => _text ??= _content.ToString();
+
+    /// <summary>
+    /// Text with non-breaking spaces, so the UI keeps the indentation.
+    /// Allocated on first access and cached.
+    /// </summary>
+    public string DisplayText => _displayText ??= CreateDisplayText(_content);
+
+    private static string CreateDisplayText(ReadOnlyMemory<char> content)
+    {
+      return string.Create(content.Length, content, static (destination, source) =>
+      {
+        ReadOnlySpan<char> span = source.Span;
+
+        for (int i = 0; i < span.Length; i++)
+        {
+          destination[i] = span[i] == ' ' ? '\u00A0' : span[i];
+        }
+      });
+    }
   }
 
   /// <summary>
-  /// Splits a log line into plain text and hyperlink segments.
-  /// A segment is a hyperlink when it looks like "File.cs:12" or
-  /// "File.cs:line 12" (and the French ":ligne" variant).
-  /// Ported from the WPF PartialView.
+  /// Splits a log line into plain text and hyperlink segments. A segment is a
+  /// hyperlink when it looks like "File.cs:12", "File.cs:line 12" or
+  /// "File.cs:ligne 12".
   /// </summary>
   public static class LogLineParser
   {
     private const string LineFr = ":ligne";
     private const string LineEn = ":line";
-    private const string Space = " ";
-
-    /// <summary>
-    /// Parses a line and highlights the occurrences of <paramref name="searchText"/>.
-    /// When the search text is empty, the result is the same as <see cref="Parse(string)"/>.
-    /// </summary>
-    public static IReadOnlyList<LogLineSegment> Parse(string? line, string? searchText, bool ignoreCase = true)
-    {
-      if (string.IsNullOrEmpty(searchText))
-      {
-        return Parse(line);
-      }
-
-      var comparison = ignoreCase ? System.StringComparison.OrdinalIgnoreCase : System.StringComparison.Ordinal;
-      var highlighted = new List<LogLineSegment>();
-
-      foreach (var segment in Parse(line))
-      {
-        if (segment.IsHyperLink)
-        {
-          highlighted.Add(segment);
-          continue;
-        }
-
-        AddHighlightedSegments(highlighted, segment.Text, searchText, comparison);
-      }
-
-      return highlighted;
-    }
-
-    private static void AddHighlightedSegments(ICollection<LogLineSegment> segments, string text,
-      string searchText, System.StringComparison comparison)
-    {
-      int index = 0;
-      while (index < text.Length)
-      {
-        int found = text.IndexOf(searchText, index, comparison);
-        if (found < 0)
-        {
-          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text.Substring(index)));
-          break;
-        }
-
-        if (found > index)
-        {
-          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text.Substring(index, found - index)));
-        }
-
-        segments.Add(new LogLineSegment(LogLineSegmentKind.Text,
-          text.Substring(found, searchText.Length), true));
-
-        index = found + searchText.Length;
-      }
-    }
+    private const char Space = ' ';
+    private const char Colon = ':';
 
     public static IReadOnlyList<LogLineSegment> Parse(string? line)
     {
+      return ParseCore(line, null, StringComparison.Ordinal);
+    }
+
+    public static IReadOnlyList<LogLineSegment> Parse(string? line, string? searchText, bool ignoreCase = true)
+    {
+      if (string.IsNullOrEmpty(searchText)) return Parse(line);
+
+      var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+      return ParseCore(line, searchText, comparison);
+    }
+
+    private static IReadOnlyList<LogLineSegment> ParseCore(string? line, string? searchText,
+      StringComparison comparison)
+    {
       var segments = new List<LogLineSegment>();
-      if (line == null) return segments;
+      if (string.IsNullOrEmpty(line)) return segments;
 
-      var textToAdd = new StringBuilder();
-      string[] words = line.Split(new[] { Space }, System.StringSplitOptions.None);
+      int index = 0;
+      int textStart = 0;
 
-      for (int i = 0; i < words.Length; i++)
+      while (index < line.Length)
       {
-        string word = words[i];
-        bool isLineKeyword = word.EndsWith(LineFr, System.StringComparison.Ordinal) ||
-                             word.EndsWith(LineEn, System.StringComparison.Ordinal);
+        int tokenEnd = line.IndexOf(Space, index);
+        if (tokenEnd < 0) tokenEnd = line.Length;
 
-        if (isLineKeyword)
+        ReadOnlySpan<char> token = line.AsSpan(index, tokenEnd - index);
+
+        bool isLink = IsFileLocationToken(token);
+        int linkEnd = tokenEnd;
+
+        if (!isLink && (token.EndsWith(LineFr, StringComparison.Ordinal) ||
+                        token.EndsWith(LineEn, StringComparison.Ordinal)))
         {
-          // Include the line number when it is the next token: "File.cs:line 12".
-          string linkText = word;
-          if (i + 1 < words.Length && int.TryParse(words[i + 1], out _))
+          // "File.cs:line 12": include the line number when it is the next token.
+          int nextStart = tokenEnd + 1;
+          if (nextStart < line.Length)
           {
-            linkText += Space + words[++i];
+            int nextEnd = line.IndexOf(Space, nextStart);
+            if (nextEnd < 0) nextEnd = line.Length;
+
+            if (int.TryParse(line.AsSpan(nextStart, nextEnd - nextStart), out _))
+            {
+              linkEnd = nextEnd;
+              isLink = true;
+            }
           }
+        }
 
-          FlushText(segments, textToAdd);
-          segments.Add(new LogLineSegment(LogLineSegmentKind.HyperLink, linkText));
+        if (isLink)
+        {
+          AddText(segments, line.AsMemory(textStart, index - textStart), searchText, comparison);
+          segments.Add(new LogLineSegment(LogLineSegmentKind.HyperLink,
+            line.AsMemory(index, linkEnd - index)));
+
+          textStart = linkEnd;
+          index = linkEnd;
           continue;
         }
 
-        if (EndsWithLineNumber(word))
-        {
-          FlushText(segments, textToAdd);
-          segments.Add(new LogLineSegment(LogLineSegmentKind.HyperLink, word));
-          continue;
-        }
-
-        textToAdd.Append(word);
-        if (i < words.Length - 1)
-        {
-          textToAdd.Append(Space);
-        }
+        index = tokenEnd + 1;
       }
 
-      FlushText(segments, textToAdd);
+      AddText(segments, line.AsMemory(textStart), searchText, comparison);
       return segments;
     }
 
-    private static void FlushText(ICollection<LogLineSegment> segments, StringBuilder textToAdd)
+    private static void AddText(ICollection<LogLineSegment> segments, ReadOnlyMemory<char> text,
+      string? searchText, StringComparison comparison)
     {
-      if (textToAdd.Length == 0) return;
+      if (text.Length == 0) return;
 
-      segments.Add(new LogLineSegment(LogLineSegmentKind.Text, textToAdd.ToString()));
-      textToAdd.Clear();
+      if (searchText == null)
+      {
+        segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text));
+        return;
+      }
+
+      ReadOnlySpan<char> span = text.Span;
+      ReadOnlySpan<char> pattern = searchText.AsSpan();
+      int index = 0;
+
+      while (index < span.Length)
+      {
+        int found = span[index..].IndexOf(pattern, comparison);
+        if (found < 0)
+        {
+          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text[index..]));
+          break;
+        }
+
+        found += index;
+
+        if (found > index)
+        {
+          segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text[index..found]));
+        }
+
+        segments.Add(new LogLineSegment(LogLineSegmentKind.Text, text.Slice(found, pattern.Length), true));
+        index = found + pattern.Length;
+      }
     }
 
-    private static bool EndsWithLineNumber(string word)
+    private static bool IsFileLocationToken(ReadOnlySpan<char> token)
     {
-      int colon = word.LastIndexOf(':');
-      if (colon <= 0 || colon >= word.Length - 1) return false;
+      int colon = token.LastIndexOf(Colon);
+      if (colon <= 0 || colon >= token.Length - 1) return false;
 
-      var pathPart = word.Substring(0, colon);
-      // Avoid treating timestamps such as "23:50:01" as file locations.
-      if (!pathPart.Contains('.') || pathPart.All(char.IsDigit)) return false;
-      // Do not treat URLs such as "https://host:443" as file locations.
-      if (pathPart.Contains("://")) return false;
+      ReadOnlySpan<char> pathPart = token[..colon];
 
-      var lineText = word.Substring(colon + 1);
-      return int.TryParse(lineText, out int lineNumber) && lineNumber > 0;
+      if (pathPart.IndexOf('.') < 0) return false;
+      if (pathPart.IndexOf("://".AsSpan()) >= 0) return false;
+      if (IsAllDigits(pathPart)) return false;
+
+      return int.TryParse(token[(colon + 1)..], out int lineNumber) && lineNumber > 0;
+    }
+
+    private static bool IsAllDigits(ReadOnlySpan<char> value)
+    {
+      if (value.Length == 0) return false;
+
+      foreach (char character in value)
+      {
+        if (!char.IsDigit(character)) return false;
+      }
+
+      return true;
     }
 
     /// <summary>

@@ -68,6 +68,28 @@ src/
 - views unsubscribe from view-model events when detached, and the ownership of
   timers, delegates and collections is cleaned up on close
 
+## Benchmarks
+
+```bash
+dotnet run -c Release --project benchmarks/Tail2Jump.Benchmarks
+# or a single suite:
+dotnet run -c Release --project benchmarks/Tail2Jump.Benchmarks -- --filter "*LineSplittingBenchmarks*"
+```
+
+`BenchmarkDotNet` reports time and allocations. On the reference machine (i7-4790):
+
+| Path | Time | Allocated |
+|---|---|---|
+| UTF-8 split, legacy decode + `string.Split` | 3.66 ms / 10k lines | 2.77 MB |
+| UTF-8 split, `ReadOnlySpan<byte>` | 1.45 ms / 10k lines | 1.69 MB |
+| Line parsing, legacy `string.Split` | 259 ns | 560 B |
+| Line parsing, memory slices | 206 ns | 256 B |
+| Read a 50-line page from the cache | 1.2 us | 3.9 KB |
+| Filter replay (50k lines, 10% matches) | 1.1 ms | 782 KB |
+
+The log viewport is virtualized: a headless test asserts that a 10,000-line
+list only realizes the visible rows.
+
 ## Configuration
 
 Configuration is stored as JSON in `$XDG_CONFIG_HOME/Tail2Jump/SaveConfig.json`
