@@ -94,6 +94,82 @@ namespace Tail2Jump.App.Tests
     }
 
     [Test]
+    public void ManyNewLines_AreAddedInBatches()
+    {
+      _viewModel.CreateWatcher(_directory, "*.log", false);
+
+      var builder = new System.Text.StringBuilder();
+      for (int i = 0; i < 1500; i++)
+      {
+        builder.Append("line ").Append(i).Append('\n');
+      }
+
+      File.AppendAllText(_file, builder.ToString());
+
+      WaitFor(() => _viewModel.Lines.Count == 1500);
+      Assert.That(_viewModel.Lines, Has.Count.EqualTo(1500));
+    }
+
+    [Test]
+    public void Filter_IsAppliedAfterTheDebounce()
+    {
+      _viewModel.CreateWatcher(_directory, "*.log", false);
+      File.AppendAllText(_file, "INFO one" + Environment.NewLine + "ERROR two" + Environment.NewLine);
+      WaitFor(() => _viewModel.Lines.Count == 2);
+
+      _viewModel.ShowSearch = true;
+      _viewModel.FilterActivated = true;
+      _viewModel.SearchText = "ERROR";
+
+      WaitFor(() => _viewModel.Lines.Count == 1);
+
+      _viewModel.SearchText = string.Empty;
+      WaitFor(() => _viewModel.Lines.Count == 2);
+    }
+
+    [Test]
+    public void Dispose_UnsubscribesFromTheEngineCollection()
+    {
+      bool notified = false;
+      _viewModel.PropertyChanged += (_, e) =>
+      {
+        if (e.PropertyName == nameof(MainWindowViewModel.WatcherCount)) notified = true;
+      };
+
+      _viewModel.Dispose();
+      _engine.ListWatcher.Add(new Tail2Jump.Objects.MonitoringInstance());
+
+      Assert.That(notified, Is.False);
+    }
+
+    [Test]
+    public void DisplayedLines_AreCappedToTheConfiguredMaximum()
+    {
+      _viewModel.Dispose();
+      _engine = new WatcherEngine(new TailLineCache(), new TailLineCache());
+      _viewModel = new MainWindowViewModel(_engine, new LogController(), maxDisplayedLines: 5);
+      _viewModel.CreateWatcher(_directory, "*.log", false);
+
+      var builder = new System.Text.StringBuilder();
+      for (int i = 0; i < 10; i++)
+      {
+        builder.Append("line ").Append(i).Append('\n');
+      }
+
+      File.AppendAllText(_file, builder.ToString());
+
+      var stopwatch = Stopwatch.StartNew();
+      while (stopwatch.Elapsed < TimeSpan.FromSeconds(5) && _viewModel.Lines.Count != 5)
+      {
+        Thread.Sleep(50);
+      }
+
+      Assert.That(_viewModel.Lines, Has.Count.EqualTo(5),
+        $"watchers={_viewModel.Watchers.Count}, lines={_viewModel.Lines.Count}");
+      Assert.That(_viewModel.Lines[^1].RawLine, Is.EqualTo("app.log|line 9"));
+    }
+
+    [Test]
     public void Search_HighlightsNewLines()
     {
       _viewModel.ShowSearch = true;

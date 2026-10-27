@@ -24,4 +24,8 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Tail2Jump.App.Tests" />
+  </ItemGroup>
+
 </Project>

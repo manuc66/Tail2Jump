@@ -29,14 +29,12 @@ namespace Tail2Jump.App.Views
       AddHandler(DragDrop.DropEvent, OnDrop);
       AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
       Activated += (_, _) => StopFlashing();
+      Closed += (_, _) => DetachFromViewModel();
     }
 
     protected override void OnDataContextChanged(EventArgs e)
     {
-      if (_viewModel != null)
-      {
-        _viewModel.AttentionRequested -= OnAttentionRequested;
-      }
+      DetachFromViewModel();
 
       _viewModel = DataContext as MainWindowViewModel;
       if (_viewModel != null)
@@ -47,6 +45,18 @@ namespace Tail2Jump.App.Views
       }
 
       base.OnDataContextChanged(e);
+    }
+
+    private void DetachFromViewModel()
+    {
+      StopFlashing();
+
+      if (_viewModel == null) return;
+
+      _viewModel.AttentionRequested -= OnAttentionRequested;
+      _viewModel.NewWatcherDialog = null;
+      _viewModel.AdvancedWatcherDialog = null;
+      _viewModel = null;
     }
 
     private void OnAttentionRequested()

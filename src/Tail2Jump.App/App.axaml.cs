@@ -37,7 +37,11 @@ namespace Tail2Jump.App
         var viewModel = _services.GetRequiredService<MainWindowViewModel>();
         var window = new MainWindow { DataContext = viewModel };
         desktop.MainWindow = window;
-        desktop.ShutdownRequested += (_, _) => viewModel.Dispose();
+        desktop.ShutdownRequested += (_, _) =>
+        {
+          viewModel.Dispose();
+          _services?.Dispose();
+        };
 
         foreach (var argument in desktop.Args ?? Array.Empty<string>())
         {

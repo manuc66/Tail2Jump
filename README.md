@@ -50,6 +50,17 @@ src/
   Tail2Jump.App.Tests/   NUnit tests for the view models
 ```
 
+## Performance and memory
+
+- log lines are parsed lazily: only lines realized by the list box pay for
+  building their segments, and the result is cached per line
+- the display keeps the last 50,000 lines and the line cache the last 200,000,
+  so a long-running tail cannot grow without bound
+- filtering is debounced (250 ms) instead of replaying the whole cache on every
+  keystroke, and replays are chunked
+- views unsubscribe from view-model events when detached, and the ownership of
+  timers, delegates and collections is cleaned up on close
+
 ## Configuration
 
 Configuration is stored as JSON in `$XDG_CONFIG_HOME/Tail2Jump/SaveConfig.json`

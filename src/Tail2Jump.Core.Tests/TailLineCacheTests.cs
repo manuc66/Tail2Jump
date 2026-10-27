@@ -106,6 +106,82 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void AddData_WithFilter_IsCaseInsensitive()
+    {
+      using var cache = new TailLineCache();
+
+      cache.AddData(new TailEventData("app.log",
+        "error lower" + Environment.NewLine + "ERROR upper" + Environment.NewLine + "info", 0, 0), "Error");
+
+      Assert.That(cache.LineIndexed, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void AddData_FromAnotherCache_ReplaysLargeCachesInChunks()
+    {
+      using var source = new TailLineCache();
+      using var target = new TailLineCache();
+
+      var builder = new System.Text.StringBuilder();
+      for (int i = 0; i < 5000; i++)
+      {
+        builder.Append("line ").Append(i).Append('\n');
+      }
+
+      source.AddData(new TailEventData("app.log", builder.ToString(), 0, 0));
+      target.AddData(source, "line 4999");
+
+      Assert.That(target.LineIndexed, Is.EqualTo(1));
+      Assert.That(target.GetLines(0, 1)[0], Is.EqualTo("app.log|line 4999"));
+    }
+
+    [Test]
+    public void AddData_FromItself_IsIgnored()
+    {
+      using var cache = new TailLineCache();
+      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+
+      Assert.DoesNotThrow(() => cache.AddData(cache, null));
+      Assert.That(cache.LineIndexed, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void AddData_BeyondCapacity_DropsTheOldestLines()
+    {
+      using var cache = new TailLineCache(maxLines: 5);
+
+      cache.AddData(new TailEventData("app.log",
+        "1" + Environment.NewLine + "2" + Environment.NewLine + "3" + Environment.NewLine +
+        "4" + Environment.NewLine + "5" + Environment.NewLine + "6" + Environment.NewLine +
+        "7" + Environment.NewLine + "8" + Environment.NewLine + "9" + Environment.NewLine + "10", 0, 0));
+
+      Assert.That(cache.LineIndexed, Is.EqualTo(10));
+      Assert.That(cache.FirstLineIndex, Is.EqualTo(5));
+      Assert.That(cache.GetLines(0, 10), Is.EqualTo(new[]
+      {
+        "app.log|6", "app.log|7", "app.log|8", "app.log|9", "app.log|10"
+      }));
+      Assert.That(cache.GetLines(5, 5), Is.EqualTo(new[]
+      {
+        "app.log|6", "app.log|7", "app.log|8", "app.log|9", "app.log|10"
+      }));
+    }
+
+    [Test]
+    public void AddData_FromATrimmedCache_OnlyReplaysKeptLines()
+    {
+      using var source = new TailLineCache(maxLines: 2);
+      using var target = new TailLineCache();
+
+      source.AddData(new TailEventData("app.log",
+        "one" + Environment.NewLine + "two" + Environment.NewLine + "three", 0, 0));
+
+      target.AddData(source, null);
+
+      Assert.That(target.GetLines(0, 10), Is.EqualTo(new[] { "app.log|two", "app.log|three" }));
+    }
+
+    [Test]
     public void UsingTheCacheAfterDispose_DoesNotThrow()
     {
       var cache = new TailLineCache();

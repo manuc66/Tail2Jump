@@ -283,14 +283,24 @@ namespace Be.Manuc66.Library.FileIO
         if (size <= 0) return new byte[0];
 
         var bytesRead = new byte[size];
-        int numBytes = fs.Read(bytesRead, 0, bytesRead.Length);
+        int numBytes = 0;
+        while (numBytes < bytesRead.Length)
+        {
+          int read = fs.Read(bytesRead, numBytes, bytesRead.Length - numBytes);
+          if (read <= 0) break;
+          numBytes += read;
+        }
 
         if (numBytes <= 0)
         {
           _log.LogError("Nothing read in the file: {FullPath}, expected data read: {Expected}",
             fullPath, bytesRead.Length);
-          return new byte[0];
+          return Array.Empty<byte>();
         }
+
+        // Stream.Read is allowed to return less than requested: do not copy the
+        // buffer when it was filled completely.
+        if (numBytes == bytesRead.Length) return bytesRead;
 
         var toReturn = new byte[numBytes];
         Array.Copy(bytesRead, toReturn, numBytes);

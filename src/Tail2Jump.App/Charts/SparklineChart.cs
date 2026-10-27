@@ -36,6 +36,9 @@ namespace Tail2Jump.App.Charts
         StrokeProperty, FillProperty);
     }
 
+    private INotifyCollectionChanged? _observedCollection;
+    private bool _isAttached;
+
     public SparklineChart()
     {
       ClipToBounds = true;
@@ -71,22 +74,49 @@ namespace Tail2Jump.App.Charts
       set { SetValue(FillProperty, value); }
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+      base.OnAttachedToVisualTree(e);
+      _isAttached = true;
+      Observe(Values);
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+      _isAttached = false;
+      Observe(null);
+      base.OnDetachedFromVisualTree(e);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
       base.OnPropertyChanged(change);
 
-      if (change.Property != ValuesProperty) return;
-
-      if (change.OldValue is INotifyCollectionChanged oldCollection)
+      if (change.Property == ValuesProperty && _isAttached)
       {
-        oldCollection.CollectionChanged -= OnValuesChanged;
-      }
-
-      if (change.NewValue is INotifyCollectionChanged newCollection)
-      {
-        newCollection.CollectionChanged += OnValuesChanged;
+        Observe(Values);
       }
     }
+
+    private void Observe(IEnumerable<double>? values)
+    {
+      var collection = values as INotifyCollectionChanged;
+      if (ReferenceEquals(collection, _observedCollection)) return;
+
+      if (_observedCollection != null)
+      {
+        _observedCollection.CollectionChanged -= OnValuesChanged;
+      }
+
+      _observedCollection = collection;
+
+      if (_observedCollection != null)
+      {
+        _observedCollection.CollectionChanged += OnValuesChanged;
+      }
+    }
+
+    internal bool IsObservingValues => _observedCollection != null;
 
     private void OnValuesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {

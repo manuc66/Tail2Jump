@@ -152,6 +152,8 @@ namespace Tail2Jump.Core.Tests
 
       public int LineIndexed => _inner.LineIndexed;
 
+      public int FirstLineIndex => _inner.FirstLineIndex;
+
       public string[] GetLines(int start, int len) => _inner.GetLines(start, len);
 
       public void Clear() => _inner.Clear();

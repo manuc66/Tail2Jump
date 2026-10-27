@@ -14,12 +14,16 @@ namespace Tail2Jump.ViewModels
   {
     private const int SampleCount = 60;
     private static readonly TimeSpan SampleInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan MemoryCacheDuration = TimeSpan.FromSeconds(5);
 
     private readonly ISystemMetrics _metrics;
     private readonly SynchronizationContext? _uiContext;
     private Timer? _timer;
     private bool _isRunning;
     private bool _disposed;
+    private long _cachedTotalMemory;
+    private long _cachedAvailableMemory;
+    private DateTime _memoryCacheTimestamp = DateTime.MinValue;
 
     public PerformanceViewModel(ISystemMetrics metrics, SynchronizationContext? uiContext = null)
     {
@@ -48,8 +52,18 @@ namespace Tail2Jump.ViewModels
     {
       get
       {
-        long total = _metrics.GetTotalMemoryBytes();
-        long available = _metrics.GetAvailableMemoryBytes();
+        var now = DateTime.UtcNow;
+        if (now - _memoryCacheTimestamp >= MemoryCacheDuration)
+        {
+          // Reading physical memory is cheap on Linux but spawns a process on
+          // macOS, so keep the value for a few seconds.
+          _cachedTotalMemory = _metrics.GetTotalMemoryBytes();
+          _cachedAvailableMemory = _metrics.GetAvailableMemoryBytes();
+          _memoryCacheTimestamp = now;
+        }
+
+        long total = _cachedTotalMemory;
+        long available = _cachedAvailableMemory;
 
         if (total <= 0) return "Physical memory unavailable";
 

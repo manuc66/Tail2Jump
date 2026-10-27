@@ -31,6 +31,20 @@ namespace Tail2Jump.App.Tests
     }
 
     [Test]
+    public void MemoryDetails_ReadsPhysicalMemoryOncePerCacheWindow()
+    {
+      var metrics = new CountingMetrics();
+      using var viewModel = new PerformanceViewModel(metrics);
+
+      _ = viewModel.MemoryDetails;
+      _ = viewModel.MemoryDetails;
+      _ = viewModel.MemoryDetails;
+
+      Assert.That(metrics.TotalMemoryCalls, Is.EqualTo(1));
+      Assert.That(metrics.AvailableMemoryCalls, Is.EqualTo(1));
+    }
+
+    [Test]
     public void SampleOnce_AfterDispose_DoesNothing()
     {
       var viewModel = new PerformanceViewModel(new FakeMetrics());
@@ -40,6 +54,26 @@ namespace Tail2Jump.App.Tests
       viewModel.SampleOnce();
 
       Assert.That(viewModel.Cpu.Values, Has.Count.EqualTo(before));
+    }
+
+    private class CountingMetrics : ISystemMetrics
+    {
+      public int TotalMemoryCalls { get; private set; }
+      public int AvailableMemoryCalls { get; private set; }
+
+      public double GetCpuUsagePercent() => 10;
+      public long GetProcessMemoryBytes() => 1024;
+      public long GetTotalMemoryBytes()
+      {
+        TotalMemoryCalls++;
+        return 1024L * 1024 * 1024;
+      }
+
+      public long GetAvailableMemoryBytes()
+      {
+        AvailableMemoryCalls++;
+        return 512L * 1024 * 1024;
+      }
     }
 
     private class FakeMetrics : ISystemMetrics

@@ -22,6 +22,7 @@ namespace Tail2Jump.App.Views
     private ScrollViewer? _scrollViewer;
     private bool _stickToBottom = true;
     private bool _scrollingProgrammatically;
+    private bool _isAttached;
 
     public LogTextView()
     {
@@ -33,6 +34,8 @@ namespace Tail2Jump.App.Views
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
       base.OnAttachedToVisualTree(e);
+      _isAttached = true;
+      AttachToViewModel(DataContext as MainWindowViewModel);
       Dispatcher.UIThread.Post(AttachScrollViewer, DispatcherPriority.Loaded);
     }
 
@@ -44,11 +47,16 @@ namespace Tail2Jump.App.Views
         _scrollViewer = null;
       }
 
+      _isAttached = false;
+      AttachToViewModel(null);
+
       base.OnDetachedFromVisualTree(e);
     }
 
     private void AttachScrollViewer()
     {
+      if (TopLevel.GetTopLevel(this) == null) return;
+
       _scrollViewer = LinesList.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
       if (_scrollViewer != null)
       {
@@ -58,21 +66,33 @@ namespace Tail2Jump.App.Views
 
     protected override void OnDataContextChanged(EventArgs e)
     {
+      if (_isAttached)
+      {
+        AttachToViewModel(DataContext as MainWindowViewModel);
+      }
+
+      base.OnDataContextChanged(e);
+    }
+
+    internal bool IsAttachedToViewModel => _viewModel != null;
+
+    private void AttachToViewModel(MainWindowViewModel? viewModel)
+    {
+      if (ReferenceEquals(_viewModel, viewModel)) return;
+
       if (_viewModel != null)
       {
         _viewModel.LinesUpdated -= OnLinesUpdated;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
       }
 
-      _viewModel = DataContext as MainWindowViewModel;
+      _viewModel = viewModel;
 
       if (_viewModel != null)
       {
         _viewModel.LinesUpdated += OnLinesUpdated;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
       }
-
-      base.OnDataContextChanged(e);
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

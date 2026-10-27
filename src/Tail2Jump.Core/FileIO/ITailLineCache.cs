@@ -9,5 +9,8 @@ namespace Be.Manuc66.Library.FileIO
     void AddData(TailEventData tailData, string? filter = null);
     void AddData(ITailLineCache other, string? filter);
     int LineIndexed { get; }
+
+    /// <summary>Absolute index of the oldest line still kept in the cache.</summary>
+    int FirstLineIndex { get; }
   }
 }

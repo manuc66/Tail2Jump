@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using Tail2Jump.Collections;
 using System.Linq;
 using System.Threading;
 using Be.Manuc66.Library.Collections;
@@ -21,12 +22,14 @@ namespace Tail2Jump.ViewModels
   public class MainWindowViewModel : ObservableObject, IDisposable
   {
     private const string BaseTitle = "Tail2Jump";
+    private const int DefaultMaxDisplayedLines = 50_000;
 
     private readonly WatcherEngine _engine;
     private readonly ILogController _log;
     private readonly EditorTools _editorTools = new EditorTools();
     private readonly SynchronizationContext? _uiContext;
-    private readonly ObservableCollection<LogLineViewModel> _lines = new ObservableCollection<LogLineViewModel>();
+    private readonly int _maxDisplayedLines;
+    private readonly BulkObservableCollection<LogLineViewModel> _lines = new BulkObservableCollection<LogLineViewModel>();
 
     private int _renderedLineCount;
     private ITailLineCache? _renderedCache;
@@ -43,12 +46,16 @@ namespace Tail2Jump.ViewModels
     private bool _ignoreCase = true;
     private readonly Be.Manuc66.Library.Threading.TemporisedEvent _searchDebounce =
       new Be.Manuc66.Library.Threading.TemporisedEvent(200);
+    private readonly Be.Manuc66.Library.Threading.TemporisedEvent _filterDebounce =
+      new Be.Manuc66.Library.Threading.TemporisedEvent(250);
     private string _title = BaseTitle;
 
-    public MainWindowViewModel(WatcherEngine engine, ILogController log)
+    public MainWindowViewModel(WatcherEngine engine, ILogController log,
+      int maxDisplayedLines = DefaultMaxDisplayedLines)
     {
       _engine = engine ?? throw new ArgumentNullException(nameof(engine));
       _log = log ?? throw new ArgumentNullException(nameof(log));
+      _maxDisplayedLines = Math.Max(1, maxDisplayedLines);
       _uiContext = SynchronizationContext.Current;
 
       AddWatcherCommand = new RelayCommand(() => _ = AddWatcherAsync());
@@ -64,6 +71,7 @@ namespace Tail2Jump.ViewModels
       _engine.DataUpdated += OnDataUpdated;
       Watchers.CollectionChanged += OnWatchersChanged;
       _searchDebounce.eHandle += (_, _) => PostToUi(ApplyHighlighting);
+      _filterDebounce.eHandle += (_, _) => PostToUi(ApplyPendingFilter);
 
       CFG.Load();
       RefreshEditors();
@@ -168,7 +176,7 @@ namespace Tail2Jump.ViewModels
       set
       {
         if (!SetProperty(ref _searchText, value)) return;
-        if (FilterActivated) ApplyFilter(value);
+        if (FilterActivated) ScheduleFilter();
         ScheduleHighlight();
       }
     }
@@ -331,6 +339,25 @@ namespace Tail2Jump.ViewModels
       _engine.Clear();
     }
 
+    private void ScheduleFilter()
+    {
+      if (string.IsNullOrEmpty(_searchText))
+      {
+        ApplyPendingFilter();
+        return;
+      }
+
+      // Replaying the whole cache on every keystroke is expensive: wait until
+      // the user stops typing.
+      _filterDebounce.Set();
+    }
+
+    private void ApplyPendingFilter()
+    {
+      if (!FilterActivated) return;
+      ApplyFilter(_searchText);
+    }
+
     private void ScheduleHighlight()
     {
       if (string.IsNullOrEmpty(_searchText) || !_searchActivated)
@@ -400,6 +427,14 @@ namespace Tail2Jump.ViewModels
       }
 
       int total = cache.LineIndexed;
+
+      // The cache may have dropped its oldest lines; continue from there
+      // instead of replaying lines that no longer exist.
+      if (_renderedLineCount < cache.FirstLineIndex)
+      {
+        _renderedLineCount = cache.FirstLineIndex;
+      }
+
       if (total < _renderedLineCount)
       {
         _lines.Clear();
@@ -412,6 +447,7 @@ namespace Tail2Jump.ViewModels
         var batch = cache.GetLines(_renderedLineCount, Math.Min(chunkSize, total - _renderedLineCount));
         if (batch.Length == 0) break;
 
+        var viewModels = new List<LogLineViewModel>(batch.Length);
         foreach (var rawLine in batch)
         {
           var line = new LogLineViewModel(rawLine);
@@ -420,10 +456,17 @@ namespace Tail2Jump.ViewModels
             line.ApplySearch(_searchText, _ignoreCase);
           }
 
-          _lines.Add(line);
+          viewModels.Add(line);
         }
 
+        _lines.AddRange(viewModels);
+
         _renderedLineCount += batch.Length;
+
+        if (_lines.Count > _maxDisplayedLines)
+        {
+          _lines.RemoveFirst(_lines.Count - _maxDisplayedLines);
+        }
       }
 
       LinesUpdated?.Invoke();
@@ -489,7 +532,9 @@ namespace Tail2Jump.ViewModels
     public void Dispose()
     {
       _engine.DataUpdated -= OnDataUpdated;
+      Watchers.CollectionChanged -= OnWatchersChanged;
       _searchDebounce.Dispose();
+      _filterDebounce.Dispose();
       Performance.Dispose();
       _engine.Dispose();
     }

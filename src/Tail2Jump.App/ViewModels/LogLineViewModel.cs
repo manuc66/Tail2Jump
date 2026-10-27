@@ -6,25 +6,33 @@ namespace Tail2Jump.ViewModels
 {
   public class LogLineViewModel : ObservableObject
   {
-    private IReadOnlyList<LogLineSegment> _segments;
+    private IReadOnlyList<LogLineSegment>? _segments;
+    private string? _searchText;
+    private bool _ignoreCase = true;
 
     public LogLineViewModel(string rawLine)
     {
       RawLine = rawLine;
-      _segments = LogLineParser.Parse(rawLine);
     }
 
     public string RawLine { get; }
 
-    public IReadOnlyList<LogLineSegment> Segments
-    {
-      get { return _segments; }
-      private set { SetProperty(ref _segments, value); }
-    }
+    /// <summary>
+    /// Segments are parsed lazily: the list box only realizes visible rows, so
+    /// a huge log does not pay for parsing lines that are never displayed.
+    /// </summary>
+    public IReadOnlyList<LogLineSegment> Segments =>
+      _segments ??= LogLineParser.Parse(RawLine, _searchText, _ignoreCase);
 
     public void ApplySearch(string? searchText, bool ignoreCase)
     {
-      Segments = LogLineParser.Parse(RawLine, searchText, ignoreCase);
+      if (_searchText == searchText && _ignoreCase == ignoreCase) return;
+
+      _searchText = searchText;
+      _ignoreCase = ignoreCase;
+      _segments = null;
+
+      OnPropertyChanged(nameof(Segments));
     }
   }
 }
