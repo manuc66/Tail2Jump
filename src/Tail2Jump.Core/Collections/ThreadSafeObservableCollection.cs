@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 
-namespace Be.Manuc66.Library.Collections
+namespace Tail2Jump.Collections
 {
   /// <summary>
   /// Provides a thread-safe <see cref="ObservableCollection{T}"/>.
@@ -54,7 +54,10 @@ namespace Be.Manuc66.Library.Collections
     {
       Invoke(() =>
       {
-        if (index > Count) return;
+        // Clamp instead of silently dropping the item: a stale index coming
+        // from another thread must not lose data without a trace.
+        if (index < 0) index = 0;
+        if (index > Count) index = Count;
 
         _lock.EnterWriteLock();
         try

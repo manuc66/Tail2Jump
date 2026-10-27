@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Be.Manuc66.Library.Mvvm
+namespace Tail2Jump.Mvvm
 {
   /// <summary>
   /// Minimal INotifyPropertyChanged implementation.

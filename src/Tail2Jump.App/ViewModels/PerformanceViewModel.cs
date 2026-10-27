@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using Be.Manuc66.Library.Mvvm;
+using Tail2Jump.Mvvm;
 using Tail2Jump.Charting;
 using Tail2Jump.Monitoring;
 

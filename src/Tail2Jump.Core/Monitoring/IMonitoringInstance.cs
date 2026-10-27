@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using Tai2JumpInfra.MonitoringInstanceStates;
+using Tail2Jump.Monitoring;
 
-namespace Tai2JumpInfra
+namespace Tail2Jump.Monitoring
 {
   public interface IMonitoringInstance : INotifyPropertyChanged
   {

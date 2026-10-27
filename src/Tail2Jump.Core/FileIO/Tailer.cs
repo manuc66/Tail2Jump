@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace Be.Manuc66.Library.FileIO
+namespace Tail2Jump.FileIO
 {
   /// <summary>
   /// Watches a directory for file changes and raises new complete lines.
@@ -354,28 +354,51 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
+    private static readonly TimeSpan RecentlyWrittenThreshold = TimeSpan.FromSeconds(1);
+    private const int TruncationRetryCount = 5;
+    private const int TruncationRetryDelayMs = 100;
+
     private long GetActualFilePos(string fullPath, FileStream fs, out long fileLength)
     {
+      long pos;
       lock (_monitorPreviousSeekPosition)
       {
-        long pos = _previousSeekPositions.TryGetValue(fullPath, out long previous) ? previous : 0;
-        int retry = 0;
+        pos = _previousSeekPositions.TryGetValue(fullPath, out long previous) ? previous : 0;
+      }
 
+      fileLength = fs.Length;
+      int retry = 0;
+
+      // Only a file that was just written to is worth waiting for: a writer
+      // mid-rewrite temporarily shrinks the file, but an idle file smaller
+      // than the last known offset has been truncated. Waiting on an idle
+      // file would stall every other file tailed by this instance.
+      while (retry < TruncationRetryCount && fileLength < pos && WasRecentlyWritten(fs))
+      {
+        Thread.Sleep(TruncationRetryDelayMs);
         fileLength = fs.Length;
-        while (retry < 5 && fileLength - pos < 0)
-        {
-          // The file is smaller than the known size: it may be rewritten,
-          // wait a bit before considering it truncated.
-          Thread.Sleep(100);
-          fileLength = fs.Length;
-          retry++;
-        }
+        retry++;
+      }
 
-        if (fileLength - pos >= 0) return pos;
+      if (fileLength >= pos) return pos;
 
-        _log.LogError("File reset detected: {FullPath}", fullPath);
+      _log.LogError("File reset detected: {FullPath}", fullPath);
+      lock (_monitorPreviousSeekPosition)
+      {
         _previousSeekPositions[fullPath] = 0;
-        return 0;
+      }
+      return 0;
+    }
+
+    private static bool WasRecentlyWritten(FileStream fs)
+    {
+      try
+      {
+        return File.GetLastWriteTimeUtc(fs.Name) >= DateTime.UtcNow - RecentlyWrittenThreshold;
+      }
+      catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)
+      {
+        return false;
       }
     }
 

@@ -1,6 +1,5 @@
-using Be.Manuc66.Library.Mvvm;
-using Tai2JumpInfra;
-using Tai2JumpInfra.MonitoringInstanceStates;
+using Tail2Jump.Mvvm;
+using Tail2Jump.Monitoring;
 
 namespace Tail2Jump.Objects
 {

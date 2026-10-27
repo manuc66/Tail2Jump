@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Be.Manuc66.Library.FileIO
+namespace Tail2Jump.FileIO
 {
   public class TailEventData
   {

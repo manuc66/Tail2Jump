@@ -3,7 +3,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Be.Manuc66.Library.Mvvm;
+using Tail2Jump.Mvvm;
 using Tail2Jump.Config.Objects;
 using Tail2Jump.ViewModels;
 

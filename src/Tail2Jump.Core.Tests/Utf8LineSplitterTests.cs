@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests

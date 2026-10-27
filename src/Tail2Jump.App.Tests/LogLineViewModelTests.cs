@@ -19,6 +19,41 @@ namespace Tail2Jump.App.Tests
     }
 
     [Test]
+    public void ConstructorFromEntry_BuildsTheRawLineOnDemand()
+    {
+      var line = new LogLineViewModel("app.log", "hello");
+
+      Assert.That(line.RawLine, Is.EqualTo("app.log|hello"));
+      Assert.That(line.RawLine, Is.SameAs(line.RawLine));
+    }
+
+    [Test]
+    public void ApplySearch_BeforeTheLineIsRealized_DoesNotNotify()
+    {
+      var line = new LogLineViewModel("app.log", "an ERROR happened");
+      int notifications = 0;
+      line.PropertyChanged += (_, _) => notifications++;
+
+      line.ApplySearch("error", ignoreCase: true);
+
+      Assert.That(notifications, Is.Zero);
+      Assert.That(line.Segments.Any(segment => segment.IsHighlighted), Is.True);
+    }
+
+    [Test]
+    public void ApplySearch_AfterTheLineIsRealized_NotifiesOnce()
+    {
+      var line = new LogLineViewModel("app.log", "an ERROR happened");
+      _ = line.Segments;
+      int notifications = 0;
+      line.PropertyChanged += (_, _) => notifications++;
+
+      line.ApplySearch("error", ignoreCase: true);
+
+      Assert.That(notifications, Is.EqualTo(1));
+    }
+
+    [Test]
     public void ApplySearch_InvalidatesTheCachedSegments()
     {
       var line = new LogLineViewModel("an ERROR happened");

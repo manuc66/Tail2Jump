@@ -2,8 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Be.Manuc66.Library.Events;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using Microsoft.Extensions.DependencyInjection;
 using Tail2Jump.Controllers;
 using Tail2Jump.Logging;
@@ -25,7 +24,6 @@ namespace Tail2Jump.App
     {
       var services = new ServiceCollection();
 
-      services.AddSingleton<IEventAggregator, EventAggregator>();
       services.AddSingleton<ILogController, LogController>();
       services.AddSingleton(_ => new WatcherEngine(new TailLineCache(), new TailLineCache()));
       services.AddSingleton<MainWindowViewModel>();

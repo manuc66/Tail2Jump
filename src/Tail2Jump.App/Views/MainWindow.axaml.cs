@@ -9,7 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Tail2Jump.ViewModels;
-using Tai2JumpInfra;
+using Tail2Jump.Monitoring;
 
 namespace Tail2Jump.App.Views
 {

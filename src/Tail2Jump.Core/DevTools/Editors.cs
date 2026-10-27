@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Be.Manuc66.Library.DevTools
+namespace Tail2Jump.DevTools
 {
   public class FilePathWithLineInfo
   {

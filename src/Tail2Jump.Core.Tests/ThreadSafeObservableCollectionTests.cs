@@ -1,4 +1,4 @@
-using Be.Manuc66.Library.Collections;
+using Tail2Jump.Collections;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests

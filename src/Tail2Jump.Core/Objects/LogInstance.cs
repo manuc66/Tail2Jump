@@ -1,5 +1,5 @@
 using System;
-using Be.Manuc66.Library.Mvvm;
+using Tail2Jump.Mvvm;
 using Tail2Jump.Enums;
 
 namespace Tail2Jump.Objects

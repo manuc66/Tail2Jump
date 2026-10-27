@@ -1,6 +1,6 @@
 using System;
-using Be.Manuc66.Library.Collections;
-using Be.Manuc66.Library.Mvvm;
+using Tail2Jump.Collections;
+using Tail2Jump.Mvvm;
 using Tail2Jump.Enums;
 using Tail2Jump.Objects;
 

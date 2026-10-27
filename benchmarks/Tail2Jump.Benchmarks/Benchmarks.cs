@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using Tail2Jump.Rendering;
 
 namespace Tail2Jump.Benchmarks
@@ -157,6 +157,12 @@ namespace Tail2Jump.Benchmarks
     public int ReadPage()
     {
       return _cache.GetLines(25_000, 50).Length;
+    }
+
+    [Benchmark]
+    public int ReadEntriesPage()
+    {
+      return _cache.GetEntries(25_000, 50).Length;
     }
 
     [Benchmark]

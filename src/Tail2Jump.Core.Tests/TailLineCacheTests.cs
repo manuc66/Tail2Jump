@@ -1,6 +1,6 @@
 using System.Linq;
 using System;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests
@@ -180,6 +180,21 @@ namespace Tail2Jump.Core.Tests
       target.AddData(source, null);
 
       Assert.That(target.GetLines(0, 10), Is.EqualTo(new[] { "app.log|two", "app.log|three" }));
+    }
+
+    [Test]
+    public void GetEntries_ReturnsTheRawPartsWithoutFormatting()
+    {
+      using var cache = new TailLineCache();
+
+      cache.AddData(new TailEventData("app.log", "one" + Environment.NewLine + "two", 0, 0));
+
+      var entries = cache.GetEntries(0, 2);
+
+      Assert.That(entries, Has.Length.EqualTo(2));
+      Assert.That(entries[0].FileName, Is.EqualTo("app.log"));
+      Assert.That(entries[0].Content, Is.EqualTo("one"));
+      Assert.That(entries[1].Content, Is.EqualTo("two"));
     }
 
     [Test]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests

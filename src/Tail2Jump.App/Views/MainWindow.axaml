@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="using:Tail2Jump.App.Views"
         xmlns:charts="using:Tail2Jump.App.Charts"
-        xmlns:infra="using:Tai2JumpInfra"
+        xmlns:infra="using:Tail2Jump.Monitoring"
         x:Class="Tail2Jump.App.Views.MainWindow"
         Title="{Binding Title}"
         Width="1015"

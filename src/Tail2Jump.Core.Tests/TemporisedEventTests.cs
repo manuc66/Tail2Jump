@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Be.Manuc66.Library.Threading;
+using Tail2Jump.Threading;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Be.Manuc66.Library.FileIO
+namespace Tail2Jump.FileIO
 {
   /// <summary>
   /// Splits a UTF-8 buffer into complete lines without decoding the whole

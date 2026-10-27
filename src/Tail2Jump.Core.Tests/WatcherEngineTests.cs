@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.FileIO;
 using NUnit.Framework;
 using Tail2Jump.Controllers;
-using Tai2JumpInfra.MonitoringInstanceStates;
+using Tail2Jump.Monitoring;
 
 namespace Tail2Jump.Core.Tests
 {
@@ -72,7 +72,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var engine = new WatcherEngine(new TailLineCache(), new TailLineCache());
 
-      Assert.DoesNotThrow(() => engine.RemoveWatcher((System.Collections.Generic.ICollection<Tai2JumpInfra.IMonitoringInstance>)null!));
+      Assert.DoesNotThrow(() => engine.RemoveWatcher((System.Collections.Generic.ICollection<Tail2Jump.Monitoring.IMonitoringInstance>)null!));
     }
 
     [Test]
@@ -155,6 +155,8 @@ namespace Tail2Jump.Core.Tests
       public int FirstLineIndex => _inner.FirstLineIndex;
 
       public string[] GetLines(int start, int len) => _inner.GetLines(start, len);
+
+      public TailLineEntry[] GetEntries(int start, int len) => _inner.GetEntries(start, len);
 
       public void Clear() => _inner.Clear();
 

@@ -63,8 +63,6 @@ src/
   intermediate full-buffer strings
 - the line cache stores `(file, content)` entries and only builds the displayed
   `file|content` string for the requested page
-- `RandomLineFileAccessor` indexes and reads through a read-only memory-mapped
-  file (with UTF-8 BOM handling)
 - views unsubscribe from view-model events when detached, and the ownership of
   timers, delegates and collections is cleaned up on close
 
@@ -84,8 +82,9 @@ dotnet run -c Release --project benchmarks/Tail2Jump.Benchmarks -- --filter "*Li
 | UTF-8 split, `ReadOnlySpan<byte>` | 1.45 ms / 10k lines | 1.69 MB |
 | Line parsing, legacy `string.Split` | 259 ns | 560 B |
 | Line parsing, memory slices | 206 ns | 256 B |
-| Read a 50-line page from the cache | 1.2 us | 3.9 KB |
-| Filter replay (50k lines, 10% matches) | 1.1 ms | 782 KB |
+| Read a 50-line page, formatted (`GetLines`) | 1.4 us | 4.0 KB |
+| Read a 50-line page, raw entries (`GetEntries`) | 133 ns | 824 B |
+| Filter replay (50k lines, 10% matches) | 1.3 ms | 782 KB |
 
 The log viewport is virtualized: a headless test asserts that a 10,000-line
 list only realizes the visible rows.

@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Tail2Jump.Collections;
 using System.Linq;
 using System.Threading;
-using Be.Manuc66.Library.Collections;
-using Be.Manuc66.Library.DevTools;
-using Be.Manuc66.Library.FileIO;
+using Tail2Jump.Collections;
+using Tail2Jump.DevTools;
+using Tail2Jump.FileIO;
 using Tail2Jump.Config.Objects;
 using Tail2Jump.Controllers;
 using Tail2Jump.Enums;
 using Tail2Jump.Objects;
 using Tail2Jump.Logging;
-using Tai2JumpInfra;
-using Tai2JumpInfra.MonitoringInstanceStates;
-using Be.Manuc66.Library.Mvvm;
+using Tail2Jump.Monitoring;
+using Tail2Jump.Mvvm;
+using Tail2Jump.Threading;
 
 namespace Tail2Jump.ViewModels
 {
@@ -44,10 +43,8 @@ namespace Tail2Jump.ViewModels
     private bool _searchActivated;
     private bool _filterActivated;
     private bool _ignoreCase = true;
-    private readonly Be.Manuc66.Library.Threading.TemporisedEvent _searchDebounce =
-      new Be.Manuc66.Library.Threading.TemporisedEvent(200);
-    private readonly Be.Manuc66.Library.Threading.TemporisedEvent _filterDebounce =
-      new Be.Manuc66.Library.Threading.TemporisedEvent(250);
+    private readonly TemporisedEvent _searchDebounce = new TemporisedEvent(200);
+    private readonly TemporisedEvent _filterDebounce = new TemporisedEvent(250);
     private string _title = BaseTitle;
 
     public MainWindowViewModel(WatcherEngine engine, ILogController log,

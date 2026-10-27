@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Be.Manuc66.Library.FileIO
+namespace Tail2Jump.FileIO
 {
   /// <summary>
   /// Thread-safe cache of log lines. Lines are stored as (file name, content)
@@ -98,7 +98,7 @@ namespace Be.Manuc66.Library.FileIO
         {
           for (int i = 0; i < lines.Count; i++)
           {
-            _lines.Add(new LineEntry(fileName, lines[i]));
+            _lines.Add(new TailLineEntry(fileName, lines[i]));
           }
         }
         else
@@ -107,7 +107,7 @@ namespace Be.Manuc66.Library.FileIO
           {
             if (line.IndexOf(filter!, StringComparison.OrdinalIgnoreCase) >= 0)
             {
-              _lines.Add(new LineEntry(fileName, line));
+              _lines.Add(new TailLineEntry(fileName, line));
             }
           }
         }
@@ -155,7 +155,7 @@ namespace Be.Manuc66.Library.FileIO
 
           if (Matches(fileName, content, filter))
           {
-            _lines.Add(new LineEntry(fileName, content));
+            _lines.Add(new TailLineEntry(fileName, content));
           }
         }
       }
@@ -180,7 +180,7 @@ namespace Be.Manuc66.Library.FileIO
 
       while (start < total)
       {
-        LineEntry[] entries = GetEntries(start, Math.Min(ReplayChunkSize, total - start), out int actualStart);
+        TailLineEntry[] entries = GetEntriesCore(start, Math.Min(ReplayChunkSize, total - start), out int actualStart);
         if (entries.Length == 0) break;
 
         target.AppendEntries(entries, filter);
@@ -191,23 +191,28 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    private LineEntry[] GetEntries(int start, int len, out int actualStart)
+    public TailLineEntry[] GetEntries(int start, int len)
+    {
+      return GetEntriesCore(start, len, out _);
+    }
+
+    private TailLineEntry[] GetEntriesCore(int start, int len, out int actualStart)
     {
       actualStart = start;
       var locker = _locker;
-      if (locker == null) return Array.Empty<LineEntry>();
+      if (locker == null) return Array.Empty<TailLineEntry>();
 
       locker.EnterReadLock();
       try
       {
         if (start < _lines.FirstLineIndex) start = _lines.FirstLineIndex;
-        if (start >= _lines.LineIndexed) return Array.Empty<LineEntry>();
+        if (start >= _lines.LineIndexed) return Array.Empty<TailLineEntry>();
 
         actualStart = start;
         int count = Math.Min(len, _lines.LineIndexed - start);
-        if (count <= 0) return Array.Empty<LineEntry>();
+        if (count <= 0) return Array.Empty<TailLineEntry>();
 
-        var entries = new LineEntry[count];
+        var entries = new TailLineEntry[count];
         _lines.CopyTo(start, entries, count);
         return entries;
       }
@@ -217,7 +222,7 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    private void AppendEntries(IEnumerable<LineEntry> entries, string? filter)
+    private void AppendEntries(IEnumerable<TailLineEntry> entries, string? filter)
     {
       var locker = _locker;
       if (locker == null) return;
@@ -239,7 +244,7 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
-    private static string Format(LineEntry entry)
+    private static string Format(TailLineEntry entry)
     {
       return entry.FileName.Length == 0
         ? entry.Content
@@ -254,17 +259,7 @@ namespace Be.Manuc66.Library.FileIO
       _locker = null;
     }
 
-    private readonly struct LineEntry
-    {
-      public LineEntry(string fileName, string content)
-      {
-        FileName = fileName;
-        Content = content;
-      }
-
-      public string FileName { get; }
-      public string Content { get; }
-    }
+    
 
     /// <summary>
     /// Fixed-capacity ring buffer of line entries. When full, the oldest entry
@@ -273,21 +268,21 @@ namespace Be.Manuc66.Library.FileIO
     private sealed class LineRingBuffer
     {
       private readonly int _maxCapacity;
-      private LineEntry[] _buffer;
+      private TailLineEntry[] _buffer;
       private int _head;
       private int _count;
 
       public LineRingBuffer(int maxCapacity)
       {
         _maxCapacity = maxCapacity;
-        _buffer = new LineEntry[Math.Min(maxCapacity, 1024)];
+        _buffer = new TailLineEntry[Math.Min(maxCapacity, 1024)];
       }
 
       public int FirstLineIndex { get; private set; }
 
       public int LineIndexed { get; private set; }
 
-      public LineEntry this[int index]
+      public TailLineEntry this[int index]
       {
         get
         {
@@ -296,7 +291,7 @@ namespace Be.Manuc66.Library.FileIO
         }
       }
 
-      public void Add(LineEntry entry)
+      public void Add(TailLineEntry entry)
       {
         if (_count == _buffer.Length && _buffer.Length < _maxCapacity)
         {
@@ -318,7 +313,7 @@ namespace Be.Manuc66.Library.FileIO
         LineIndexed = FirstLineIndex + _count;
       }
 
-      public void CopyTo(int start, LineEntry[] destination, int count)
+      public void CopyTo(int start, TailLineEntry[] destination, int count)
       {
         int offset = start - FirstLineIndex;
         int firstChunk = Math.Min(count, _buffer.Length - ((_head + offset) % _buffer.Length));
@@ -342,7 +337,7 @@ namespace Be.Manuc66.Library.FileIO
       private void Grow()
       {
         int newSize = Math.Min(_buffer.Length * 2, _maxCapacity);
-        var newBuffer = new LineEntry[newSize];
+        var newBuffer = new TailLineEntry[newSize];
 
         for (int i = 0; i < _count; i++)
         {

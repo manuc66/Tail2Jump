@@ -1,4 +1,4 @@
-namespace Tai2JumpInfra.MonitoringInstanceStates
+namespace Tail2Jump.Monitoring
 {
   public abstract class MonitoringInstanceState
   {

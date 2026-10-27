@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Be.Manuc66.Library.DevTools;
+using Tail2Jump.DevTools;
 using NUnit.Framework;
 
 namespace Tail2Jump.Core.Tests

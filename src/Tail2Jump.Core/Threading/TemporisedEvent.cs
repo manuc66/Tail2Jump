@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace Be.Manuc66.Library.Threading
+namespace Tail2Jump.Threading
 {
   /// <summary>
   /// Debounced event: <see cref="Set"/> arms a timer that raises
@@ -50,6 +50,13 @@ namespace Be.Manuc66.Library.Threading
 
       ThreadPool.QueueUserWorkItem(_ =>
       {
+        // The dispose can happen between the timer firing and this work item
+        // running: check again so a disposed instance never raises eHandle.
+        lock (_lockObject)
+        {
+          if (_disposed) return;
+        }
+
         eHandle(this, EventArgs.Empty);
       });
     }
