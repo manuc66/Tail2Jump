@@ -1,148 +1,157 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Be.Manuc66.Library.FileIO
 {
   /// <summary>
-  /// Indexes a file by new-line offsets so lines can be read randomly.
+  /// Indexes a file by line offsets and reads lines randomly. The file is
+  /// memory-mapped read-only for both indexing and reading, so no buffer copy
+  /// is involved and the memory usage stays flat for large files.
   /// </summary>
   public class RandomLineFileAccessor
   {
-    private const int MaxBytes = 1024 * 32; // 32 KB per read
-
     private readonly List<long> _startLineIndex = new List<long>();
     private readonly string _filePath;
     private readonly ILogger _log;
     private bool _isFileIndexed;
 
-    private static readonly byte[] NewLineByteDef;
-
-    static RandomLineFileAccessor()
-    {
-      NewLineByteDef = new UTF8Encoding().GetBytes(Environment.NewLine);
-    }
-
     public RandomLineFileAccessor(string filePath, ILogger? log = null)
     {
-      _filePath = filePath;
+      _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
       _log = log ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     }
 
-    public int LineIndexed
-    {
-      get { return _isFileIndexed ? _startLineIndex.Count : 0; }
-    }
+    /// <summary>Number of indexed lines.</summary>
+    public int LineIndexed => _isFileIndexed ? Math.Max(0, _startLineIndex.Count - 1) : 0;
 
     public void IndexFile()
     {
       _startLineIndex.Clear();
       _startLineIndex.Add(0);
 
-      var bytesRead = new byte[MaxBytes];
-      long totalRead = 0;
-
-      using (FileStream fs = OpenFileShareMode(_filePath))
+      if (new FileInfo(_filePath).Length == 0)
       {
-        int numBytes;
-        do
+        _isFileIndexed = true;
+        return;
+      }
+
+      using var mappedFile = MemoryMappedFile.CreateFromFile(_filePath, FileMode.Open, null, 0,
+        MemoryMappedFileAccess.Read);
+      using var view = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read);
+
+      int length = GetLength(view);
+
+      unsafe
+      {
+        byte* pointer = null;
+        view.SafeMemoryMappedViewHandle.AcquirePointer(ref pointer);
+
+        try
         {
-          long windowReadStart = totalRead;
-          numBytes = fs.Read(bytesRead, 0, MaxBytes);
-          totalRead += numBytes;
+          var span = new ReadOnlySpan<byte>(pointer + (int)view.PointerOffset, length);
 
-          int jumpWhenFound = NewLineByteDef.Length - 1;
-          for (int k = 0; k < numBytes; ++k)
+          int contentStart = 0;
+
+          // Skip an optional UTF-8 byte order mark.
+          if (span.Length >= 3 && span[0] == 0xEF && span[1] == 0xBB && span[2] == 0xBF)
           {
-            int i = 0;
-            for (; i < NewLineByteDef.Length && (k + i) < numBytes && bytesRead[k + i] == NewLineByteDef[i]; i++) { }
-
-            if (i != NewLineByteDef.Length) continue;
-
-            _startLineIndex.Add(windowReadStart + k + NewLineByteDef.Length);
-            k += jumpWhenFound;
+            contentStart = 3;
+            _startLineIndex[0] = 3;
           }
 
-          if (numBytes <= 0 || bytesRead[numBytes - 1] != NewLineByteDef[0]) continue;
-
-          // Last byte matches the first byte of the new-line sequence:
-          // read it again as the start of the next block.
-          totalRead--;
-          fs.Seek(totalRead, SeekOrigin.Begin);
+          for (int i = contentStart; i < span.Length; i++)
+          {
+            if (span[i] == (byte)'\n')
+            {
+              _startLineIndex.Add(i + 1);
+            }
+          }
         }
-        while (numBytes > 0);
+        finally
+        {
+          view.SafeMemoryMappedViewHandle.ReleasePointer();
+        }
+      }
+
+      // Sentinel so the last line (with or without a trailing newline) has an end.
+      if (_startLineIndex[^1] != length)
+      {
+        _startLineIndex.Add(length);
       }
 
       _isFileIndexed = true;
     }
 
+    /// <summary>
+    /// Returns up to <paramref name="len"/> lines starting at
+    /// <paramref name="start"/> (zero-based).
+    /// </summary>
     public string[] GetLines(int start, int len)
     {
-      if (len == 0)
+      if (!_isFileIndexed || len < 0) return Array.Empty<string>();
+
+      int total = LineIndexed;
+      if (start < 0 || start >= total) return Array.Empty<string>();
+
+      int count = Math.Min(len, total - start);
+      if (count <= 0) return Array.Empty<string>();
+
+      var result = new string[count];
+
+      using var mappedFile = MemoryMappedFile.CreateFromFile(_filePath, FileMode.Open, null, 0,
+        MemoryMappedFileAccess.Read);
+      using var view = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read);
+
+      int length = GetLength(view);
+
+      unsafe
       {
-        if (start == _startLineIndex.Count)
+        byte* pointer = null;
+        view.SafeMemoryMappedViewHandle.AcquirePointer(ref pointer);
+
+        try
         {
-          start--;
+          var span = new ReadOnlySpan<byte>(pointer + (int)view.PointerOffset, length);
+
+          for (int i = 0; i < count; i++)
+          {
+            int lineStart = checked((int)_startLineIndex[start + i]);
+            int lineEnd = checked((int)_startLineIndex[start + i + 1]);
+
+            if (lineEnd > lineStart && span[lineEnd - 1] == (byte)'\n')
+            {
+              lineEnd--;
+            }
+
+            if (lineEnd > lineStart && span[lineEnd - 1] == (byte)'\r')
+            {
+              lineEnd--;
+            }
+
+            result[i] = Encoding.UTF8.GetString(span[lineStart..lineEnd]);
+          }
         }
-        len++;
-      }
-      return ShowLines(start + 1, Math.Min(start + len, _startLineIndex.Count - 1));
-    }
-
-    public string[] ShowLines(int includingStart, int includingEnd)
-    {
-      if (!_isFileIndexed || includingStart <= 0 || includingEnd - includingStart < 0)
-      {
-        return new string[0];
-      }
-
-      long totalBytes = _startLineIndex[includingEnd] - _startLineIndex[includingStart - 1];
-      var byteRequested = new byte[totalBytes];
-      long dataBegin = _startLineIndex[includingStart - 1];
-      int numBytes = 0;
-
-      using (FileStream fs = OpenFileShareMode(_filePath))
-      {
-        if (dataBegin > 0)
+        finally
         {
-          fs.Seek(dataBegin, SeekOrigin.Begin);
+          view.SafeMemoryMappedViewHandle.ReleasePointer();
         }
-
-        int byteReadThisTime;
-        do
-        {
-          byteReadThisTime = fs.Read(byteRequested, numBytes, byteRequested.Length - numBytes);
-          numBytes += byteReadThisTime;
-        }
-        while (byteReadThisTime > 0 && numBytes < byteRequested.Length);
-      }
-
-      if (numBytes != byteRequested.Length)
-      {
-        _log.LogError("Failed to read {Expected} bytes from {FilePath} (got {Actual})",
-          byteRequested.Length, _filePath, numBytes);
-        return new string[0];
-      }
-
-      var result = new string[includingEnd - includingStart + 1];
-      long offsetInFile = dataBegin;
-      int offsetInArray = 0;
-      for (int i = 0; i < result.Length; ++i)
-      {
-        var lineTotalBytes = (int)(_startLineIndex[includingStart + i] - offsetInFile);
-        result[i] = Encoding.UTF8.GetString(byteRequested, offsetInArray, lineTotalBytes);
-        offsetInFile += lineTotalBytes;
-        offsetInArray += lineTotalBytes;
       }
 
       return result;
     }
 
-    private static FileStream OpenFileShareMode(string filePath)
+    private static int GetLength(MemoryMappedViewAccessor view)
     {
-      return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+      if (view.Capacity > int.MaxValue)
+      {
+        throw new NotSupportedException("Files larger than 2 GB are not supported by this accessor.");
+      }
+
+      return (int)view.Capacity;
     }
   }
 }

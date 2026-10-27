@@ -199,6 +199,67 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
+    public void AppendingMoreThanOneChunk_DeliversEveryLine()
+    {
+      const int lineCount = 60_000;
+      var received = new List<string>();
+      using var signal = new ManualResetEventSlim(false);
+
+      using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };
+      tailer.eMoreData += (_, data) =>
+      {
+        lock (received)
+        {
+          received.AddRange(data.Lines);
+          if (received.Count >= lineCount) signal.Set();
+        }
+      };
+
+      Assert.That(tailer.Start(), Is.True);
+
+      var builder = new System.Text.StringBuilder();
+      for (int i = 0; i < lineCount; i++)
+      {
+        builder.Append("line ").Append(i).Append('\n');
+      }
+
+      File.AppendAllText(_file, builder.ToString());
+
+      Assert.That(signal.Wait(TimeSpan.FromSeconds(30)), Is.True,
+        $"Only {received.Count} lines were delivered");
+
+      lock (received)
+      {
+        Assert.That(received, Has.Count.EqualTo(lineCount));
+        Assert.That(received[0], Is.EqualTo("line 0"));
+        Assert.That(received[^1], Is.EqualTo("line 59999"));
+      }
+    }
+
+    [Test]
+    public void AppendingMultiByteCharacters_DecodesThem()
+    {
+      var received = new List<TailEventData>();
+      using var signal = new ManualResetEventSlim(false);
+
+      using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };
+      tailer.eMoreData += (_, data) =>
+      {
+        lock (received) received.Add(data);
+        signal.Set();
+      };
+
+      Assert.That(tailer.Start(), Is.True);
+      File.AppendAllText(_file, "héllo wörld" + Environment.NewLine);
+
+      Assert.That(signal.Wait(TimeSpan.FromSeconds(10)), Is.True);
+      lock (received)
+      {
+        Assert.That(received[0].Lines[0], Is.EqualTo("héllo wörld"));
+      }
+    }
+
+    [Test]
     public void Stop_IsIdempotent()
     {
       using var tailer = new Tailer { ParentDirectory = _directory, Filter = "*.log" };

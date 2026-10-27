@@ -101,7 +101,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var cache = new TailLineCache();
 
-      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", null, 0, 0)));
+      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", (string?)null, 0, 0)));
       Assert.That(cache.LineIndexed, Is.Zero);
     }
 

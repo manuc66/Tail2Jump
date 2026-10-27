@@ -58,6 +58,13 @@ src/
   so a long-running tail cannot grow without bound
 - filtering is debounced (250 ms) instead of replaying the whole cache on every
   keystroke, and replays are chunked
+- the tailer decodes UTF-8 lines from `ReadOnlySpan<byte>` and reads in bounded
+  chunks (`ArrayPool` for large reads, `stackalloc` for small ones), without
+  intermediate full-buffer strings
+- the line cache stores `(file, content)` entries and only builds the displayed
+  `file|content` string for the requested page
+- `RandomLineFileAccessor` indexes and reads through a read-only memory-mapped
+  file (with UTF-8 BOM handling)
 - views unsubscribe from view-model events when detached, and the ownership of
   timers, delegates and collections is cleaned up on close
 

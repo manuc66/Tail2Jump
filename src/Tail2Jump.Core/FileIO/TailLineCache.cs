@@ -4,21 +4,21 @@ using System.Threading;
 
 namespace Be.Manuc66.Library.FileIO
 {
+  /// <summary>
+  /// Thread-safe cache of log lines. Lines are stored as (file name, content)
+  /// pairs: the "file|content" string is only built for the lines actually
+  /// requested by the UI, which avoids duplicating the file prefix for every
+  /// cached line.
+  /// </summary>
   public class TailLineCache : ITailLineCache
   {
     public const int DefaultMaxLines = 200_000;
 
     private const int ReplayChunkSize = 4096;
 
-    private static readonly string[] NewLineSeparators = { "\r\n", "\n", "\r" };
-
     private readonly int _maxLines;
     private ReaderWriterLockSlim? _locker;
-    private List<string> _cache = new List<string>();
-
-    public int LineIndexed { get; private set; }
-
-    public int FirstLineIndex { get; private set; }
+    private List<LineEntry> _cache = new List<LineEntry>();
 
     public TailLineCache(int maxLines = DefaultMaxLines)
     {
@@ -27,6 +27,10 @@ namespace Be.Manuc66.Library.FileIO
       _maxLines = maxLines;
       _locker = new ReaderWriterLockSlim();
     }
+
+    public int LineIndexed { get; private set; }
+
+    public int FirstLineIndex { get; private set; }
 
     public string[] GetLines(int start, int len)
     {
@@ -43,13 +47,17 @@ namespace Be.Manuc66.Library.FileIO
 
         if (start < FirstLineIndex) start = FirstLineIndex;
 
-        int retLen = Math.Min(start + len, LineIndexed) - start;
-        if (retLen <= 0) return Array.Empty<string>();
+        int count = Math.Min(len, LineIndexed - start);
+        if (count <= 0) return Array.Empty<string>();
 
-        // Copy directly into the result array instead of allocating an
-        // intermediate list for every requested page.
-        var result = new string[retLen];
-        _cache.CopyTo(start - FirstLineIndex, result, 0, retLen);
+        var result = new string[count];
+        int offset = start - FirstLineIndex;
+
+        for (int i = 0; i < count; i++)
+        {
+          result[i] = Format(_cache[offset + i]);
+        }
+
         return result;
       }
       finally
@@ -66,7 +74,7 @@ namespace Be.Manuc66.Library.FileIO
       locker.EnterWriteLock();
       try
       {
-        _cache = new List<string>();
+        _cache = new List<LineEntry>();
         LineIndexed = 0;
         FirstLineIndex = 0;
       }
@@ -78,37 +86,21 @@ namespace Be.Manuc66.Library.FileIO
 
     public void AddData(TailEventData tailData, string? filter = null)
     {
-      if (tailData?.NewLines == null || _locker == null) return;
+      if (tailData == null || _locker == null) return;
 
-      string[] lines = tailData.NewLines.Split(NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
-      if (lines.Length == 0) return;
+      var lines = tailData.Lines;
+      if (lines.Count == 0) return;
 
       string fileName = tailData.FileName;
       bool fileNameMatches = filter == null ||
-                             fileName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+                             (fileName.Length > 0 &&
+                              fileName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
 
       var locker = _locker;
       locker.EnterWriteLock();
       try
       {
-        if (fileNameMatches)
-        {
-          foreach (string line in lines)
-          {
-            _cache.Add(string.Concat(fileName, "|", line));
-          }
-        }
-        else
-        {
-          foreach (string line in lines)
-          {
-            if (line.IndexOf(filter!, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-              _cache.Add(string.Concat(fileName, "|", line));
-            }
-          }
-        }
-
+        AppendLines(lines, fileName, filter, fileNameMatches);
         Trim();
       }
       finally
@@ -121,29 +113,130 @@ namespace Be.Manuc66.Library.FileIO
     {
       if (other == null || _locker == null || ReferenceEquals(other, this)) return;
 
+      if (other is TailLineCache source)
+      {
+        source.CopyTo(this, filter);
+        return;
+      }
+
+      // Unknown cache implementation: replay through the public API.
+      int total = other.LineIndexed;
+      for (int start = other.FirstLineIndex; start < total; start += ReplayChunkSize)
+      {
+        string[] lines = other.GetLines(start, Math.Min(ReplayChunkSize, total - start));
+        if (lines.Length == 0) break;
+
+        AppendFormattedLines(lines, filter);
+      }
+    }
+
+    private void AppendLines(IReadOnlyList<string> lines, string fileName, string? filter, bool fileNameMatches)
+    {
+      if (fileNameMatches)
+      {
+        for (int i = 0; i < lines.Count; i++)
+        {
+          _cache.Add(new LineEntry(fileName, lines[i]));
+        }
+
+        return;
+      }
+
+      foreach (string line in lines)
+      {
+        if (line.IndexOf(filter!, StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+          _cache.Add(new LineEntry(fileName, line));
+        }
+      }
+    }
+
+    private void AppendFormattedLines(IEnumerable<string> lines, string? filter)
+    {
       var locker = _locker;
+      if (locker == null) return;
+
       locker.EnterWriteLock();
       try
       {
-        // Replay in chunks: this avoids materializing the whole source cache
-        // when applying a filter on a large log.
-        int total = other.LineIndexed;
-        for (int start = other.FirstLineIndex; start < total; start += ReplayChunkSize)
+        foreach (string line in lines)
         {
-          string[] lines = other.GetLines(start, Math.Min(ReplayChunkSize, total - start));
-          if (lines.Length == 0) break;
+          int separator = line.IndexOf('|');
+          string fileName = separator > 0 ? line.Substring(0, separator) : string.Empty;
+          string content = separator > 0 ? line.Substring(separator + 1) : line;
 
-          foreach (string line in lines)
+          if (Matches(fileName, content, filter))
           {
-            SplitLine(line, out string fileName, out string content);
+            _cache.Add(new LineEntry(fileName, content));
+          }
+        }
 
-            bool fileNameMatches = filter == null ||
-                                   fileName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+        Trim();
+      }
+      finally
+      {
+        locker.ExitWriteLock();
+      }
+    }
 
-            if (fileNameMatches || content.IndexOf(filter!, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-              _cache.Add(line);
-            }
+    private static bool Matches(string fileName, string content, string? filter)
+    {
+      if (filter == null) return true;
+
+      return (fileName.Length > 0 && fileName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0) ||
+             content.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    internal void CopyTo(TailLineCache target, string? filter)
+    {
+      int total = LineIndexed;
+
+      for (int start = FirstLineIndex; start < total; start += ReplayChunkSize)
+      {
+        LineEntry[] entries = GetEntries(start, Math.Min(ReplayChunkSize, total - start));
+        if (entries.Length == 0) break;
+
+        target.AppendEntries(entries, filter);
+      }
+    }
+
+    private LineEntry[] GetEntries(int start, int len)
+    {
+      var locker = _locker;
+      if (locker == null) return Array.Empty<LineEntry>();
+
+      locker.EnterReadLock();
+      try
+      {
+        if (start < FirstLineIndex) start = FirstLineIndex;
+        if (start >= LineIndexed) return Array.Empty<LineEntry>();
+
+        int count = Math.Min(len, LineIndexed - start);
+        if (count <= 0) return Array.Empty<LineEntry>();
+
+        var entries = new LineEntry[count];
+        _cache.CopyTo(start - FirstLineIndex, entries, 0, count);
+        return entries;
+      }
+      finally
+      {
+        locker.ExitReadLock();
+      }
+    }
+
+    private void AppendEntries(IEnumerable<LineEntry> entries, string? filter)
+    {
+      var locker = _locker;
+      if (locker == null) return;
+
+      locker.EnterWriteLock();
+      try
+      {
+        foreach (var entry in entries)
+        {
+          if (Matches(entry.FileName, entry.Content, filter))
+          {
+            _cache.Add(entry);
           }
         }
 
@@ -167,19 +260,11 @@ namespace Be.Manuc66.Library.FileIO
       LineIndexed = FirstLineIndex + _cache.Count;
     }
 
-    private static void SplitLine(string line, out string fileName, out string content)
+    private static string Format(LineEntry entry)
     {
-      int separator = line.IndexOf('|');
-      if (separator > 0)
-      {
-        fileName = line.Substring(0, separator);
-        content = line.Substring(separator + 1);
-      }
-      else
-      {
-        fileName = string.Empty;
-        content = line;
-      }
+      return entry.FileName.Length == 0
+        ? entry.Content
+        : string.Concat(entry.FileName, "|", entry.Content);
     }
 
     public void Dispose()
@@ -188,6 +273,18 @@ namespace Be.Manuc66.Library.FileIO
 
       _locker.Dispose();
       _locker = null;
+    }
+
+    private readonly struct LineEntry
+    {
+      public LineEntry(string fileName, string content)
+      {
+        FileName = fileName;
+        Content = content;
+      }
+
+      public string FileName { get; }
+      public string Content { get; }
     }
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Buffers;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
@@ -204,6 +205,9 @@ namespace Be.Manuc66.Library.FileIO
       }
     }
 
+    private const int StackBufferThreshold = 4096;
+    private const int MaxChunkBytes = 1024 * 1024;
+
     private readonly object _lockTargetFileChanged = new object();
 
     public void TargetFileChanged(object source, FileSystemEventArgs fsEvent)
@@ -217,94 +221,136 @@ namespace Be.Manuc66.Library.FileIO
           StorePreviousPosition(fsEvent.FullPath, 0);
         }
 
-        byte[] bytesRead = ReadAvailableBytes(fsEvent.FullPath);
-        if (bytesRead.Length <= 0) return;
-
-        string stringRead = Encoding.UTF8.GetString(bytesRead, 0, bytesRead.Length);
-
-        if (!LineSplitter.TrySplitCompleteLines(stringRead, out var completeLines, out int consumedChars))
+        using var fs = OpenFileShareMode(fsEvent.FullPath);
+        if (fs == null)
         {
-          _log.LogDebug("Target file changed but no complete line: {ChangeType} - {Path}",
-            fsEvent.ChangeType, fsEvent.FullPath);
+          _log.LogError("{FullPath} fail to get tailed", fsEvent.FullPath);
           return;
         }
 
-        long fileSeekPos;
-        string file = Path.GetFileName(fsEvent.FullPath);
-        uint byteConsumed = (uint)Encoding.UTF8.GetByteCount(stringRead.Substring(0, consumedChars));
+        long position = GetActualFilePos(fsEvent.FullPath, fs, out long fileLength);
+        position = fs.Seek(position, SeekOrigin.Begin);
+        StorePreviousPosition(fsEvent.FullPath, position);
 
-        lock (_monitorPreviousSeekPosition)
+        long remaining = fileLength - position;
+        if (remaining <= 0) return;
+
+        string fileName = Path.GetFileName(fsEvent.FullPath);
+
+        // Read the backlog in bounded chunks: a multi-gigabyte file must not
+        // trigger a multi-gigabyte allocation. Small chunks use the stack.
+        while (remaining > 0)
         {
-          fileSeekPos = _previousSeekPositions.TryGetValue(fsEvent.FullPath, out long previous)
-            ? previous
-            : 0;
-          _previousSeekPositions[fsEvent.FullPath] = fileSeekPos + byteConsumed;
-        }
+          int chunkSize = (int)Math.Min(remaining, MaxChunkBytes);
+          int numBytes;
+          int consumedBytes;
 
-        string toShow = string.Join(Environment.NewLine, completeLines);
-
-        var tailEvent = new TailEventData(file, toShow, fileSeekPos, byteConsumed);
-        var handlers = eMoreData;
-        if (handlers != null)
-        {
-          // Invoke each subscriber separately: one failing handler must neither
-          // take down the watcher thread nor prevent the other handlers.
-          foreach (Action<Tailer, TailEventData> handler in handlers.GetInvocationList())
+          if (chunkSize <= StackBufferThreshold)
           {
+            consumedBytes = ProcessStackChunk(fs, fsEvent.FullPath, fileName, chunkSize, out numBytes);
+          }
+          else
+          {
+            byte[] rented = ArrayPool<byte>.Shared.Rent(chunkSize);
             try
             {
-              handler(this, tailEvent);
+              consumedBytes = ProcessChunk(fs, fsEvent.FullPath, fileName,
+                rented.AsSpan(0, chunkSize), out numBytes);
             }
-            catch (Exception error)
+            finally
             {
-              _log.LogError(error, "Tail event handler failed for {Path}", fsEvent.FullPath);
+              ArrayPool<byte>.Shared.Return(rented);
             }
           }
+
+          if (numBytes <= 0)
+          {
+            _log.LogError("Nothing read in the file: {FullPath}", fsEvent.FullPath);
+            return;
+          }
+
+          if (consumedBytes <= 0)
+          {
+            _log.LogDebug("Target file changed but no complete line: {ChangeType} - {Path}",
+              fsEvent.ChangeType, fsEvent.FullPath);
+            return;
+          }
+
+          position += consumedBytes;
+          remaining = fileLength - position;
+
+          // A partial line is left for the next event.
+          if (consumedBytes < numBytes) return;
         }
       }
     }
 
-    private byte[] ReadAvailableBytes(string fullPath)
+    private int ProcessStackChunk(FileStream stream, string fullPath, string fileName, int chunkSize,
+      out int numBytes)
     {
-      using (var fs = OpenFileShareMode(fullPath))
+      Span<byte> buffer = stackalloc byte[StackBufferThreshold];
+      return ProcessChunk(stream, fullPath, fileName, buffer[..chunkSize], out numBytes);
+    }
+
+    private int ProcessChunk(FileStream stream, string fullPath, string fileName, Span<byte> buffer,
+      out int numBytes)
+    {
+      numBytes = ReadFully(stream, buffer);
+      if (numBytes <= 0) return 0;
+
+      if (!Utf8LineSplitter.TrySplitCompleteLines(buffer[..numBytes], out var lines, out int consumedBytes))
       {
-        if (fs == null)
+        return 0;
+      }
+
+      if (consumedBytes <= 0) return 0;
+
+      long fileSeekPos;
+      lock (_monitorPreviousSeekPosition)
+      {
+        fileSeekPos = _previousSeekPositions.TryGetValue(fullPath, out long previous)
+          ? previous
+          : 0;
+        _previousSeekPositions[fullPath] = fileSeekPos + consumedBytes;
+      }
+
+      RaiseMoreData(fullPath, fileName, lines, fileSeekPos, (uint)consumedBytes);
+      return consumedBytes;
+    }
+
+    private static int ReadFully(FileStream stream, Span<byte> buffer)
+    {
+      int total = 0;
+      while (total < buffer.Length)
+      {
+        int read = stream.Read(buffer[total..]);
+        if (read <= 0) break;
+        total += read;
+      }
+
+      return total;
+    }
+
+    private void RaiseMoreData(string fullPath, string fileName, IReadOnlyList<string> lines,
+      long fileSeekPos, uint byteConsumed)
+    {
+      var tailEvent = new TailEventData(fileName, lines, fileSeekPos, byteConsumed);
+
+      var handlers = eMoreData;
+      if (handlers == null) return;
+
+      // Invoke each subscriber separately: one failing handler must neither
+      // take down the watcher thread nor prevent the other handlers.
+      foreach (Action<Tailer, TailEventData> handler in handlers.GetInvocationList())
+      {
+        try
         {
-          _log.LogError("{FullPath} fail to get tailed", fullPath);
-          return new byte[0];
+          handler(this, tailEvent);
         }
-
-        long pos = GetActualFilePos(fullPath, fs, out long fileLength);
-
-        pos = fs.Seek(pos, SeekOrigin.Begin);
-        StorePreviousPosition(fullPath, pos);
-
-        long size = fileLength - pos;
-        if (size <= 0) return new byte[0];
-
-        var bytesRead = new byte[size];
-        int numBytes = 0;
-        while (numBytes < bytesRead.Length)
+        catch (Exception error)
         {
-          int read = fs.Read(bytesRead, numBytes, bytesRead.Length - numBytes);
-          if (read <= 0) break;
-          numBytes += read;
+          _log.LogError(error, "Tail event handler failed for {Path}", fullPath);
         }
-
-        if (numBytes <= 0)
-        {
-          _log.LogError("Nothing read in the file: {FullPath}, expected data read: {Expected}",
-            fullPath, bytesRead.Length);
-          return Array.Empty<byte>();
-        }
-
-        // Stream.Read is allowed to return less than requested: do not copy the
-        // buffer when it was filled completely.
-        if (numBytes == bytesRead.Length) return bytesRead;
-
-        var toReturn = new byte[numBytes];
-        Array.Copy(bytesRead, toReturn, numBytes);
-        return toReturn;
       }
     }
 
