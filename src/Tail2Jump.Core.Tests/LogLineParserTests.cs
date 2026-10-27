@@ -79,14 +79,6 @@ namespace Tail2Jump.Core.Tests
       Assert.That(segments[0].DisplayText, Is.EqualTo("two\u00A0words"));
     }
 
-    [Test]
-    public void SplitFileName_SplitsOnTheFirstPipe()
-    {
-      var (fileName, content) = LogLineParser.SplitFileName("app.log|a|b");
-
-      Assert.That(fileName, Is.EqualTo("app.log"));
-      Assert.That(content, Is.EqualTo("a|b"));
-    }
 
     [Test]
     public void Parse_WithSearch_MarksEveryMatch()

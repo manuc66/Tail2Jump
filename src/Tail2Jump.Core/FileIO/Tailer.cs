@@ -192,7 +192,7 @@ namespace Tail2Jump.FileIO
       _log.LogError(e.GetException(), "FileSystemWatcher error");
     }
 
-    public void TargetFileDeleted(object source, FileSystemEventArgs e)
+    private void TargetFileDeleted(object source, FileSystemEventArgs e)
     {
       if (e == null) return;
 
@@ -210,7 +210,7 @@ namespace Tail2Jump.FileIO
 
     private readonly object _lockTargetFileChanged = new object();
 
-    public void TargetFileChanged(object source, FileSystemEventArgs fsEvent)
+    private void TargetFileChanged(object source, FileSystemEventArgs fsEvent)
     {
       lock (_lockTargetFileChanged)
       {
@@ -314,7 +314,7 @@ namespace Tail2Jump.FileIO
         _previousSeekPositions[fullPath] = fileSeekPos + consumedBytes;
       }
 
-      RaiseMoreData(fullPath, fileName, lines, fileSeekPos, (uint)consumedBytes);
+      RaiseMoreData(fullPath, fileName, lines);
       return consumedBytes;
     }
 
@@ -331,10 +331,9 @@ namespace Tail2Jump.FileIO
       return total;
     }
 
-    private void RaiseMoreData(string fullPath, string fileName, IReadOnlyList<string> lines,
-      long fileSeekPos, uint byteConsumed)
+    private void RaiseMoreData(string fullPath, string fileName, IReadOnlyList<string> lines)
     {
-      var tailEvent = new TailEventData(fileName, lines, fileSeekPos, byteConsumed);
+      var tailEvent = new TailEventData(fileName, lines);
 
       var handlers = eMoreData;
       if (handlers == null) return;

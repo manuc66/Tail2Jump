@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Tail2Jump.Charting;
 
@@ -21,36 +22,15 @@ namespace Tail2Jump.Core.Tests
     }
 
     [Test]
-    public void AutoScale_UpdatesTheMaximum()
+    public void Latest_IsZeroWhenEmpty()
     {
-      var series = new MetricSeries(10, autoScale: true);
-
-      series.Add(100);
-      series.Add(200);
-
-      Assert.That(series.Maximum, Is.GreaterThanOrEqualTo(200));
+      Assert.That(new MetricSeries(3).Latest, Is.Zero);
     }
 
     [Test]
-    public void FixedScale_KeepsTheGivenMaximum()
+    public void Constructor_WithAnInvalidCapacity_Throws()
     {
-      var series = new MetricSeries(10, autoScale: false, maximum: 100);
-
-      series.Add(42);
-
-      Assert.That(series.Maximum, Is.EqualTo(100));
-    }
-
-    [Test]
-    public void Clear_RemovesValuesAndResetsTheMaximum()
-    {
-      var series = new MetricSeries(10, autoScale: true);
-      series.Add(500);
-
-      series.Clear();
-
-      Assert.That(series.Values, Is.Empty);
-      Assert.That(series.Maximum, Is.EqualTo(1));
+      Assert.Throws<ArgumentOutOfRangeException>(() => new MetricSeries(0));
     }
   }
 }

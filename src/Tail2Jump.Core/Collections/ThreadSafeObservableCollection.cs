@@ -135,23 +135,6 @@ namespace Tail2Jump.Collections
       });
     }
 
-    /// <summary>
-    /// Returns a snapshot copy of the collection.
-    /// </summary>
-    public T[] ToSyncArray()
-    {
-      _lock.EnterReadLock();
-      try
-      {
-        var sync = new T[Count];
-        CopyTo(sync, 0);
-        return sync;
-      }
-      finally
-      {
-        _lock.ExitReadLock();
-      }
-    }
 
     public void AddRange(IEnumerable<T> collection)
     {

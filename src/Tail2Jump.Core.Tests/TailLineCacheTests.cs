@@ -13,7 +13,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var cache = new TailLineCache();
 
-      cache.AddData(new TailEventData("app.log", "line1" + Environment.NewLine + "line2", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line1" + Environment.NewLine + "line2"));
 
       Assert.That(cache.LineIndexed, Is.EqualTo(2));
       Assert.That(cache.GetLines(0, 2), Is.EqualTo(new[] { "app.log|line1", "app.log|line2" }));
@@ -25,7 +25,7 @@ namespace Tail2Jump.Core.Tests
       using var cache = new TailLineCache();
 
       cache.AddData(new TailEventData("app.log",
-        "error: boom" + Environment.NewLine + "info: ok", 0, 0), "ERROR");
+        "error: boom" + Environment.NewLine + "info: ok"), "ERROR");
 
       Assert.That(cache.LineIndexed, Is.EqualTo(1));
       Assert.That(cache.GetLines(0, 1), Is.EqualTo(new[] { "app.log|error: boom" }));
@@ -37,9 +37,9 @@ namespace Tail2Jump.Core.Tests
       using var cache = new TailLineCache();
 
       cache.AddData(new TailEventData("other.log",
-        "something" + Environment.NewLine + "else", 0, 0), "app.log");
+        "something" + Environment.NewLine + "else"), "app.log");
       cache.AddData(new TailEventData("app.log",
-        "something" + Environment.NewLine + "else", 0, 0), "app.log");
+        "something" + Environment.NewLine + "else"), "app.log");
 
       Assert.That(cache.LineIndexed, Is.EqualTo(2));
       Assert.That(cache.GetLines(0, 2), Is.EqualTo(new[] { "app.log|something", "app.log|else" }));
@@ -49,7 +49,7 @@ namespace Tail2Jump.Core.Tests
     public void GetLines_ReturnsAnEmptyArrayOutOfBounds()
     {
       using var cache = new TailLineCache();
-      cache.AddData(new TailEventData("app.log", "line1", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line1"));
 
       Assert.That(cache.GetLines(-1, 5), Is.Empty);
       Assert.That(cache.GetLines(2, 5), Is.Empty);
@@ -61,7 +61,7 @@ namespace Tail2Jump.Core.Tests
       using var source = new TailLineCache();
       using var target = new TailLineCache();
 
-      source.AddData(new TailEventData("app.log", "keep me" + Environment.NewLine + "drop me", 0, 0));
+      source.AddData(new TailEventData("app.log", "keep me" + Environment.NewLine + "drop me"));
       target.AddData(source, "keep");
 
       Assert.That(target.GetLines(0, 1), Is.EqualTo(new[] { "app.log|keep me" }));
@@ -72,7 +72,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var cache = new TailLineCache();
 
-      cache.AddData(new TailEventData("app.log", "one\r\ntwo\r\nthree", 0, 0));
+      cache.AddData(new TailEventData("app.log", "one\r\ntwo\r\nthree"));
 
       Assert.That(cache.GetLines(0, 3), Is.EqualTo(new[] { "app.log|one", "app.log|two", "app.log|three" }));
     }
@@ -82,7 +82,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var source = new TailLineCache();
       using var target = new TailLineCache();
-      source.AddData(new TailEventData("app.log", "line", 0, 0));
+      source.AddData(new TailEventData("app.log", "line"));
 
       Assert.DoesNotThrow(() => target.AddData(source, null));
       Assert.That(target.GetLines(0, 1), Is.EqualTo(new[] { "app.log|line" }));
@@ -92,7 +92,7 @@ namespace Tail2Jump.Core.Tests
     public void GetLines_WithNegativeLength_ReturnsAnEmptyArray()
     {
       using var cache = new TailLineCache();
-      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line"));
 
       Assert.That(cache.GetLines(0, -1), Is.Empty);
     }
@@ -102,7 +102,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var cache = new TailLineCache();
 
-      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", (string?)null, 0, 0)));
+      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", (string?)null)));
       Assert.That(cache.LineIndexed, Is.Zero);
     }
 
@@ -112,7 +112,7 @@ namespace Tail2Jump.Core.Tests
       using var cache = new TailLineCache();
 
       cache.AddData(new TailEventData("app.log",
-        "error lower" + Environment.NewLine + "ERROR upper" + Environment.NewLine + "info", 0, 0), "Error");
+        "error lower" + Environment.NewLine + "ERROR upper" + Environment.NewLine + "info"), "Error");
 
       Assert.That(cache.LineIndexed, Is.EqualTo(2));
     }
@@ -129,7 +129,7 @@ namespace Tail2Jump.Core.Tests
         builder.Append("line ").Append(i).Append('\n');
       }
 
-      source.AddData(new TailEventData("app.log", builder.ToString(), 0, 0));
+      source.AddData(new TailEventData("app.log", builder.ToString()));
       target.AddData(source, "line 4999");
 
       Assert.That(target.LineIndexed, Is.EqualTo(1));
@@ -140,7 +140,7 @@ namespace Tail2Jump.Core.Tests
     public void AddData_FromItself_IsIgnored()
     {
       using var cache = new TailLineCache();
-      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line"));
 
       Assert.DoesNotThrow(() => cache.AddData(cache, null));
       Assert.That(cache.LineIndexed, Is.EqualTo(1));
@@ -154,7 +154,7 @@ namespace Tail2Jump.Core.Tests
       cache.AddData(new TailEventData("app.log",
         "1" + Environment.NewLine + "2" + Environment.NewLine + "3" + Environment.NewLine +
         "4" + Environment.NewLine + "5" + Environment.NewLine + "6" + Environment.NewLine +
-        "7" + Environment.NewLine + "8" + Environment.NewLine + "9" + Environment.NewLine + "10", 0, 0));
+        "7" + Environment.NewLine + "8" + Environment.NewLine + "9" + Environment.NewLine + "10"));
 
       Assert.That(cache.LineIndexed, Is.EqualTo(10));
       Assert.That(cache.FirstLineIndex, Is.EqualTo(5));
@@ -175,7 +175,7 @@ namespace Tail2Jump.Core.Tests
       using var target = new TailLineCache();
 
       source.AddData(new TailEventData("app.log",
-        "one" + Environment.NewLine + "two" + Environment.NewLine + "three", 0, 0));
+        "one" + Environment.NewLine + "two" + Environment.NewLine + "three"));
 
       target.AddData(source, null);
 
@@ -187,7 +187,7 @@ namespace Tail2Jump.Core.Tests
     {
       using var cache = new TailLineCache();
 
-      cache.AddData(new TailEventData("app.log", "one" + Environment.NewLine + "two", 0, 0));
+      cache.AddData(new TailEventData("app.log", "one" + Environment.NewLine + "two"));
 
       var entries = cache.GetEntries(0, 2);
 
@@ -204,7 +204,7 @@ namespace Tail2Jump.Core.Tests
 
       for (int i = 0; i < 10; i++)
       {
-        cache.AddData(new TailEventData("app.log", i.ToString(), 0, 0));
+        cache.AddData(new TailEventData("app.log", i.ToString()));
       }
 
       Assert.That(cache.LineIndexed, Is.EqualTo(10));
@@ -221,7 +221,7 @@ namespace Tail2Jump.Core.Tests
       using var cache = new TailLineCache(maxLines: 5_000);
       var lines = System.Linq.Enumerable.Range(0, 2_000).Select(i => "line " + i).ToArray();
 
-      cache.AddData(new TailEventData("app.log", lines, 0, 0));
+      cache.AddData(new TailEventData("app.log", lines));
 
       Assert.That(cache.LineIndexed, Is.EqualTo(2_000));
       Assert.That(cache.GetLines(1_990, 10)[0], Is.EqualTo("app.log|line 1990"));
@@ -234,7 +234,7 @@ namespace Tail2Jump.Core.Tests
       using var cache = new TailLineCache(maxLines: 8);
       var lines = System.Linq.Enumerable.Range(0, 20).Select(i => "line " + i).ToArray();
 
-      cache.AddData(new TailEventData("app.log", lines, 0, 0));
+      cache.AddData(new TailEventData("app.log", lines));
 
       Assert.That(cache.FirstLineIndex, Is.EqualTo(12));
       Assert.That(cache.GetLines(12, 8), Is.EqualTo(new[]
@@ -248,19 +248,19 @@ namespace Tail2Jump.Core.Tests
     public void UsingTheCacheAfterDispose_DoesNotThrow()
     {
       var cache = new TailLineCache();
-      cache.AddData(new TailEventData("app.log", "line", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line"));
       cache.Dispose();
 
       Assert.DoesNotThrow(() => cache.GetLines(0, 1));
       Assert.DoesNotThrow(() => cache.Clear());
-      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", "more", 0, 0)));
+      Assert.DoesNotThrow(() => cache.AddData(new TailEventData("app.log", "more")));
     }
 
     [Test]
     public void Clear_RemovesEverything()
     {
       using var cache = new TailLineCache();
-      cache.AddData(new TailEventData("app.log", "line1", 0, 0));
+      cache.AddData(new TailEventData("app.log", "line1"));
 
       cache.Clear();
 

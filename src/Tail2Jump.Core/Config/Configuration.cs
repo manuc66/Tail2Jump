@@ -186,10 +186,5 @@ namespace Tail2Jump.Config.Objects
       }
     }
 
-    public static void MergeList(IEnumerable<string> oldConf, IEnumerable<string> current, IList<string> newConf)
-    {
-      AddUnique(current, newConf);
-      AddUnique(oldConf, newConf);
-    }
   }
 }

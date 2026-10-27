@@ -29,8 +29,8 @@ namespace Tail2Jump.ViewModels
     {
       _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
       _uiContext = uiContext;
-      Cpu = new MetricSeries(SampleCount, autoScale: false, maximum: 100);
-      Memory = new MetricSeries(SampleCount, autoScale: true);
+      Cpu = new MetricSeries(SampleCount);
+      Memory = new MetricSeries(SampleCount);
 
       // Start with a flat line so the chart has a full width from the beginning.
       for (int i = 0; i < SampleCount - 1; i++)

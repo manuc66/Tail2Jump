@@ -200,17 +200,5 @@ namespace Tail2Jump.Rendering
       return true;
     }
 
-    /// <summary>
-    /// Splits a "file|content" cache line into its file name and content.
-    /// </summary>
-    public static (string FileName, string Content) SplitFileName(string? line)
-    {
-      if (line == null) return (string.Empty, string.Empty);
-
-      int index = line.IndexOf('|');
-      return index > 0
-        ? (line.Substring(0, index), line.Substring(index + 1))
-        : (string.Empty, line);
-    }
   }
 }

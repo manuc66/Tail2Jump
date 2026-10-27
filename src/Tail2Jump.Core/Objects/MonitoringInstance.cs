@@ -5,20 +5,12 @@ namespace Tail2Jump.Objects
 {
   public class MonitoringInstance : ObservableObject, IMonitoringInstance
   {
-    private bool _isOnScreen;
     private MonitoringInstanceState _state = new StoppedMonitoringInstance();
     private bool _includeSubdirectories;
-    private bool _notified;
     private string? _titleName;
     private string? _fullDirectoryPath;
     private int _tailerId;
     private string? _filter;
-
-    public bool IsOnScreen
-    {
-      get { return _isOnScreen; }
-      set { SetProperty(ref _isOnScreen, value); }
-    }
 
     public MonitoringInstanceState State
     {
@@ -28,33 +20,16 @@ namespace Tail2Jump.Objects
         if (SetProperty(ref _state, value))
         {
           OnPropertyChanged(nameof(Status));
-          OnPropertyChanged(nameof(IsStarted));
         }
       }
     }
 
-    public bool IsStarted => _state is StartedMonitoringInstance;
-
-    public string Status
-    {
-      get
-      {
-        if (_state is StartedMonitoringInstance) return "Started";
-        if (_state is PausedMonitoringInstance) return "Paused";
-        return "Stopped";
-      }
-    }
+    public string Status => _state is StartedMonitoringInstance ? "Started" : "Stopped";
 
     public bool IncludeSubdirectories
     {
       get { return _includeSubdirectories; }
       set { SetProperty(ref _includeSubdirectories, value); }
-    }
-
-    public bool Notified
-    {
-      get { return _notified; }
-      set { SetProperty(ref _notified, value); }
     }
 
     public string? TitleName

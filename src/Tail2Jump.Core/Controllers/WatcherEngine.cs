@@ -87,7 +87,6 @@ namespace Tail2Jump.Controllers
 
       instance.IncludeSubdirectories = includeSubdirectories;
       instance.SetDisplayedName();
-      instance.IsOnScreen = true;
       instance.State = new StoppedMonitoringInstance();
 
       var tailer = new Tailer();

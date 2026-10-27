@@ -38,13 +38,5 @@ namespace Tail2Jump.Core.Tests
       Assert.That(collection, Is.EqualTo(new[] { 1, 2, 3 }));
     }
 
-    [Test]
-    public void ToSyncArray_ReturnsASnapshot()
-    {
-      var collection = new ThreadSafeObservableCollection<int>();
-      collection.AddRange(new[] { 1, 2, 3 });
-
-      Assert.That(collection.ToSyncArray(), Is.EqualTo(new[] { 1, 2, 3 }));
-    }
   }
 }

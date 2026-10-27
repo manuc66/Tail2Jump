@@ -134,7 +134,7 @@ namespace Tail2Jump.Benchmarks
           lines[i] = (index % 10 == 0 ? "ERROR " : "INFO ") + "line " + index;
         }
 
-        var tailEvent = new TailEventData("app.log", lines, 0, 0);
+        var tailEvent = new TailEventData("app.log", lines);
         _events.Add(tailEvent);
         _cache.AddData(tailEvent);
       }

@@ -282,22 +282,5 @@ namespace Tail2Jump.DevTools
       return editors;
     }
 
-    public void RefreshEditors(IList<IOpenWithInfo> editors, ref IOpenWithInfo? openIn)
-    {
-      if (editors == null) throw new ArgumentNullException(nameof(editors));
-
-      var detected = DetectEditors();
-
-      editors.Clear();
-      foreach (var editor in detected)
-      {
-        editors.Add(editor);
-      }
-
-      if (openIn == null || !editors.Contains(openIn))
-      {
-        openIn = editors.FirstOrDefault();
-      }
-    }
   }
 }
