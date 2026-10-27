@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Tail2Jump.Benchmarks/Tail2Jump.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Tail2Jump.App.Tests/Tail2Jump.App.Tests.csproj" />
+    <Project Path="src/Tail2Jump.App/Tail2Jump.App.csproj" />
+    <Project Path="src/Tail2Jump.Core.Tests/Tail2Jump.Core.Tests.csproj" />
+    <Project Path="src/Tail2Jump.Core/Tail2Jump.Core.csproj" />
+  </Folder>
+</Solution>

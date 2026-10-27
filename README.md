@@ -10,8 +10,8 @@ search the output, and open the referenced source file at the right line.
 Requires the .NET 10 SDK.
 
 ```bash
-dotnet build Tail2Jump.sln
-dotnet test  Tail2Jump.sln
+dotnet build Tail2Jump.slnx
+dotnet test  Tail2Jump.slnx
 ```
 
 The build is strict: nullable reference types, the .NET analyzers and
